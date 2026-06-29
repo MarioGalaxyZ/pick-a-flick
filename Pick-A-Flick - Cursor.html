@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Neon Arcade Movie Wheel - Premium Edition</title>
+
+    <style>
+
+        * {
+
+            box-sizing: border-box;
+
+            margin: 0;
+
+            padding: 0;
+
+        }
+
+
+
+        body {
+
+            background-color: #0b0b12;
+
+            font-family: 'Courier New', Courier, monospace;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            min-height: 100vh;
+
+            overflow: hidden;
+
+            color: #fff;
+
+        }
+
+
+
+        /* The Arcade Cabinet Workspace Container */
+
+        #arcade-container {
+
+            position: relative;
+
+            width: 1200px;
+
+            height: 700px;
+
+            background-image: url('arcade_background.png');
+
+            background-size: cover;
+
+            background-position: center;
+
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+        }
+
+
+
+        /* Recent Spins History Panel */
+
+        #history-deck {
+
+            position: absolute;
+
+            top: 460px;
+
+            left: 60px;
+
+            width: 200px;
+
+            height: 89px;
+
+            background: rgba(0, 0, 0, 0.75);
+
+            border: 1px dashed #39FF14;
+
+            border-radius: 6px;
+
+            padding: 6px 8px;
+
+            z-index: 15;
+
+            opacity: 0; /* Hidden on initialization */
+
+            transition: opacity 0.4s ease; /* Fluid reveal transition */
+
+        }
+
+
+
+        #history-title {
+
+            font-size: 10px;
+
+            color: #39FF14;
+
+            text-align: center;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 6px;
+
+            font-weight: bold;
+
+            border-bottom: 1px solid rgba(57, 255, 20, 0.3);
+
+            padding-bottom: 3px;
+
+        }
+
+
+
+        #history-list {
+
+            list-style: none;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 2px;
+
+        }
+
+
+
+        .history-item {
+
+            font-size: 10px;
+
+            color: #fff;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+            text-transform: uppercase;
+
+            padding-left: 5px;
+
+            border-left: 2px solid #39FF14;
+
+        }
+
+
+
+        .history-item.empty {
+
+            color: rgba(255, 255, 255, 0.2);
+
+            border-left-color: rgba(57, 255, 20, 0.1);
+
+        }
+
+
+
+        /* Layered Wheel Positioning System */
+
+        #wheel-housing {
+
+            position: absolute;
+
+            top: -280px;
+
+            left: 0px; 
+
+            width: 1200px; 
+
+            height: 1200px;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+        }
+
+
+
+        /* The actual rotating high-res graphic layer */
+
+        #wheel-disc {
+
+            width: 50%;
+
+            height: 50%;
+
+            background-image: url('wheel_disc.png');
+
+            background-size: contain;
+
+            background-position: center;
+
+            background-repeat: no-repeat;
+
+            transition: transform 0.1s linear;
+
+            will-change: transform;
+
+        }
+
+
+
+        /* Your perfectly dialed-in 80px custom ticker arrow */
+
+        #ticker-arrow {
+
+            position: absolute;
+
+            top: 20px;
+
+            left: 570px; 
+
+            width: 80px;
+
+            height: 80px;
+
+            background-image: url('ticker_arrow.png');
+
+            background-size: contain;
+
+            background-repeat: no-repeat;
+
+            z-index: 10;
+
+        }
+
+
+
+        /* Invisible clickable hitbox fields wrapped over the artwork buttons */
+
+        .arcade-btn {
+
+            position: absolute;
+
+            cursor: pointer;
+
+            background: rgba(255, 255, 255, 0); 
+
+            border: none;
+
+            outline: none;
+
+            border-radius: 50%;
+
+        }
+
+
+
+        #spin-button {
+
+            top: 245px;
+
+            right: 128px;
+
+            width: 115px;
+
+            height: 115px;
+
+        }
+
+
+
+        #spin-button:active {
+
+            transform: scale(0.96);
+
+        }
+
+
+
+        /* Audio Toggle Mask System */
+
+        #audio-toggle {
+
+            position: absolute;
+
+            top: 422px;
+
+            right: 200px;
+
+            width: 55px;
+
+            height: 55px;
+
+            border-radius: 8px;
+
+        }
+
+
+
+        /* The Pop-Up Poster Frame System */
+
+        #poster-frame {
+
+            position: absolute;
+
+            top: 140px;
+
+            left: 60px;
+
+            width: 200px;
+
+            height: 300px;
+
+            background: rgba(0, 0, 0, 0.75);
+
+            border: 2px solid #39FF14;
+
+            box-shadow: 0 0 25px rgba(57, 255, 20, 0.4);
+
+            border-radius: 8px;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            overflow: hidden;
+
+            transition: opacity 0.4s ease;
+
+            opacity: 0; 
+
+            z-index: 15;
+
+        }
+
+
+
+        #poster-image {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+            display: none;
+
+        }
+
+
+
+        #poster-placeholder {
+
+            color: #39FF14;
+
+            font-size: 11px;
+
+            text-align: center;
+
+            letter-spacing: 2px;
+
+            font-weight: bold;
+
+            padding: 15px;
+
+            text-transform: uppercase;
+
+        }
+
+
+
+        /* Scrolling Marquee Ledger Output Base */
+
+        #marquee-ledger {
+
+            position: absolute;
+
+            bottom: 35px;
+
+            left: 215px;
+
+            width: 770px; 
+
+            height: 45px;
+
+            background: rgba(0, 0, 0, 0.75);
+
+            border: 1px solid rgba(57, 255, 20, 0.3);
+
+            border-radius: 4px;
+
+            display: flex;
+
+            align-items: center;
+
+            padding-left: 20px;
+
+            overflow: hidden;
+
+        }
+
+
+
+        #marquee-text {
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            color: #39FF14;
+
+            text-shadow: 0 0 8px rgba(57, 255, 20, 0.6);
+
+            white-space: nowrap;
+
+            letter-spacing: 2px;
+
+            text-transform: uppercase;
+
+        }
+
+
+
+    </style>
+
+</head>
+
+<body>
+
+
+
+    <div id="arcade-container">
+
+        <div id="ticker-arrow"></div>
+
+        
+
+        <div id="wheel-housing">
+
+            <div id="wheel-disc"></div>
+
+        </div>
+
+
+
+        <button id="spin-button" class="arcade-btn" onclick="initiateSpin(event)"></button>
+
+        <input type="checkbox" id="audio-toggle" checked>
+
+
+
+        <div id="poster-frame">
+
+            <div id="poster-placeholder">AWAITING SPIN...</div>
+
+            <img id="poster-image" src="" alt="Movie Poster">
+
+        </div>
+
+
+
+        <div id="history-deck">
+
+            <div id="history-title">RECENT SPINS</div>
+
+            <ul id="history-list">
+
+                <li class="history-item empty">EMPTY SLOT</li>
+
+                <li class="history-item empty">EMPTY SLOT</li>
+
+                <li class="history-item empty">EMPTY SLOT</li>
+
+            </ul>
+
+        </div>
+
+
+
+        <div id="marquee-ledger">
+
+            <div id="marquee-text">SYSTEM READY // CHOOSE YOUR GENRE...</div>
+
+        </div>
+
+    </div>
+
+
+
+<script>
+// Fully calibrated movie lists + Prospector Pete logic integration
+
+    const movieDatabase = {
+
+        "ALIEN ALLEY 👽": [
+            "Alien (Series)", 
+            "Aliens (1986)", 
+            "District 9 (2009)", 
+            "Evolution (2001)", 
+            "Meet Dave (2008)", 
+            "Men in Black (Series)", 
+            "The Hitchhiker's Guide to the Galaxy (2005)",
+            "They Live (1988)", 
+            "Project Hail Mary (2026)"
+        ],
+        
+        "ANIMATION STATION 👾": [
+            "Anastasia (1997)", 
+            "Atlantis: The Lost Empire (2001)", 
+            "Osmosis Jones (2001)", 
+            "Over the Hedge (2006)", 
+            "Rango (2009)", 
+            "Shrek (2001)", 
+            "The Croods (2013)", 
+            "The Curse of the Were-Rabbit (2005)", 
+            "The Last Unicorn (1982)", 
+            "The Rescuers (1977)", 
+            "The Secret of NIMH (1982)", 
+            "The Spongebob Squarepants Movie (2004)",
+            "The Land Before Time (1988)",
+            "A Scanner Darkly (2006)",
+            "Balto (1995)",
+            "The Fox and The Hound (1981)"
+        ],
+        
+        "CAGE STAGE 🐷": [ 
+            "Bad Lieutenant: Port of Call -- New Orleans (2009)", 
+            "Color Out of Space (2019)", 
+            "Dream Scenario (2023)", 
+            "Face/Off (1997)", 
+            "Ghost Rider (2007)", 
+            "Leaving Las Vegas (1995)", 
+            "Lord of War (2005)", 
+            "Matchstick Men (2003)", 
+            "Moonstruck (1987)", 
+            "National Treasure (2004)", 
+            "Next (2007)", 
+            "Outcast (2014)",  
+            "Pig (2021)", 
+            "Renfield (2023)", 
+            "Rumble Fish (1983)", 
+            "The Family Man (2000)", 
+            "The Rock (1996)", 
+            "The Weather Man (2005)", 
+            "Willy's Wonderland (2021)"
+        ],
+        
+        "CARREY'S CHARACTERS 🎭": [
+            "Dumb and Dumber To (2014)", 
+            "Earth Girls Are Easy (1988)", 
+            "Fun with Dick and Jane (2005)", 
+            "Liar Liar (1997)", 
+            "Mr. Popper's Penguins (2011)", 
+            "The Majestic (2001)",
+            "The Number 23 (2007)"
+        ],
+        
+        "KAUFMAN'S KORNER 🌞": [
+            "Confessions of a Dangerous Mind (2002)", 
+            "Eternal Sunshine of the Spotless Mind (2004)", 
+            "Human Nature (2001)", 
+            "Orion And The Dark (2024)", 
+    
+        ],
+        
+        "MOVIES TO FALL ASLEEP TO 💤": [
+            "28 Years Later (2025)",
+            "After Hours (1985)",
+            "Brazil (1985)",
+            "Evil Dead II (1987)",
+            "Heretic (2024)",
+            "Jacob's Ladder (1990)",
+            "Mandy (2018)",
+            "Natural Born Killers (1994)",
+            "Possessor (2020)",
+            "Predator (1987)",
+            "The Sixth Sense (1999)",
+            "The Sweet East (2023)"
+        ],
+        
+        "MUSIC MOUNTAIN ⛰️": [
+            "20,000 Days on Earth (2014)", 
+            "24 Hour Party People (2002)", 
+            "A Complete Unknown (2024)", 
+            "Amadeus (1984)", 
+            "Bohemian Rhapsody (2018)", 
+            "CBGB (2013)", 
+            "Head (1968)", 
+            "I'm Not There (2007)", 
+            "Inside Llewyn Davis (2013)", 
+            "Last Days (2005)", 
+            "Nowhere Boy (2009)", 
+            "O Brother Where Art Thou (2000)", 
+            "Pink Floyd: The Wall (1982)", 
+            "Ray (2004)", 
+            "Rocketman (2019)", 
+            "The Blues Brothers (1980)", 
+            "The Doors (1991)", 
+            "Walk the Line EXTENDED (2005)"
+        ],
+        
+        "PEGG'S PLAYGROUND 🎡": [
+            "A Fantastic Fear of Everything (2012)", 
+            "Big Nothing (2006)", 
+            "Burke & Hare (2010)", 
+            "Guest House Paradiso (1999)", 
+            "Hector and the Search for Happiness (2014)", 
+            "Hot Fuzz (2007)", 
+            "Shaun of the Dead (2004)", 
+            "Slaughterhouse Rulez (2018)", 
+            "The Adventures of Tintin (2011)", 
+            "The Boxtrolls (2014)"
+        ],
+        
+        "SEQUEL STREET 🚗": [
+            "Back to the Future Part 2 (1989)", 
+            "Back to the Future Part 3 (1990)", 
+            "Bill & Ted Face the Music (2020)", 
+            "Ip Man: The Final Fight (2013)", 
+            "The Grandmaster (2013)", 
+            "The Legend is Born: Ip Man (2010)",
+            "Kung Fu Panda 2 (2011)",
+            "Kung Fu Panda 3 (2016)",
+            "Kung Fu Panda 4 (2024)",
+            "Heavier Trip (2024)"
+        ],
+        
+        "WACKY WAY 🤪": [
+            "Batteries Not Included (1987)", 
+            "Big Trouble in Little China (1986)", 
+            "Braindead / Dead Alive (1992)", 
+            "Death Race 2000 (1975)", 
+            "Death to Smoochy (2002)", 
+            "Drop Dead Fred (1991)", 
+            "Flubber (1997)", 
+            "Galaxy Quest (1999)", 
+            "George of the Jungle (1997)", 
+            "Ghost World (2001)",
+            "Good Luck Have Fun Don't Die (2025)", 
+            "Greener Grass (2019)",
+            "Howard the Duck (1986)", 
+            "Idle Hands (1999)", 
+            "Innerspace (1987)", 
+            "Jumanji (1995)", 
+            "Kajillionaire (2020)",
+            "Kung Pow: Enter the Fist (2002)", 
+            "Labyrinth (1986)", 
+            "Little Shop of Horrors (1986)", 
+            "Living in Oblivion (1995)", 
+            "Looney Tunes: Back in Action (2003)", 
+            "Monkeybone (2001)", 
+            "Multiplicity (1996)", 
+            "Mystery Men (1999)", 
+            "Naked Lunch (1991)", 
+            "Phantom of the Paradise (1974)", 
+            "Popeye (1980)", 
+            "Real Life (1979)", 
+            "Repo Man (1984)", 
+            "Scooby-Doo (2002)", 
+            "Screwed (2000)", 
+            "Small Soldiers (1998)", 
+            "Swiss Army Man (2016)", 
+            "The 'Burbs (1989)", 
+            "The Adventures of Rocky & Bullwinkle (2000)", 
+            "The Cat in the Hat (2003)", 
+            "The Dark Crystal (1982)", 
+            "The Fall (2006)", 
+            "The Flintstones (1994)", 
+            "The Frighteners (1996)", 
+            "The Game (1997)",
+            "The Gods Must Be Crazy (1980)", 
+            "The Imaginarium of Doctor Parnassus (2009)", 
+            "The Monster Squad (1987)", 
+            "The Muppet Movie (1979)", 
+            "The Rocketeer (1991)", 
+            "Time Bandits (1981)", 
+            "Tropic Thunder (2008)",
+            "Toys (1992)", 
+            "UHF (1989)", 
+            "Used Cars (1980)",
+            "Warm Bodies (2013)",
+            "Speed Racer (2008)"
+        ],
+        
+        "ZEMECKIS ZONE 🐇": [
+            "Beowulf (2007)", 
+            "Used Cars (1980)", 
+            "Flight (2012)", 
+            "Romancing the Stone (1984)"
+        ],
+        
+        "PHOENIX FREEWAY 🃏": [
+            "Clay Pigeons (1998)",
+            "Eddington (2025)",
+            "I'm Still Here (2010)",
+            "Inherent Vice (2014)",
+            "The Master (2012)",
+            "The Sisters Brothers (2018)",
+            "The Village (2004)",
+            "To Die For (1995)",
+            "U Turn (1997)",
+            "We Own the Night (2007)",
+            "You Were Never Really Here (2017)"
+        ],
+
+        "FOREIGN EMBASSY 🌐": [
+            "Parasite (2019)",
+            "Shaolin Soccer (2001)", "A Town Called Panic (2009)", "Heavy Trip (2018)",
+            "Peppermint Candy (1999)", "City of God (2002)", "No Other Choice (2025)",
+            "Train to Busan (2016)", "Another Round (2020)", "Save the Green Planet! (2003)",
+            "Alienoid (2022)", "Crouching Tiger Hidden Dragon (2000)", "La Haine (1995)",
+            "Delicatessen (1991)"
+        ],
+        
+        "TUMBLEWEED TURNPIKE 🏜️": [
+            "Unforgiven (1992)", "True Grit (2010)",
+            "3:10 to Yuma (2007)", "Slow West (2015)", "Man of the West (1958)",
+            "The Assassination of Jesse James by the Coward Robert Ford (2007)"
+        ],
+        
+        "JB JUNCTION 🎸": [
+            "Tenacious D in The Pick of Destiny (2006)", "School of Rock (2003)", "High Fidelity (2000)", "Kung Fu Panda (2008)",
+            "Anaconda (2025)", "Dear Santa (2024)", "Free LSD (2023)", "Be Kind Rewind (2008)",
+            "Bernie (2011)", "Nacho Libre (2006)", "Orange County (2002)", "Saving Silverman (2001)",
+            "The Polka King (2017)", "The School of Rock (2003)", "Tropic Thunder (2008)",
+            "Walk Hard: The Dewey Cox Story (2007)", "Year One (2009)"
+        ],
+        
+        "NEON & NINETIES 🌃": [
+            "Blade Runner (1982)", "Drive (2011)", "Akira (1988)",
+            "Blade Runner 2049 (2017)", "Tron: Ares (2025)", "Empire Records (1995)",
+            "Bean (1997)", "Office Space (1999)", "Tommy Boy (1995)", "Wayne's World (1992)",
+            "Clerks (1994)", "The Big Lebowski (1998)", "Groundhog Day (1993)",
+            "Pump Up the Volume (1990)", "The Neon Demon (2016)", "Mute (2018)",
+            "Ex Machina (2015)", "Dredd (2012)", "Jackie Brown (1997)",
+            "Reservoir Dogs (1992)", "Dark City (1998)", "Kate (2021)",
+            "Tron (1982)", "Tron Legacy (2010)", "True Romance (1993)",
+            "Strange Days (1995)", "Total Recall (1990)", "The Guest (2014)",
+            "Atomic Blonde (2017)", "Streets of Fire (1984)", "Gattaca (1997)",
+            "Johnny Mnemonic (1995)", "Upgrade (2018)", "Only God Forgives (2013)",
+            "Primer (2004)", "Lost River (2014)", "Gunpowder Milkshake (2021)",
+            "The Fifth Element (1997)"
+        ]
+
+
+
+    };
+
+
+
+
+
+    let categories = Object.keys(movieDatabase);
+
+    const totalSlices = 16;
+
+    const degreesPerSlice = 360 / totalSlices; 
+
+    let isSpinning = false;
+
+    let currentRotation = 0; 
+
+    
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+
+
+    // --- MASTER AUDIO MIXING DECK ---
+
+    const cabinetMixer = {
+
+        tickerVolume: 0.12,      
+
+        introClipVolume: 0.70,   
+
+        victoryClipVolume: 0.85  
+
+    };
+
+
+
+    function playTickerClick() {
+
+        if (!document.getElementById('audio-toggle').checked) return;
+
+        const osc = audioCtx.createOscillator();
+
+        const gainNode = audioCtx.createGain();
+
+        osc.type = 'triangle';
+
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime); 
+
+        gainNode.gain.setValueAtTime(cabinetMixer.tickerVolume, audioCtx.currentTime);
+
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.03);
+
+        osc.connect(gainNode);
+
+        gainNode.connect(audioCtx.destination);
+
+        osc.start();
+
+        osc.stop(audioCtx.currentTime + 0.03);
+
+    }
+
+
+
+    // --- ARCADE AUDIO SETTINGS ---
+
+    const spinIntroClips = [
+
+        "sounds/output 6.wav", "sounds/output 7.wav", "sounds/output 8.wav", "sounds/output 9.wav",
+
+        "sounds/output 10.wav", "sounds/output 11.wav", "sounds/output 12.wav", "sounds/output 13.wav",
+
+        "sounds/output 14.wav", "sounds/output 15.wav", "sounds/output 18.wav", "sounds/output 19.wav",
+
+        "sounds/output 21.wav", "sounds/output 23.wav", "sounds/output 24.wav", "sounds/output 26.wav",
+
+        "sounds/output 27.wav", "sounds/output 29.wav", "sounds/output 31.wav", "sounds/output 32.wav",
+
+        "sounds/output 35.wav", "sounds/output 36.wav", "sounds/output.wav", "sounds/output 2.wav",
+
+        "sounds/output 3.wav", "sounds/output 4.wav", "sounds/output 5.wav"
+
+    ];
+
+
+
+    function initiateSpin(event) {
+
+        if (isSpinning) return;
+
+        isSpinning = true;
+
+        audioCtx.resume();
+
+
+
+        const marquee = document.getElementById('marquee-text');
+
+        
+
+        // Hide previous poster artwork at start of next spin
+
+        document.getElementById('poster-frame').style.opacity = "0";
+
+        document.getElementById('poster-image').style.display = "none";
+
+        document.getElementById('poster-placeholder').style.display = "block";
+
+        document.getElementById('poster-placeholder').innerHTML = "AWAITING SPIN...";
+
+
+
+        // DEV OVERRIDE DETECTED: Shift key bypasses entry sounds
+
+        if (event && event.shiftKey) {
+
+            marquee.innerHTML = "DEV BYPASS // FAST SPIN MODE...";
+
+            triggerPhysicalSpin();
+
+            return;
+
+        }
+
+
+
+        marquee.innerHTML = "PREPARING CABINET...";
+
+        const audioEnabled = document.getElementById('audio-toggle').checked;
+
+
+
+        if (audioEnabled && spinIntroClips.length > 0) {
+
+            let randomClip = spinIntroClips[Math.floor(Math.random() * spinIntroClips.length)];
+
+            
+
+            let introAudio = new Audio(randomClip);
+
+            introAudio.volume = cabinetMixer.introClipVolume;
+
+            
+
+            introAudio.play().catch(err => {
+
+                console.log("Audio play blocked or file not found, skipping directly to spin:", err);
+
+                triggerPhysicalSpin(); 
+
+            });
+
+
+
+            introAudio.onended = function() {
+
+                triggerPhysicalSpin();
+
+            };
+
+        } else {
+
+            triggerPhysicalSpin();
+
+        }
+
+    }
+
+
+
+    function triggerPhysicalSpin() {
+
+        let tuningOffset = 15; 
+
+
+
+        const disc = document.getElementById('wheel-disc');
+
+        const marquee = document.getElementById('marquee-text');
+
+        
+
+        marquee.innerHTML = "LOCKING CATEGORY...";
+
+
+
+        let randomCategoryIndex = Math.floor(Math.random() * categories.length);
+
+        let selectedCategory = categories[randomCategoryIndex];
+
+        
+
+        let targetDegrees = (360 - (randomCategoryIndex * degreesPerSlice) - (degreesPerSlice / 2) + tuningOffset) % 360;
+
+        
+
+        let baseRotation = currentRotation % 360;
+
+        let extraSpins = 5 * 360; 
+
+        
+
+        let distanceToTarget = (targetDegrees - baseRotation + 360) % 360;
+
+        if (distanceToTarget === 0) distanceToTarget = 360; 
+
+        
+
+        let finalDegrees = baseRotation + extraSpins + distanceToTarget;
+
+        
+
+        let start = null;
+
+        let duration = 4000; // Total spin window = 4 seconds
+
+        let lastClickDegree = baseRotation;
+
+        
+
+        // State gate to prevent multiple audio triggers in the tracking window
+
+        let hasFiredVictorySound = false;
+
+
+
+        function animate(timestamp) {
+
+            if (!start) start = timestamp;
+
+            let progress = timestamp - start;
+
+            let timePercent = Math.min(progress / duration, 1);
+
+            
+
+            let easePercent = 1 - Math.pow(1 - timePercent, 3);
+
+            let frameRotation = baseRotation + (finalDegrees - baseRotation) * easePercent;
+
+            
+
+            disc.style.transform = `rotate(${frameRotation}deg)`;
+
+
+
+            if (Math.abs(frameRotation - lastClickDegree) >= degreesPerSlice) {
+
+                playTickerClick();
+
+                lastClickDegree = frameRotation - (frameRotation % degreesPerSlice);
+
+            }
+
+
+
+            // SUSPENSE TIMING MECHANIC: Fire victory sound exactly 1 second (3000ms) before stop
+
+            if (progress >= 3000 && !hasFiredVictorySound) {
+
+                hasFiredVictorySound = true;
+
+                playCategoryVictorySound(selectedCategory);
+
+            }
+
+
+
+            if (timePercent < 1) {
+
+                requestAnimationFrame(animate);
+
+            } else {
+
+                currentRotation = finalDegrees;
+
+                disc.style.transform = `rotate(${currentRotation}deg)`;
+
+                
+
+                setTimeout(() => {
+
+                    executeMovieTierSelection(selectedCategory);
+
+                }, 800);
+
+            }
+
+        }
+
+        requestAnimationFrame(animate);
+
+    }
+
+
+
+    // --- WINNING AUDIO DIRECTORY ---
+
+    const categoryWinClips = {
+
+"FOREIGN EMBASSY 🌐": { folder: "win_sounds/foreign_embassy/", files: ["007.mp3", "french.mp3", "naruto.mp3"] },
+
+        "TUMBLEWEED TURNPIKE 🏜️": { folder: "win_sounds/tumbleweed/", files: ["tumble1.mp3"] },
+
+        "JB JUNCTION 🎸": {
+
+            folder: "win_sounds/jb_junction/",
+
+            files: [
+
+                "jb1.mp3",
+
+                "and-here-i-am-saying-you-got-no-sense-of-humor.mp3",
+
+                "and-i-can-sing-like-that-all-night.mp3",
+
+                "and-next-here-we-have-the-corn-in-the-best-in-the-city-is-delicious.mp3",
+
+                "damn-that-is-a-man-right-there.mp3",
+
+                "do-you-know-where-i-can-find-the-pick-of-destiny.mp3",
+
+                "don-t-don-t-offer-me-anything-i-ll-tell-you-what-i-want.mp3",
+
+                "dude-hold-on-it-s-good-stuff.mp3",
+
+                "dude-it-s-jables-pick-up-man.mp3",
+
+                "gonna-smoke-some-weed.mp3",
+
+                "hold-on-a-second-i-m-looking-at-the-menu.mp3",
+
+                "i-did-not-mean-to-blow-your-mind.mp3",
+
+                "i-feel-more-comfortable-when-i-m-up-on-stage.mp3",
+
+                "i-look-like-a-living-garden-gnome-where-is-my-phone.mp3",
+
+                "i-lost-my-wallet.mp3",
+
+                "i-m-an-overweight-middle-age-man.mp3",
+
+                "i-may-need-your-help.mp3",
+
+                "i-win-one-did-nothing.mp3",
+
+                "jack-black-coke-2.mp3",
+
+                "jack-black-simple.mp3",
+
+                "maybe-we-re-all-in-a-coma.mp3",
+
+                "oh-man-jack-black.mp3",
+
+                "tenacious-d-beelzeboss-jumpscare.mp3",
+
+                "Voicy_ I got to be light on my feet like a dancer.mp3",
+
+                "Voicy_Jack Black Me baby.mp3",
+
+                "Voicy_Tenacious D Rock.mp3",
+
+                "Voicy_That was the Best Thing I Have Ever Seen.mp3",
+
+                "Voicy_Wait, WAIT WAIIIT, YOU MOTHERF.mp3"
+
+            ]
+
+        },
+
+        "NEON & NINETIES 🌃": { folder: "win_sounds/neon_skyline/", files: ["neon1.mp3"] }, 
+
+       "ALIEN ALLEY 👽": {
+
+            folder: "win_sounds/alien_alley/",
+
+            files: [
+
+                "alien alley1.mp3", 
+
+                "daviddumaisaudio-sci-fi-weapon-single-shot-warped-06-316417.mp3", 
+
+                "dragon-studio-alien-song-323613.mp3", 
+
+                "dream_sequencer-sci-fi-drone-transition-effect-200107.mp3", 
+
+                "fnx_sound-alien-technology-resonance-287319.mp3", 
+
+                "fnx_sound-futuristic-alien-resonance-287308.mp3", 
+
+                "freesound_community-sci-fi-sensors-89337.mp3", 
+
+                "kitsunemusic-sci-fi-ambience-stars-are-blinking-270037.mp3", 
+
+                "kontraa-grading-back-transition-fx-178633.mp3"
+
+            ]
+
+        },
+
+        "ANIMATION STATION 👾": {
+
+            folder: "win_sounds/animation_station/",
+
+            files: [
+
+                "49053354-cartoon-fall-318229.mp3", 
+
+                "advikgam-jump-up-245782.mp3", 
+
+                "animation1.mp3", 
+
+                "freesound_community-cartoon-jump-6462.mp3", 
+
+                "freesound_community-yoshi-99954.mp3", 
+
+                "lucadialessandro-funny-cartoon-sound-397415.mp3", 
+
+                "ribhavagrawal-energy-up-sound-effect-230472.mp3", 
+
+                "11325622-cartoon-violin-sound-effect-241389.mp3"
+
+            ]
+
+        },
+
+        "CAGE STAGE 🐷": {
+
+            folder: "win_sounds/cage_stage/",
+
+            files: [
+
+                "cage stage sfx1.mp3", "cage stage sfx2.mp3", "cage stage sfx3.mp3", "cage stage sfx4.mp3",
+
+                "cage stage sfx5.mp3", "cage stage sfx6.mp3", "cage stage sfx7.mp3", "cage stage sfx8.mp3",
+
+                "cage stage sfx9.mp3", "cage stage sfx10.mp3", "cage stage sfx11.mp3", "cage stage sfx12.mp3",
+
+                "cage stage sfx13.mp3", "cage stage sfx14.mp3", "cage stage sfx15.mp3", "cage stage sfx16.mp3",
+
+                "Voicy_I'm The Only One Who Can Walk In Both Worlds.mp3",
+
+                "Voicy_Okay That Was Weird.mp3",
+
+                "Voicy_You'll Think I'm Crazy.mp3"
+
+            ]
+
+        },
+
+        "CARREY'S CHARACTERS 🎭": {
+
+            folder: "win_sounds/carrey_characters/",
+
+            files: [
+
+                "carrey3.wav", 
+
+                "carrey4.wav", 
+
+                "jc.wav", 
+
+                "jim-carrey-2x-golden-globe-winner.wav", 
+
+                "jim-carrey-going-to-sleep.wav", 
+
+                "thanks-son-jim-carrey-liar-liar.wav", 
+
+                "carrey1.wav", 
+
+                "carrey2.wav",
+
+                "Voicy_Alllllrighty Then.mp3",
+
+                "Voicy_Cable guy!  (4).mp3",
+
+                "Voicy_Cleanliness is next to godliness.mp3",
+
+                "Voicy_Free cable is the ultimate aphrodisiac.mp3",
+
+                "Voicy_Hey man, It's me again. I was just taking a whiz.mp3",
+
+                "Voicy_Hey, I'm a big boy. It's no big deal. Whatever.mp3",
+
+                "Voicy_No ifs, ands or buts. Well, maybe a few butts. BIG.mp3",
+
+                "Voicy_The Mask (1994) Smokin'!.mp3"
+
+            ]
+
+        },
+
+        "KAUFMAN'S KORNER 🌞": { 
+
+            folder: "win_sounds/kaufman_korner/", 
+
+            files: ["shrek_30-unfortunate-lullaby-340703.mp3"] 
+
+        },
+
+        "MOVIES TO FALL ASLEEP TO 💤": { 
+
+            folder: "win_sounds/movies_to_fall_asleeepto/", 
+
+            files: ["shrek_30-unfortunate-lullaby-340703.mp3"] 
+
+        },
+
+        "MUSIC MOUNTAIN ⛰️": {
+
+            folder: "win_sounds/music_mountain/",
+
+            files: [
+
+                "music1.mp3", 
+
+                "shidenbeatsmusic-harp-glissando-with-chimes-sound-effect-128349.mp3", 
+
+                "zec53-sleepy-marimba-and-vibraphone-ending-271446.mp3", 
+
+                "freesound_community-harp-glissando-down-69334.mp3"
+
+            ]
+
+        },
+
+        "PEGG'S PLAYGROUND 🎡": { 
+
+            folder: "win_sounds/peggs_playground/", 
+
+            files: ["p1.mp3", "p2.mp3"] 
+
+        },
+
+        "SEQUEL STREET 🚗": { 
+
+            folder: "win_sounds/sequel_street/", 
+
+            files: ["sequel.mp3"] 
+
+        },
+
+        "WACKY WAY 🤪": { 
+
+            folder: "win_sounds/wacky_way/", 
+
+            files: [
+
+                
+                "tunetank-kids-logo-483658.mp3", 
+
+            
+
+            ] 
+
+        },
+
+        "ZEMECKIS ZONE 🐇": { 
+
+            folder: "win_sounds/zemeckis_zone/", 
+
+            files: ["alexzavesa-logo-fashion-future-bass-491977.mp3"] 
+
+        },
+
+        "U-Pick ⛏️": { 
+
+            folder: "win_sounds/u_pick/", 
+
+            files: [
+
+                "zafi-gold-coin-sound-437271.mp3", 
+
+                "kaufman.mp3", 
+
+                "universfield-cartoon-fail-trumpet-278822.mp3", 
+
+                "11325622-cartoon-trombone-sound-effect-241387.mp3", 
+
+                "freesound_community-wah-wah-sad-trombone-6347.mp3"
+
+            ] 
+
+        }
+
+    };
+
+
+
+    function playCategoryVictorySound(catKey) {
+
+        const audioEnabled = document.getElementById('audio-toggle').checked;
+
+        if (!audioEnabled) return;
+
+        
+
+        let winData = categoryWinClips[catKey];
+
+        if (winData && winData.files.length > 0) {
+
+            let randomWinFile = winData.files[Math.floor(Math.random() * winData.files.length)];
+
+            let fullPath = winData.folder + randomWinFile;
+
+            
+
+            let winAudio = new Audio(fullPath);
+
+            winAudio.volume = cabinetMixer.victoryClipVolume;
+
+            
+
+            winAudio.play().catch(err => console.log("Win audio playback blocked or file not found:", err));
+
+        }
+
+    }
+
+
+
+    // Global history state tracking array
+
+    let spinHistory = [];
+
+
+
+function executeMovieTierSelection(category) {
+    const marquee = document.getElementById('marquee-text');
+    const omdbApiKey = '14e2f0ac';
+
+    const posterFrame = document.getElementById('poster-frame');
+    const posterImg = document.getElementById('poster-image');
+    const placeholder = document.getElementById('poster-placeholder');
+
+    // Extract the emoji from the category name (assuming it's the last part of the string)
+    const categoryParts = category.split(' ');
+    const categoryEmoji = categoryParts[categoryParts.length - 1];
+
+    marquee.innerHTML = `${category} CHOSEN -> RUNNING MOVIE INDEX...`;
+    placeholder.innerHTML = "LOADING ARTWORK...";
+    posterFrame.style.opacity = "1";
+
+    setTimeout(() => {
+        let movies = movieDatabase[category];
+        let chosenMovie = movies[Math.floor(Math.random() * movies.length)];
+        marquee.innerHTML = `${category} SELECTED // CHOSEN MOVIE: ${chosenMovie}`;
+        
+        // --- UPDATED HISTORY LOG LOGIC ---
+        // Combine emoji + movie title for the history list
+        const historyEntry = `${categoryEmoji} ${chosenMovie}`;
+        spinHistory.unshift(historyEntry);
+        if (spinHistory.length > 3) spinHistory.pop();
+
+        // Make the history container fade into view
+        document.getElementById('history-deck').style.opacity = "1";
+
+        // Refresh UI history slots
+        const historyItems = document.querySelectorAll('.history-item');
+        historyItems.forEach((item, index) => {
+            if (spinHistory[index]) {
+                item.textContent = spinHistory[index];
+                item.classList.remove('empty');
+            } else {
+                item.textContent = "EMPTY SLOT";
+                item.classList.add('empty');
+            }
+        });
+        // ---------------------------------
+
+        // Clean title string tags for API search stability
+        let cleanTitle = chosenMovie.split('(')[0].trim();
+
+        fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(cleanTitle)}&apikey=${omdbApiKey}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.Response === "True" && data.Poster && data.Poster !== "N/A") {
+                    posterImg.src = data.Poster;
+                    placeholder.style.display = "none";
+                    posterImg.style.display = "block";
+                } else {
+                    placeholder.innerHTML = "NO ART FOUND";
+                }
+            })
+            .catch(err => {
+                console.log("OMDb fetch failure:", err);
+                placeholder.innerHTML = "NET ERROR";
+            });
+
+        isSpinning = false;
+    }, 1500);
+}
+
+</script>
+
+</body>
+
+</html> 
+

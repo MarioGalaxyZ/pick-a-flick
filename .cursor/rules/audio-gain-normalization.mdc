@@ -1,0 +1,90 @@
+---
+
+description: Re-scan audio gain map when win or intro clips are added or changed
+
+globs: main.js,win_sounds/**,sounds/**,audio-gain-map.js,win-clips-manifest.js
+
+alwaysApply: false
+
+---
+
+
+
+# Audio gain normalization
+
+
+
+Victory and intro clips use per-file gains in `audio-gain-map.js` (target -16 LUFS). Unmapped clips play at default volume and sound jarring.
+
+
+
+Win clip rosters are auto-generated in `win-clips-manifest.js` from files in `win_sounds/<category>/`.
+
+
+
+Gain analysis is incremental: only new or changed files are re-analyzed (cached in `.audio-gain-cache.json`). Use `--full` for a complete rescan.
+
+
+
+## When this applies
+
+
+
+After any change that adds, removes, or renames clips:
+
+
+
+- Files under `win_sounds/<category>/` or `sounds/`
+
+- `spinIntroClips` in `main.js`
+
+
+
+## Required follow-up (same task)
+
+
+
+1. Run `npm run refresh-audio`, double-click `Refresh Audio.bat`, or use `Watch Audio.bat` during an editing session
+
+2. Confirm `win-clips-manifest.js` lists the new clip under the correct category
+
+3. Confirm `audio-gain-map.js` was regenerated and includes the new paths
+
+4. Mention in your summary that gains were re-scanned
+
+
+
+Do not skip this step unless the user explicitly asks to skip normalization.
+
+
+
+## Adding a win clip
+
+
+
+1. Drop `.mp3` or `.wav` into the category folder (see `scripts/win-clip-categories.mjs`)
+
+2. Refresh audio (see below)
+
+3. Prefix filenames with `_` to exclude drafts from the roster
+
+
+
+## Refresh options
+
+
+
+- **Watch mode (best for sporadic adds):** double-click `Watch Audio.bat` or run `npm run watch-audio`, then reload the browser after updates
+
+- **One-shot refresh:** double-click `Refresh Audio.bat` or run `npm run refresh-audio`
+
+- **Full rescan (rare):** `npm run analyze-audio-gains -- --full`
+
+
+
+## Playback reference
+
+
+
+`getNormalizedVolume()` in `main.js` resolves paths and looks up `window.audioGainMap`.
+

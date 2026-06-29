@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Arcade Movie Wheel - Premium Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <link rel="preload" href="sounds/spin-projector-button-push.mp3" as="fetch" type="audio/mpeg" crossorigin>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+        <defs>
+            <clipPath id="ticket-unit-clip" clipPathUnits="objectBoundingBox">
+                <path d="M 0.05625,0 L 0.94375,0 A 0.05625,0.1875 0 0,0 1,0.1875 L 1,0.244792 A 0.010938,0.036458 0 0,0 0.989062,0.302083 A 0.010938,0.036458 0 0,0 1,0.302083 L 1,0.359375 A 0.010938,0.036458 0 0,0 0.989062,0.416667 A 0.010938,0.036458 0 0,0 1,0.416667 L 1,0.473958 A 0.010938,0.036458 0 0,0 0.989062,0.53125 A 0.010938,0.036458 0 0,0 1,0.53125 L 1,0.588542 A 0.010938,0.036458 0 0,0 0.989062,0.645833 A 0.010938,0.036458 0 0,0 1,0.645833 L 1,0.703125 A 0.010938,0.036458 0 0,0 0.989062,0.760417 A 0.010938,0.036458 0 0,0 1,0.760417 L 1,0.8125 A 0.05625,0.1875 0 0,0 0.94375,1 L 0.05625,1 A 0.05625,0.1875 0 0,0 0,0.8125 L 0,0.755208 A 0.010938,0.036458 0 0,0 0.010938,0.697917 A 0.010938,0.036458 0 0,0 0,0.697917 L 0,0.640625 A 0.010938,0.036458 0 0,0 0.010938,0.583333 A 0.010938,0.036458 0 0,0 0,0.583333 L 0,0.526042 A 0.010938,0.036458 0 0,0 0.010938,0.46875 A 0.010938,0.036458 0 0,0 0,0.46875 L 0,0.411458 A 0.010938,0.036458 0 0,0 0.010938,0.354167 A 0.010938,0.036458 0 0,0 0,0.354167 L 0,0.296875 A 0.010938,0.036458 0 0,0 0.010938,0.239583 A 0.010938,0.036458 0 0,0 0,0.239583 L 0,0.1875 A 0.05625,0.1875 0 0,0 0.05625,0 Z"/>
+            </clipPath>
+        </defs>
+    </svg>
+
+    <div id="arcade-container">
+        <div id="ticker-arrow"></div>
+
+        <div id="wheel-housing">
+            <div id="wheel-disc"></div>
+        </div>
+
+        <div id="spin-button-wrap">
+            <button id="spin-button" class="arcade-btn" onclick="initiateSpin(event)"></button>
+            <div id="spin-no-match-message" class="spin-blocker-message" hidden aria-live="polite">
+                No movies match your selected categories and filters.
+            </div>
+        </div>
+
+        <div id="audio-controls">
+            <button type="button" id="intro-audio-btn" class="audio-toggle-btn audio-disabled" onclick="toggleIntroAudio()">Intro Audio</button>
+            <button type="button" id="victory-audio-btn" class="audio-toggle-btn audio-enabled" onclick="toggleVictoryAudio()">Victory Audio</button>
+            <button type="button" id="killswitch-btn" class="killswitch-btn" onclick="killswitch()">KILLSWITCH</button>
+        </div>
+
+        <div id="result-panel">
+            <div id="poster-frame">
+                <div id="poster-placeholder">AWAITING SPIN...</div>
+                <img id="poster-image" src="" alt="Movie Poster">
+                <div id="result-ratings" class="poster-ratings-overlay" aria-label="Movie ratings" hidden></div>
+            </div>
+            <div id="result-details" class="result-hidden" aria-live="polite">
+                <div id="result-title" class="result-line"></div>
+                <div id="result-meta" class="result-line"></div>
+                <div id="result-genre" class="result-line"></div>
+                <div id="result-plot" class="result-line"></div>
+            </div>
+        </div>
+
+        <div id="history-deck">
+            <div id="history-title">RECENT SPINS</div>
+            <ul id="history-list">
+                <li class="history-item empty">EMPTY SLOT</li>
+                <li class="history-item empty">EMPTY SLOT</li>
+                <li class="history-item empty">EMPTY SLOT</li>
+            </ul>
+        </div>
+
+        <div id="marquee-ledger">
+            <div id="marquee-text">SYSTEM READY // CHOOSE YOUR GENRE...</div>
+        </div>
+    </div>
+
+    <div id="filters-panel">
+    <div id="category-filter">
+        <div id="category-filter-label">CATEGORY FILTER</div>
+        <div id="category-filter-controls">
+            <button type="button" onclick="toggleAllCategories(true)">Select All</button>
+            <button type="button" onclick="toggleAllCategories(false)">Deselect All</button>
+        </div>
+        <div id="category-filter-options"></div>
+    </div>
+
+    <div id="movie-filters">
+        <div id="filter-sidebar">
+            <button type="button" id="reset-all-filters-btn" onclick="resetAllFilters()">Reset All Filters</button>
+            <div id="available-flicks" aria-live="polite">
+                <div id="available-flicks-label">AVAILABLE FLICKS</div>
+                <div id="available-flicks-count">0</div>
+            </div>
+        </div>
+
+        <div id="runtime-filter">
+            <div id="runtime-filter-label">RUNTIME FILTER</div>
+            <div id="runtime-filter-controls">
+                <label class="runtime-filter-field">
+                    Min:
+                    <select id="min-runtime-select"></select>
+                </label>
+                <label class="runtime-filter-field">
+                    Max:
+                    <select id="max-runtime-select"></select>
+                </label>
+                <button type="button" onclick="clearRuntimeFilter()">Clear</button>
+            </div>
+        </div>
+
+        <div id="decade-filter">
+            <div id="decade-filter-label">DECADE FILTER</div>
+            <div id="decade-filter-controls">
+                <button type="button" onclick="toggleAllDecades(true)">Select All</button>
+                <button type="button" onclick="toggleAllDecades(false)">Deselect All</button>
+            </div>
+            <div id="decade-filter-options"></div>
+        </div>
+    </div>
+    </div>
+
+    <script src="movie-metadata.js"></script>
+    <script src="win-clips-manifest.js"></script>
+    <script src="audio-gain-map.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

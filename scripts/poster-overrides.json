@@ -1,0 +1,11 @@
+{
+  "byListing": {
+    "Unforgiven (1992)": "https://m.media-amazon.com/images/M/MV5BNmZmMzM3YWMtZjg5Yi00M2MxLTg3ZGItNGU4YjQxNDAxM2Q4XkEyXkFqcGc@._V1_SX300.jpg",
+    "The Quick and the Dead (1995)": "https://m.media-amazon.com/images/M/MV5BZGRlZTJmNTEtMzE3Yi00YTAwLWIyMjgtODU4NTExNjFmOTQwXkEyXkFqcGc@._V1_SX300.jpg"
+  },
+  "byImdbId": {
+    "tt0116998": "https://m.media-amazon.com/images/M/MV5BNjE0ZDRjZDQtMTE2OS00MTM3LWE0OGUtNDU2ZDg2MmJhMTVlXkEyXkFqcGc@._V1_SX300.jpg",
+    "tt0105695": "https://m.media-amazon.com/images/M/MV5BNmZmMzM3YWMtZjg5Yi00M2MxLTg3ZGItNGU4YjQxNDAxM2Q4XkEyXkFqcGc@._V1_SX300.jpg",
+    "tt0114214": "https://m.media-amazon.com/images/M/MV5BZGRlZTJmNTEtMzE3Yi00YTAwLWIyMjgtODU4NTExNjFmOTQwXkEyXkFqcGc@._V1_SX300.jpg"
+  }
+}
