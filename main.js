@@ -20,7 +20,6 @@
             "Atlantis: The Lost Empire (2001)", 
             "Osmosis Jones (2001)", 
             "Over the Hedge (2006)", 
-            "Rango (2009)", 
             "Shrek (2001)", 
             "The Croods (2013)", 
             "The Curse of the Were-Rabbit (2005)", 
@@ -91,7 +90,6 @@
             "Evil Dead II (1987)",
             "Heretic (2024)",
             "Jacob's Ladder (1990)",
-            "Mandy (2018)",
             "Natural Born Killers (1994)",
             "Possessor (2020)",
             "Predator (1987)",
@@ -119,7 +117,7 @@
             "Rocketman (2019)", 
             "The Blues Brothers (1980)", 
             "The Doors (1991)", 
-            "Walk the Line EXTENDED (2005)"
+            "Walk the Line (2005)"
         ],
         
         "PEGG'S PLAYGROUND 🎡": [
@@ -206,7 +204,6 @@
             "Warm Bodies (2013)",
             "Speed Racer (2008)",
             "Zombeavers (2014)",
-            "Velocipastor (2018)",
             "Mega Time Squad (2019)",
             "Attack of the Killer Tomatoes (1978)",
             "The Man with Two Brains (1983)",
@@ -795,7 +792,10 @@
         recentSelections = [];
         keeperPicks = [];
         isDiscardingKeeper = false;
+        isKeeperDeckMinimized = false;
         keeperUiGeneration += 1;
+        lastRevealedListing = null;
+        lastRevealedLabel = null;
         winClipRemainingByCategory = {};
         resetMovieSelectionPools();
 
@@ -805,6 +805,7 @@
         updateRecentSelectionsUI();
         updateKeeperPicksUI();
         updateKeeperButtonState();
+        resetTicketShuffleState();
     }
 
 
@@ -1167,12 +1168,22 @@
 
     let keeperUiGeneration = 0;
 
+    let isKeeperDeckMinimized = false;
+
     let hasSelectedMovie = false;
+
+    let lastRevealedListing = null;
+
+    let lastRevealedLabel = null;
 
 
 
 function getMovieMetadata(listing) {
-    return window.movieMetadataByListing?.[listing] ?? null;
+    const listingAliases = {
+        "Walk the Line EXTENDED (2005)": "Walk the Line (2005)"
+    };
+    const key = listingAliases[listing] ?? listing;
+    return window.movieMetadataByListing?.[key] ?? null;
 }
 
 function parseMovieListing(listing) {
@@ -1645,6 +1656,10 @@ function revealMovieResult(category, chosenMovie, categoryEmoji) {
     }
 
     populateResultCard(metadata, chosenMovie, categoryEmoji, category);
+
+    lastRevealedListing = chosenMovie;
+    lastRevealedLabel = `${categoryEmoji} ${chosenMovie}`;
+    refreshCoinTossCandidatesUI();
 }
 
 
@@ -1707,6 +1722,8 @@ function updateRecentSelectionsUI() {
             item.classList.add('empty');
         }
     });
+
+    refreshCoinTossCandidatesUI();
 }
 
 function getInsertCoinMarkup() {
@@ -2330,6 +2347,2768 @@ function buildAddMovieUI() {
     filtersPanel.appendChild(section);
 }
 
+const SHUFFLE_TICKET_COUNT = 4;
+const SHUFFLE_QUADRANT_SLOTS = [
+    { left: 28, top: 28 },
+    { left: 72, top: 28 },
+    { left: 28, top: 72 },
+    { left: 72, top: 72 }
+];
+const SHUFFLE_CW_NEXT = { 0: 1, 1: 3, 3: 2, 2: 0 };
+const SHUFFLE_CCW_NEXT = { 0: 2, 2: 3, 3: 1, 1: 0 };
+const SHUFFLE_DIAGONAL_PAIRS = [[0, 3], [1, 2]];
+const SHUFFLE_ADJACENT_PAIRS = [[0, 1], [1, 3], [3, 2], [2, 0]];
+const SHUFFLE_CROSS_SWAP_PAUSE_MS = 120;
+const SHUFFLE_SWAP_MS_FAST = 500;
+const SHUFFLE_SWAP_MS = 450;
+const SHUFFLE_SWAP_MS_SLOW = 900;
+const SHUFFLE_BURST_MS = 350;
+const SHUFFLE_SPIN_MS = 900;
+const SHUFFLE_FEINT_MS = 550;
+const SHUFFLE_MIDAIR_JITTER_MS = 80;
+const SHUFFLE_MISDIRECT_PULSE_MS = 50;
+const SHUFFLE_FLIP_MS = 650;
+const SHUFFLE_EMERGE_MS = 1500;
+const SHUFFLE_PAIR_REST_MS = 1000;
+const SHUFFLE_POSTER_FADE_MS = 1400;
+const SHUFFLE_ROW_ALIGN_MS = 600;
+const SHUFFLE_CROSSFADE_REST_MS = 1000;
+const SHUFFLE_STACK_MS = 800;
+const SHUFFLE_STACK_REST_MS = 1000;
+const SHUFFLE_QUADRANT_DEPLOY_MS = 1000;
+const SHUFFLE_PRE_SHUFFLE_REST_MS = 1000;
+const SHUFFLE_ARC_OFFSET_PX = 32;
+const SHUFFLE_ROW_SLOTS = [
+    { left: 18, top: 50 },
+    { left: 39, top: 50 },
+    { left: 61, top: 50 },
+    { left: 82, top: 50 }
+];
+const SHUFFLE_ROW_TICKET_ORDER = [2, 0, 1, 3];
+const SHUFFLE_CONFIRM_WINNER_POS = { left: 50, top: 24 };
+const SHUFFLE_CONFIRM_WINNER_SCALE = 3;
+const SHUFFLE_CONFIRM_BOWER_POS = [
+    { left: 22, top: 78, bow: 'left' },
+    { left: 50, top: 82, bow: 'center' },
+    { left: 78, top: 78, bow: 'right' }
+];
+const SHUFFLE_MYSTERY_SEQUEL_CATEGORY = 'SEQUEL STREET 🚗';
+
+const SHUFFLE_JOKER_DISINTEGRATE_MS = 1400;
+
+const COIN_FLIP_1_PATH = 'win_sounds/NEW/coin flip 1.mp3';
+const COIN_FLIP_2_PATH = 'win_sounds/NEW/coin flip 2.mp3';
+const COIN_FLIP_REGULAR_LOOPS = 1;
+const COIN_FLIP_ACCEL_LOOPS = 7;
+const COIN_FLIP_1_DURATION_FALLBACK_MS = 770;
+const COIN_FLIP_ROTATIONS_PER_LOOP = 4;
+const COIN_FLIP_FINAL_SEGMENT_MAX_FLIPS = 6;
+const COIN_FLIP_TAIL_ROTATION_DEG = 180;
+
+let coinTossSpinAudio = null;
+let coinTossSpinAudioEnd = null;
+let coinFlip1DurationMs = null;
+let coinSpinDeg = 0;
+
+let isShuffleActive = false;
+let isCoinTossing = false;
+let shufflePhase = 'idle';
+let coinTossPhase = 'idle';
+let shuffleTicketSlots = [0, 1, 2, 3];
+let shuffleMysteryA = null;
+let shuffleMysteryB = null;
+let coinTossSlotA = null;
+let coinTossSlotB = null;
+let coinTossGeneration = 0;
+let coinTossPendingWinner = null;
+let coinTossPendingLoser = null;
+let coinTossPendingWinnerIsFront = false;
+
+function shuffleSleep(ms) {
+    return new Promise((resolve) => { window.setTimeout(resolve, ms); });
+}
+
+function coinTossLabelsMatch(a, b) {
+    return a && b && a === b;
+}
+
+function buildCoinTossEntry(label, source, poster = null, runtimeMinutes = null) {
+    const listing = getKeeperListingLabel(label);
+    return {
+        label,
+        listing,
+        poster,
+        runtimeMinutes: runtimeMinutes ?? getMovieRuntimeMinutes(listing),
+        source
+    };
+}
+
+function getCoinTossPosterForEntry(entry) {
+    let raw = null;
+    if (entry.poster && entry.poster !== 'N/A') {
+        raw = entry.poster;
+    } else {
+        const metadata = getMovieMetadata(entry.listing);
+        if (metadata?.Poster && metadata.Poster !== 'N/A') {
+            raw = metadata.Poster;
+        }
+    }
+    if (!raw) return null;
+    const candidates = getPosterLoadCandidates(raw);
+    return candidates[0] || null;
+}
+
+function getCoinTossEmojiForEntry(entry) {
+    const fromLabel = getKeeperCategoryEmoji(entry.label);
+    if (fromLabel) return fromLabel;
+    for (const category of Object.keys(movieDatabase)) {
+        const movies = movieDatabase[category];
+        if (movies.includes(entry.listing)) {
+            const parts = category.split(' ');
+            return parts[parts.length - 1];
+        }
+    }
+    return '🎬';
+}
+
+function getCoinTossCandidates() {
+    const seen = new Set();
+    const candidates = [];
+
+    const addCandidate = (entry) => {
+        if (!entry?.label || seen.has(entry.label)) return;
+        seen.add(entry.label);
+        candidates.push(entry);
+    };
+
+    keeperPicks.forEach((pick) => {
+        addCandidate(buildCoinTossEntry(pick.label, 'keeper', pick.poster, pick.runtimeMinutes));
+    });
+
+    recentSelections.forEach((label) => {
+        addCandidate(buildCoinTossEntry(label, 'recent'));
+    });
+
+    if (hasSelectedMovie && lastRevealedLabel && lastRevealedListing) {
+        const fromKeeper = keeperPicks.find((pick) => pick.label === lastRevealedLabel);
+        addCandidate(buildCoinTossEntry(
+            lastRevealedLabel,
+            'current',
+            fromKeeper?.poster ?? null,
+            fromKeeper?.runtimeMinutes ?? null
+        ));
+    }
+
+    return candidates;
+}
+
+function shuffleGetMovieDecade(listing) {
+    const { year } = parseMovieListing(listing);
+    if (!year) return null;
+    return Math.floor(parseInt(year, 10) / 10) * 10;
+}
+
+function shuffleMoviePassesRuntimeFilter(listing) {
+    const minSelect = document.getElementById('min-runtime-select');
+    const maxSelect = document.getElementById('max-runtime-select');
+    const minVal = minSelect?.value ? parseInt(minSelect.value, 10) : null;
+    const maxVal = maxSelect?.value ? parseInt(maxSelect.value, 10) : null;
+    if (minVal == null && maxVal == null) return true;
+
+    const minutes = getMovieRuntimeMinutes(listing);
+    if (minutes == null) return false;
+    if (minVal != null && minutes < minVal) return false;
+    if (maxVal != null && minutes > maxVal) return false;
+    return true;
+}
+
+function shuffleMoviePassesDecadeFilter(listing) {
+    const decadeInputs = document.querySelectorAll('#decade-filter-options input[type=checkbox]');
+    const checked = [...decadeInputs].filter((input) => input.checked);
+    if (checked.length === 0) return false;
+    if (checked.length === decadeInputs.length) return true;
+
+    const decade = shuffleGetMovieDecade(listing);
+    if (decade == null) return false;
+    return checked.some((input) => parseInt(input.dataset.decade, 10) === decade);
+}
+
+function buildFilteredCoinTossPool(excludeLabels = [], categories = null) {
+    const exclude = new Set(excludeLabels);
+    const seen = new Set();
+    const pool = [];
+    const categoryList = categories ?? [...document.querySelectorAll('#category-filter-options input[type=checkbox]:checked')]
+        .map((input) => input.dataset.category);
+
+    categoryList.forEach((category) => {
+        const movies = movieDatabase[category] || [];
+        if (!movies.length) return;
+        const parts = category.split(' ');
+        const emoji = parts[parts.length - 1];
+        movies.forEach((listing) => {
+            if (!shuffleMoviePassesRuntimeFilter(listing) || !shuffleMoviePassesDecadeFilter(listing)) return;
+            const label = `${emoji} ${listing}`;
+            if (exclude.has(label) || seen.has(label)) return;
+            seen.add(label);
+            pool.push(buildCoinTossEntry(label, 'mystery'));
+        });
+    });
+
+    return pool;
+}
+
+function pickRandomCoinTossEntry(pool) {
+    if (!pool.length) return null;
+    return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function drawMysteryShuffleEntries(slotA, slotB) {
+    const slotExclude = [slotA.label, slotB.label];
+    const fullPool = buildFilteredCoinTossPool(slotExclude);
+    if (fullPool.length < 2) return null;
+
+    const sequelPool = buildFilteredCoinTossPool(slotExclude, [SHUFFLE_MYSTERY_SEQUEL_CATEGORY]);
+    let first = pickRandomCoinTossEntry(sequelPool);
+    if (!first) {
+        for (let i = fullPool.length - 1; i > 0; i -= 1) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [fullPool[i], fullPool[j]] = [fullPool[j], fullPool[i]];
+        }
+        return [resolveCoinTossEntry(fullPool[0]), resolveCoinTossEntry(fullPool[1])];
+    }
+
+    const secondPool = buildFilteredCoinTossPool([...slotExclude, first.label]);
+    const second = pickRandomCoinTossEntry(secondPool);
+    if (!second) return null;
+
+    return [resolveCoinTossEntry(first), resolveCoinTossEntry(second)];
+}
+
+function findMovieListingInDatabase(query) {
+    const normalized = query.trim();
+    if (!normalized) return { matches: [] };
+
+    const exact = [];
+    const partial = [];
+    const lower = normalized.toLowerCase();
+
+    for (const category of Object.keys(movieDatabase)) {
+        const parts = category.split(' ');
+        const categoryEmoji = parts[parts.length - 1];
+        for (const listing of movieDatabase[category]) {
+            const label = `${categoryEmoji} ${listing}`;
+            const listingLower = listing.toLowerCase();
+            if (listingLower === lower || label.toLowerCase() === lower) {
+                exact.push(buildCoinTossEntry(label, 'manual'));
+            } else if (listingLower.includes(lower)) {
+                partial.push(buildCoinTossEntry(label, 'manual'));
+            }
+        }
+    }
+
+    if (exact.length) return { matches: exact };
+    return { matches: partial.slice(0, 12) };
+}
+
+function resolveCoinTossEntry(entry) {
+    if (!entry?.label) return null;
+    const poster = getCoinTossPosterForEntry(entry);
+    return {
+        label: entry.label,
+        listing: entry.listing || getKeeperListingLabel(entry.label),
+        poster,
+        runtimeMinutes: entry.runtimeMinutes ?? getMovieRuntimeMinutes(entry.listing || getKeeperListingLabel(entry.label)),
+        source: entry.source || 'manual'
+    };
+}
+
+function isEntryInKeeper(entry) {
+    return keeperPicks.some((pick) => pick.label === entry.label);
+}
+
+function getKeeperIndexForEntry(entry) {
+    return keeperPicks.findIndex((pick) => pick.label === entry.label);
+}
+
+function coinTossWouldNeedKeeperSlot(entry) {
+    return !isEntryInKeeper(entry);
+}
+
+function canRunCoinTossFlip() {
+    if (isSpinning || isDiscardingKeeper || isCoinTossing || isShuffleActive) return false;
+    if (!coinTossSlotA || !coinTossSlotB) return false;
+    if (coinTossLabelsMatch(coinTossSlotA.label, coinTossSlotB.label)) return false;
+
+    const winnerNeedsSlot = coinTossWouldNeedKeeperSlot(coinTossSlotA)
+        || coinTossWouldNeedKeeperSlot(coinTossSlotB);
+    if (winnerNeedsSlot && getOpenKeeperSlots() === 0) return false;
+
+    return true;
+}
+
+function canStartTicketShuffle() {
+    if (isSpinning || isDiscardingKeeper || isShuffleActive || isCoinTossing) return false;
+    if (!coinTossSlotA || !coinTossSlotB) return false;
+    if (coinTossLabelsMatch(coinTossSlotA.label, coinTossSlotB.label)) return false;
+    if (buildFilteredCoinTossPool([coinTossSlotA.label, coinTossSlotB.label]).length < 2) return false;
+
+    const winnerNeedsSlot = coinTossWouldNeedKeeperSlot(coinTossSlotA)
+        || coinTossWouldNeedKeeperSlot(coinTossSlotB);
+    if (winnerNeedsSlot && getOpenKeeperSlots() === 0) return false;
+
+    return true;
+}
+
+function setCoinTossStatus(message, isError = false) {
+    const status = document.getElementById('coin-toss-status');
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle('coin-toss-status-error', isError);
+    status.classList.toggle('coin-toss-status-success', !isError && Boolean(message));
+}
+
+function setCoinTossSlotsBlind(hidden) {
+    document.getElementById('coin-toss-slots-row')?.classList.toggle('coin-toss-slots-blind', hidden);
+}
+
+function clearShuffleArenaEntering() {
+    document.getElementById('ticket-shuffle-arena')?.classList.remove('shuffle-arena-entering', 'is-visible');
+}
+
+function clearShuffleIntroUI() {
+    const slotsRow = document.getElementById('coin-toss-slots-row');
+    slotsRow?.classList.remove(
+        'coin-toss-slots-shuffle-intro',
+        'coin-toss-slots-poster-fade',
+        'coin-toss-shuffle-active'
+    );
+    const arena = document.getElementById('ticket-shuffle-arena');
+    arena?.classList.remove('shuffle-intro-row', 'shuffle-intro-quadrant', 'shuffle-intro-emerge');
+    clearShuffleArenaEntering();
+}
+
+function resetTicketShuffleArena() {
+    const arena = document.getElementById('ticket-shuffle-arena');
+    if (!arena) return;
+    clearShuffleIntroUI();
+    arena.classList.remove('shuffle-confirm-mode');
+    arena.hidden = true;
+    arena.innerHTML = '';
+    shufflePhase = 'idle';
+    shuffleTicketSlots = [0, 1, 2, 3];
+    shuffleMysteryA = null;
+    shuffleMysteryB = null;
+}
+
+function clearShuffleConfirmUI() {
+    const arena = document.getElementById('ticket-shuffle-arena');
+    if (!arena) return;
+    arena.classList.remove('shuffle-confirm-mode');
+    arena.querySelectorAll('.shuffle-ticket').forEach((btn) => {
+        btn.classList.remove(
+            'shuffle-ticket-selected',
+            'shuffle-ticket-dimmed',
+            'shuffle-reveal-pending',
+            'shuffle-ticket-bower',
+            'shuffle-ticket-bower-left',
+            'shuffle-ticket-bower-center',
+            'shuffle-ticket-bower-right'
+        );
+    });
+}
+
+function layoutShuffleConfirmSelection(arena, selectedEl) {
+    const bowers = [...arena.querySelectorAll('.shuffle-ticket')]
+        .filter((btn) => btn !== selectedEl)
+        .sort((a, b) => parseFloat(a.style.left || 0) - parseFloat(b.style.left || 0));
+
+    setTicketPosition(selectedEl, SHUFFLE_CONFIRM_WINNER_POS, {
+        zIndex: 10,
+        transform: `translate(-50%, -50%) scale(${SHUFFLE_CONFIRM_WINNER_SCALE})`
+    });
+
+    bowers.forEach((btn, index) => {
+        const slot = SHUFFLE_CONFIRM_BOWER_POS[index];
+        if (!slot) return;
+        btn.classList.add('shuffle-ticket-bower', `shuffle-ticket-bower-${slot.bow}`);
+        setTicketPosition(btn, { left: slot.left, top: slot.top }, {
+            zIndex: 2,
+            transform: 'translate(-50%, -50%)'
+        });
+    });
+}
+
+function setShuffleTicketSelection(arena, ticketEl) {
+    arena.classList.add('shuffle-confirm-mode');
+    arena.querySelectorAll('.shuffle-ticket').forEach((btn) => {
+        btn.classList.remove(
+            'shuffle-ticket-selected',
+            'shuffle-ticket-dimmed',
+            'shuffle-ticket-bower',
+            'shuffle-ticket-bower-left',
+            'shuffle-ticket-bower-center',
+            'shuffle-ticket-bower-right'
+        );
+        if (btn === ticketEl) {
+            btn.classList.add('shuffle-ticket-selected');
+        } else {
+            btn.classList.add('shuffle-ticket-dimmed');
+        }
+    });
+    layoutShuffleConfirmSelection(arena, ticketEl);
+}
+
+function revealShuffleTicketTitle(btn) {
+    const entry = btn._shuffleEntry;
+    if (!entry) return;
+    btn.classList.remove('face-down', 'face-down-settled');
+
+    const title = btn.querySelector('.shuffle-ticket-title');
+    if (title) {
+        title.textContent = `${getCoinTossEmojiForEntry(entry)} ${getKeeperListingLabel(entry.label)}`;
+    }
+}
+
+function revealAllShuffleTicketTitles(arena) {
+    arena.querySelectorAll('.shuffle-ticket').forEach(revealShuffleTicketTitle);
+}
+
+function cancelActiveTicketShuffle() {
+    coinTossGeneration += 1;
+    isShuffleActive = false;
+    shufflePhase = 'idle';
+    setCoinTossSlotsBlind(false);
+    clearShuffleConfirmUI();
+    resetTicketShuffleArena();
+
+    renderCoinTossSlot(document.getElementById('coin-toss-slot-a'), coinTossSlotA);
+    renderCoinTossSlot(document.getElementById('coin-toss-slot-b'), coinTossSlotB);
+
+    setCoinTossStatus('Shuffle cancelled.');
+    updateCoinTossCoinFaces();
+    updateDecisionButtonStates();
+}
+
+function resetTicketShuffleState() {
+    coinTossGeneration += 1;
+    isShuffleActive = false;
+    isCoinTossing = false;
+    shufflePhase = 'idle';
+    clearCoinTossPendingState();
+    coinTossSlotA = null;
+    coinTossSlotB = null;
+    shuffleTicketSlots = [0, 1, 2, 3];
+    shuffleMysteryA = null;
+    shuffleMysteryB = null;
+    stopCoinTossSpinAudio();
+    setCoinTossStatus('');
+    setCoinTossSlotsBlind(false);
+
+    const slotA = document.getElementById('coin-toss-slot-a');
+    const slotB = document.getElementById('coin-toss-slot-b');
+    if (slotA) {
+        slotA.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser', 'filled');
+        slotA.innerHTML = getInsertCoinMarkup();
+    }
+    if (slotB) {
+        slotB.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser', 'filled');
+        slotB.innerHTML = getInsertCoinMarkup();
+    }
+
+    resetTicketShuffleArena();
+    resetCoinTossStage();
+    refreshCoinTossCandidatesUI();
+    updateDecisionButtonStates();
+}
+
+function clearCoinFlipClasses(coin) {
+    if (!coin) return;
+    coin.classList.remove(
+        'coin-toss-flipping',
+        'coin-flip-lands-front',
+        'coin-flip-lands-back',
+        'coin-toss-spinning'
+    );
+    stopCoinTossVisualSpin(coin);
+}
+
+function clearCoinTossPendingState() {
+    coinTossPhase = 'idle';
+    coinTossPendingWinner = null;
+    coinTossPendingLoser = null;
+    coinTossPendingWinnerIsFront = false;
+}
+
+function clearCoinTossLandedUI() {
+    const stage = document.getElementById('coin-toss-stage');
+    const flightWrap = document.getElementById('coin-toss-flight-wrap');
+    const coin = document.getElementById('coin-toss-coin');
+    if (stage) stage.classList.remove('coin-toss-landed');
+    if (flightWrap) {
+        flightWrap.classList.remove('coin-toss-flipping', 'coin-toss-landed');
+        flightWrap.style.transform = '';
+    }
+    if (coin) {
+        coin.classList.remove(
+            'coin-toss-flipping',
+            'coin-toss-settled',
+            'coin-toss-awaiting',
+            'coin-flip-lands-front',
+            'coin-flip-lands-back',
+            'coin-toss-spinning'
+        );
+        coin.querySelectorAll('.coin-face-winner').forEach((face) => {
+            face.classList.remove('coin-face-winner');
+        });
+        stopCoinTossVisualSpin(coin);
+        coin.disabled = true;
+    }
+}
+
+function clearCoinTossFaceStyles() {
+    document.querySelectorAll('#coin-toss-coin .coin-face').forEach((face) => {
+        face.classList.remove(
+            'has-poster',
+            'coin-face-winner',
+            'coin-face-show-label',
+            'coin-face-show-poster',
+            'coin-face-show-landed'
+        );
+        const posterEl = face.querySelector('.coin-face-poster');
+        const emojiEl = face.querySelector('.coin-face-emoji');
+        const titleEl = face.querySelector('.coin-face-title');
+        if (posterEl) posterEl.style.backgroundImage = '';
+        if (emojiEl) emojiEl.textContent = '';
+        if (titleEl) titleEl.textContent = '';
+    });
+}
+
+function ensureCoinFaceStructure(faceEl) {
+    if (!faceEl || faceEl.querySelector('.coin-face-label')) return;
+    faceEl.innerHTML = `
+        <div class="coin-face-poster"></div>
+        <div class="coin-face-label">
+            <span class="coin-face-emoji"></span>
+            <span class="coin-face-title"></span>
+        </div>
+    `;
+}
+
+function applyCoinTossFaceEntry(entry, faceEl, mode = 'poster') {
+    if (!faceEl || !entry) return;
+    ensureCoinFaceStructure(faceEl);
+    const posterEl = faceEl.querySelector('.coin-face-poster');
+    const emojiEl = faceEl.querySelector('.coin-face-emoji');
+    const titleEl = faceEl.querySelector('.coin-face-title');
+    const url = getCoinTossPosterForEntry(entry);
+
+    if (posterEl) {
+        posterEl.style.backgroundImage = url ? `url(${JSON.stringify(url)})` : '';
+    }
+    faceEl.classList.toggle('has-poster', Boolean(url));
+    if (emojiEl) {
+        emojiEl.textContent = mode === 'landed' ? '' : getCoinTossEmojiForEntry(entry);
+    }
+    if (titleEl) titleEl.textContent = getKeeperListingLabel(entry.label);
+    faceEl.classList.remove('coin-face-show-label', 'coin-face-show-poster', 'coin-face-show-landed');
+    if (mode === 'label') {
+        faceEl.classList.add('coin-face-show-label');
+    } else if (mode === 'poster') {
+        faceEl.classList.add('coin-face-show-poster');
+    } else if (mode === 'landed') {
+        faceEl.classList.add('coin-face-show-landed');
+    }
+}
+
+function setCoinTossLabelSpinFaces() {
+    const coin = document.getElementById('coin-toss-coin');
+    if (!coin || !coinTossSlotA || !coinTossSlotB) return;
+    applyCoinTossFaceEntry(coinTossSlotA, coin.querySelector('.coin-face-front'), 'label');
+    applyCoinTossFaceEntry(coinTossSlotB, coin.querySelector('.coin-face-back'), 'label');
+}
+
+function applyCoinTossWinnerReveal(winner, winnerIsFront) {
+    const coin = document.getElementById('coin-toss-coin');
+    if (!coin) return;
+    const winnerFace = coin.querySelector(winnerIsFront ? '.coin-face-front' : '.coin-face-back');
+    const loserFace = coin.querySelector(winnerIsFront ? '.coin-face-back' : '.coin-face-front');
+    if (loserFace) {
+        loserFace.classList.remove('coin-face-winner');
+        applyCoinTossFaceEntry(
+            winnerIsFront ? coinTossSlotB : coinTossSlotA,
+            loserFace,
+            'label'
+        );
+    }
+    if (winnerFace) {
+        winnerFace.classList.add('coin-face-winner');
+        applyCoinTossFaceEntry(winner, winnerFace, 'landed');
+    }
+}
+
+function resetCoinTossStage() {
+    const stage = document.getElementById('coin-toss-stage');
+    const flightWrap = document.getElementById('coin-toss-flight-wrap');
+    const coin = document.getElementById('coin-toss-coin');
+    clearCoinTossLandedUI();
+    if (stage) {
+        stage.classList.remove('coin-toss-stage-active');
+    }
+    if (flightWrap) flightWrap.classList.remove('coin-toss-flipping');
+    clearCoinFlipClasses(coin);
+    setCoinTossStageVisible(isCoinTossing);
+}
+
+function canPreviewCoinToss() {
+    return coinTossSlotA && coinTossSlotB && !isShuffleActive
+        && coinTossPhase !== 'flipping' && coinTossPhase !== 'awaitingConfirm';
+}
+
+function canPreviewShuffle() {
+    return coinTossSlotA && coinTossSlotB && !isShuffleActive && !isCoinTossing
+        && coinTossPhase !== 'flipping' && coinTossPhase !== 'awaitingConfirm';
+}
+
+function setMiddlePreviewMode(mode) {
+    const stage = document.getElementById('coin-toss-stage');
+    const coin = document.getElementById('coin-toss-coin');
+    const shufflePreview = document.getElementById('shuffle-preview');
+    if (!stage || !coin || !shufflePreview) return;
+
+    const isShuffle = mode === 'shuffle';
+    stage.classList.toggle('coin-toss-stage-shuffle-preview', isShuffle);
+    coin.hidden = isShuffle;
+    shufflePreview.hidden = !isShuffle;
+    shufflePreview.setAttribute('aria-hidden', String(!isShuffle));
+    if (!isShuffle) shufflePreview.classList.remove('shuffle-preview-disintegrating');
+    if (mode === 'coin' || mode === null) {
+        coin.hidden = false;
+    }
+}
+
+function setCoinTossStageVisible(visible) {
+    const stage = document.getElementById('coin-toss-stage');
+    if (!stage) return;
+    stage.hidden = !visible;
+    stage.classList.toggle('coin-toss-stage-visible', visible);
+    if (!visible) setMiddlePreviewMode(null);
+}
+
+function showCoinTossPreview() {
+    if (!canPreviewCoinToss()) return;
+    setMiddlePreviewMode('coin');
+    updateCoinTossCoinFaces();
+    setCoinTossStageVisible(true);
+}
+
+function showShufflePreview() {
+    if (!canPreviewShuffle()) return;
+    setMiddlePreviewMode('shuffle');
+    setCoinTossStageVisible(true);
+}
+
+function hideMiddlePreviewIfUnpinned() {
+    const stage = document.getElementById('coin-toss-stage');
+    if (stage?.classList.contains('shuffle-preview-exiting')) return;
+    if (isCoinTossing || isShuffleActive) return;
+    setCoinTossStageVisible(false);
+}
+
+function cleanupShuffleJokerDisintegrate(stage, shufflePreview, dustLayer) {
+    stage?.classList.remove('shuffle-preview-exiting');
+    dustLayer?.remove();
+}
+
+function appendShuffleJokerDustParticle(dustLayer, options) {
+    const {
+        kind = 'medium',
+        size,
+        ox,
+        oy,
+        dx,
+        dy,
+        delay,
+        dur,
+        rot,
+        color,
+        radius
+    } = options;
+    const particle = document.createElement('span');
+    particle.className = `shuffle-joker-dust-particle shuffle-joker-dust-particle-${kind}`;
+    particle.style.setProperty('--size', `${size}px`);
+    particle.style.setProperty('--ox', `${ox}px`);
+    particle.style.setProperty('--oy', `${oy}px`);
+    particle.style.setProperty('--dx', `${dx}px`);
+    particle.style.setProperty('--dy', `${dy}px`);
+    particle.style.setProperty('--delay', `${delay}ms`);
+    particle.style.setProperty('--dur', `${dur}ms`);
+    particle.style.setProperty('--rot', `${rot}deg`);
+    particle.style.setProperty('--dust-color', color);
+    if (radius) particle.style.setProperty('--radius', radius);
+    if (kind === 'chunk') particle.style.setProperty('--glow', '4px');
+    dustLayer.appendChild(particle);
+}
+
+async function playShuffleJokerDisintegrate(generation) {
+    const stage = document.getElementById('coin-toss-stage');
+    const shufflePreview = document.getElementById('shuffle-preview');
+    const flightWrap = document.getElementById('coin-toss-flight-wrap');
+    if (!stage || !shufflePreview || !flightWrap) return;
+    if (!stage.classList.contains('coin-toss-stage-shuffle-preview') || shufflePreview.hidden) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const durationMs = reducedMotion ? 200 : SHUFFLE_JOKER_DISINTEGRATE_MS;
+
+    stage.classList.add('shuffle-preview-exiting');
+    shufflePreview.classList.add('shuffle-preview-disintegrating');
+
+    let dustLayer = null;
+    if (!reducedMotion) {
+        dustLayer = document.createElement('div');
+        dustLayer.className = 'shuffle-joker-dust-layer';
+        const dustColors = [
+            'rgba(212, 175, 55, 0.95)',
+            'rgba(255, 215, 0, 0.9)',
+            'rgba(255, 193, 37, 0.88)',
+            'rgba(139, 119, 42, 0.92)',
+            'rgba(45, 35, 25, 0.88)',
+            'rgba(90, 74, 58, 0.85)',
+            'rgba(210, 180, 120, 0.8)'
+        ];
+        const smokeColors = [
+            'rgba(210, 185, 110, 0.5)',
+            'rgba(180, 150, 80, 0.42)',
+            'rgba(120, 100, 70, 0.38)'
+        ];
+        const pickColor = (palette) => palette[Math.floor(Math.random() * palette.length)];
+        const spawnSpread = (spread) => (Math.random() - 0.5) * spread;
+
+        for (let i = 0; i < 48; i++) {
+            appendShuffleJokerDustParticle(dustLayer, {
+                kind: 'fine',
+                size: 2 + Math.random() * 3.5,
+                ox: spawnSpread(120),
+                oy: spawnSpread(110),
+                dx: 50 + Math.random() * 180,
+                dy: -20 - Math.random() * 140,
+                delay: Math.random() * 280,
+                dur: 900 + Math.random() * 600,
+                rot: (Math.random() - 0.5) * 420,
+                color: pickColor(dustColors)
+            });
+        }
+        for (let i = 0; i < 38; i++) {
+            appendShuffleJokerDustParticle(dustLayer, {
+                kind: 'chunk',
+                size: 5 + Math.random() * 8,
+                ox: spawnSpread(105),
+                oy: spawnSpread(95),
+                dx: 70 + Math.random() * 200,
+                dy: -35 - Math.random() * 150,
+                delay: Math.random() * 320,
+                dur: 950 + Math.random() * 650,
+                rot: (Math.random() - 0.5) * 480,
+                color: pickColor(dustColors),
+                radius: Math.random() > 0.45 ? '2px' : '50%'
+            });
+        }
+        for (let i = 0; i < 14; i++) {
+            appendShuffleJokerDustParticle(dustLayer, {
+                kind: 'smoke',
+                size: 14 + Math.random() * 16,
+                ox: spawnSpread(90),
+                oy: spawnSpread(80),
+                dx: 40 + Math.random() * 160,
+                dy: -50 - Math.random() * 120,
+                delay: 40 + Math.random() * 360,
+                dur: 1100 + Math.random() * 700,
+                rot: (Math.random() - 0.5) * 120,
+                color: pickColor(smokeColors)
+            });
+        }
+        flightWrap.appendChild(dustLayer);
+    }
+
+    await new Promise((resolve) => window.setTimeout(resolve, durationMs));
+    if (generation !== coinTossGeneration) {
+        cleanupShuffleJokerDisintegrate(stage, shufflePreview, dustLayer);
+        return;
+    }
+    cleanupShuffleJokerDisintegrate(stage, shufflePreview, dustLayer);
+}
+
+function hideCoinTossPreviewIfUnpinned() {
+    hideMiddlePreviewIfUnpinned();
+}
+
+function refreshShufflePreviewIfHovering() {
+    const shuffleBtn = document.getElementById('ticket-shuffle-start-btn');
+    if (shuffleBtn?.matches(':hover')) {
+        showShufflePreview();
+    }
+}
+
+function refreshCoinTossPreviewIfHovering() {
+    const flipBtn = document.getElementById('coin-toss-flip-btn');
+    if (flipBtn?.matches(':hover')) {
+        showCoinTossPreview();
+        return;
+    }
+    refreshShufflePreviewIfHovering();
+}
+
+function updateCoinTossCoinFaces() {
+    const coin = document.getElementById('coin-toss-coin');
+    if (!coin) return;
+
+    if (coinTossPhase === 'flipping' || coinTossPhase === 'awaitingConfirm') return;
+    if (!coinTossSlotA || !coinTossSlotB || isShuffleActive) return;
+
+    applyCoinTossFaceEntry(coinTossSlotA, coin.querySelector('.coin-face-front'), 'poster');
+    applyCoinTossFaceEntry(coinTossSlotB, coin.querySelector('.coin-face-back'), 'poster');
+}
+
+function updateCoinTossFlipButtonState() {
+    const flipBtn = document.getElementById('coin-toss-flip-btn');
+    if (!flipBtn) return;
+
+    let blockedReason = '';
+    if (isShuffleActive) {
+        blockedReason = 'Shuffle in progress.';
+    } else if (!coinTossSlotA || !coinTossSlotB) {
+        blockedReason = 'Pick two movies to flip.';
+    } else if (coinTossLabelsMatch(coinTossSlotA.label, coinTossSlotB.label)) {
+        blockedReason = 'Pick two different movies.';
+    } else if (getOpenKeeperSlots() === 0
+        && (coinTossWouldNeedKeeperSlot(coinTossSlotA) || coinTossWouldNeedKeeperSlot(coinTossSlotB))) {
+        blockedReason = 'Keeper full — discard a movie first.';
+    }
+
+    flipBtn.disabled = !canRunCoinTossFlip();
+    flipBtn.title = blockedReason;
+}
+
+function updateDecisionButtonStates() {
+    updateCoinTossFlipButtonState();
+    updateTicketShuffleButtonState();
+}
+
+function preloadCoinTossPosters() {
+    const urls = [
+        getCoinTossPosterForEntry(coinTossSlotA),
+        getCoinTossPosterForEntry(coinTossSlotB)
+    ].filter(Boolean);
+
+    if (!urls.length) return Promise.resolve();
+
+    return Promise.all(urls.map((url) => new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = () => resolve();
+        img.src = url;
+    })));
+}
+
+function loadCoinFlip1DurationMs() {
+    if (coinFlip1DurationMs != null) return Promise.resolve(coinFlip1DurationMs);
+    const fromMap = window.coinFlipBlipMap?.clipDurationMs;
+    if (fromMap) {
+        coinFlip1DurationMs = fromMap;
+        return Promise.resolve(fromMap);
+    }
+    return new Promise((resolve) => {
+        const audio = new Audio(COIN_FLIP_1_PATH);
+        const finish = (ms) => {
+            coinFlip1DurationMs = ms;
+            resolve(ms);
+        };
+        audio.addEventListener('loadedmetadata', () => {
+            const ms = Number.isFinite(audio.duration) && audio.duration > 0
+                ? Math.round(audio.duration * 1000)
+                : COIN_FLIP_1_DURATION_FALLBACK_MS;
+            finish(ms);
+        }, { once: true });
+        audio.addEventListener('error', () => {
+            finish(COIN_FLIP_1_DURATION_FALLBACK_MS);
+        }, { once: true });
+        audio.load();
+    });
+}
+
+function getCoinFlipBlipTimesMs() {
+    const map = window.coinFlipBlipMap;
+    if (map?.blipTimesMs?.length === COIN_FLIP_ROTATIONS_PER_LOOP) {
+        return map.blipTimesMs;
+    }
+    const duration = coinFlip1DurationMs ?? COIN_FLIP_1_DURATION_FALLBACK_MS;
+    return [1, 2, 3, 4].map((i) => Math.round((duration * i) / 5));
+}
+
+function buildBlipSyncedFlipDurations(playbackRate) {
+    const blips = getCoinFlipBlipTimesMs();
+    const scale = 1 / playbackRate;
+    let prev = 0;
+    return blips.map((blipMs) => {
+        const flipMs = Math.max(1, Math.round((blipMs - prev) * scale));
+        prev = blipMs;
+        return flipMs;
+    });
+}
+
+function getBlipFlipDuration(playbackRate, flipIndex) {
+    const durations = buildBlipSyncedFlipDurations(playbackRate);
+    return durations[flipIndex % durations.length];
+}
+
+function getCoinFlipTailDurationMs(playbackRate) {
+    const blips = getCoinFlipBlipTimesMs();
+    const duration = coinFlip1DurationMs ?? COIN_FLIP_1_DURATION_FALLBACK_MS;
+    const lastBlip = blips[blips.length - 1];
+    return Math.max(0, Math.round((duration - lastBlip) / playbackRate));
+}
+
+function buildCoinFlipLoopRates() {
+    const rates = Array(COIN_FLIP_REGULAR_LOOPS).fill(1);
+    let rate = 1;
+    for (let i = 0; i < COIN_FLIP_ACCEL_LOOPS; i += 1) {
+        rate *= 1.1;
+        rates.push(rate);
+    }
+    return rates.reverse();
+}
+
+function stopCoinTossSpinAudio() {
+    if (coinTossSpinAudio) {
+        coinTossSpinAudio.pause();
+        coinTossSpinAudio.currentTime = 0;
+        coinTossSpinAudio = null;
+    }
+    if (coinTossSpinAudioEnd) {
+        coinTossSpinAudioEnd();
+        coinTossSpinAudioEnd = null;
+    }
+}
+
+function playCoinFlip1Segment(playbackRate) {
+    stopCoinTossSpinAudio();
+    return new Promise((resolve) => {
+        const audio = new Audio(COIN_FLIP_1_PATH);
+        coinTossSpinAudio = audio;
+        coinTossSpinAudioEnd = resolve;
+        const finish = () => {
+            if (coinTossSpinAudioEnd === resolve) coinTossSpinAudioEnd = null;
+            if (coinTossSpinAudio === audio) coinTossSpinAudio = null;
+            resolve();
+        };
+        audio.addEventListener('ended', finish, { once: true });
+        audio.addEventListener('error', finish, { once: true });
+        audio.playbackRate = playbackRate;
+        audio.volume = getNormalizedVolume(COIN_FLIP_1_PATH, cabinetMixer.victoryClipVolume);
+        audio.play().catch((err) => {
+            console.log('Coin flip audio blocked or file not found:', COIN_FLIP_1_PATH, err);
+            finish();
+        });
+    });
+}
+
+function playCoinTossLandSound() {
+    playKeeperClip(COIN_FLIP_2_PATH);
+}
+
+function isCoinSpinShowingFront() {
+    const normalized = ((coinSpinDeg % 360) + 360) % 360;
+    return normalized === 0;
+}
+
+async function runCoinFlipVisualSegment(coin, playbackRate, generation) {
+    const flipDurations = buildBlipSyncedFlipDurations(playbackRate);
+    for (const flipMs of flipDurations) {
+        const ok = await animateCoinHalfFlip(coin, flipMs, generation);
+        if (!ok) return false;
+    }
+    const tailMs = getCoinFlipTailDurationMs(playbackRate);
+    return animateCoinSlowTailSpin(coin, tailMs, generation);
+}
+
+async function runCoinFlipFinalSegment(coin, playbackRate, generation, winnerIsFront) {
+    if (isCoinSpinShowingFront() === winnerIsFront) {
+        stopCoinTossSpinAudio();
+        return generation === coinTossGeneration;
+    }
+
+    for (let flipIndex = 0; flipIndex < COIN_FLIP_FINAL_SEGMENT_MAX_FLIPS; flipIndex += 1) {
+        if (generation !== coinTossGeneration) return false;
+        const flipMs = getBlipFlipDuration(playbackRate, flipIndex);
+        const ok = await animateCoinHalfFlip(coin, flipMs, generation);
+        if (!ok) return false;
+        if (isCoinSpinShowingFront() === winnerIsFront) {
+            stopCoinTossSpinAudio();
+            return true;
+        }
+    }
+
+    return generation === coinTossGeneration;
+}
+
+async function runCoinTossSpinSequence(generation, coin, winnerIsFront) {
+    await loadCoinFlip1DurationMs();
+    const rates = buildCoinFlipLoopRates();
+    const lastSegmentIndex = rates.length - 1;
+
+    coinSpinDeg = 0;
+    if (coin) {
+        stopCoinTossVisualSpin(coin);
+        coin.style.transform = 'rotateY(0deg)';
+        coin.classList.add('coin-toss-spinning');
+    }
+
+    for (let i = 0; i < rates.length; i += 1) {
+        if (generation !== coinTossGeneration) return false;
+        const rate = rates[i];
+        if (i === lastSegmentIndex) {
+            playCoinFlip1Segment(rate);
+            const visualOk = await runCoinFlipFinalSegment(coin, rate, generation, winnerIsFront);
+            if (!visualOk) return false;
+        } else {
+            const audioDone = playCoinFlip1Segment(rate);
+            const visualDone = runCoinFlipVisualSegment(coin, rate, generation);
+            const [visualOk] = await Promise.all([visualDone, audioDone]);
+            if (!visualOk) return false;
+        }
+    }
+    stopCoinTossSpinAudio();
+    if (coin) {
+        coin.classList.remove('coin-toss-spinning');
+        cancelCoinSpinAnimations(coin);
+        snapCoinToWinnerAngle(coin, winnerIsFront);
+    }
+    return generation === coinTossGeneration;
+}
+
+function stopCoinTossVisualSpin(coin) {
+    if (coin) coin.getAnimations().forEach((anim) => anim.cancel());
+    coinSpinDeg = 0;
+}
+
+function cancelCoinSpinAnimations(coin) {
+    if (coin) coin.getAnimations().forEach((anim) => anim.cancel());
+}
+
+function snapCoinToWinnerAngle(coin, winnerIsFront) {
+    if (!coin) return;
+    coin.getAnimations().forEach((anim) => anim.cancel());
+    const angle = winnerIsFront ? 0 : 180;
+    coinSpinDeg = angle;
+    coin.style.transform = `rotateY(${angle}deg)`;
+}
+
+async function animateCoinHalfFlip(coin, durationMs, generation) {
+    if (!coin || generation !== coinTossGeneration || durationMs <= 0) return false;
+    cancelCoinSpinAnimations(coin);
+    const fromDeg = coinSpinDeg;
+    const toDeg = fromDeg + 180;
+    const anim = coin.animate(
+        [
+            { transform: `rotateY(${fromDeg}deg)` },
+            { transform: `rotateY(${toDeg}deg)` }
+        ],
+        { duration: durationMs, easing: 'linear', fill: 'forwards' }
+    );
+    try {
+        await anim.finished;
+    } catch {
+        return false;
+    }
+    if (generation !== coinTossGeneration) return false;
+    coinSpinDeg = toDeg;
+    coin.style.transform = `rotateY(${toDeg}deg)`;
+    return true;
+}
+
+async function animateCoinSlowTailSpin(coin, tailMs, generation) {
+    if (!coin || generation !== coinTossGeneration) return false;
+    if (tailMs <= 0) return true;
+    cancelCoinSpinAnimations(coin);
+    const fromDeg = coinSpinDeg;
+    const toDeg = fromDeg + COIN_FLIP_TAIL_ROTATION_DEG;
+    const anim = coin.animate(
+        [
+            { transform: `rotateY(${fromDeg}deg)` },
+            { transform: `rotateY(${toDeg}deg)` }
+        ],
+        { duration: tailMs, easing: 'linear', fill: 'forwards' }
+    );
+    try {
+        await anim.finished;
+    } catch {
+        return false;
+    }
+    if (generation !== coinTossGeneration) return false;
+    coinSpinDeg = toDeg;
+    coin.style.transform = `rotateY(${toDeg}deg)`;
+    return true;
+}
+
+function cancelActiveCoinToss() {
+    coinTossGeneration += 1;
+    isCoinTossing = false;
+    stopCoinTossSpinAudio();
+    stopCoinTossVisualSpin(document.getElementById('coin-toss-coin'));
+    clearCoinTossPendingState();
+    clearCoinTossLandedUI();
+
+    const stage = document.getElementById('coin-toss-stage');
+    if (stage) stage.classList.remove('coin-toss-stage-active');
+
+    renderCoinTossSlot(document.getElementById('coin-toss-slot-a'), coinTossSlotA);
+    renderCoinTossSlot(document.getElementById('coin-toss-slot-b'), coinTossSlotB);
+    updateCoinTossCoinFaces();
+    setCoinTossStageVisible(false);
+    setCoinTossStatus('Coin toss cancelled.');
+    updateDecisionButtonStates();
+}
+
+function confirmCoinToss() {
+    if (coinTossPhase !== 'awaitingConfirm' || !coinTossPendingWinner || !coinTossPendingLoser) return;
+
+    const winner = coinTossPendingWinner;
+    const loser = coinTossPendingLoser;
+    const winnerIsFront = coinTossPendingWinnerIsFront;
+
+    const slotAEl = document.getElementById('coin-toss-slot-a');
+    const slotBEl = document.getElementById('coin-toss-slot-b');
+
+    setMarqueeText(`COIN TOSS // ${getKeeperListingLabel(winner.label)} WINS`);
+
+    if (slotAEl && slotBEl) {
+        const winnerEl = winnerIsFront ? slotAEl : slotBEl;
+        const loserEl = winnerIsFront ? slotBEl : slotAEl;
+        winnerEl.classList.add('coin-toss-slot-winner');
+        loserEl.classList.add('coin-toss-slot-loser');
+    }
+
+    applyCoinTossResult(winner, loser);
+
+    coinTossSlotA = null;
+    coinTossSlotB = null;
+    clearCoinTossPendingState();
+    isCoinTossing = false;
+    clearCoinTossLandedUI();
+
+    if (slotAEl) {
+        slotAEl.classList.remove('filled');
+        slotAEl.innerHTML = getInsertCoinMarkup();
+    }
+    if (slotBEl) {
+        slotBEl.classList.remove('filled');
+        slotBEl.innerHTML = getInsertCoinMarkup();
+    }
+
+    resetCoinTossStage();
+    setCoinTossStatus(`${getKeeperListingLabel(winner.label)} wins!`);
+    refreshCoinTossCandidatesUI();
+    updateDecisionButtonStates();
+}
+
+async function runCoinToss() {
+    if (!canRunCoinTossFlip()) {
+        updateDecisionButtonStates();
+        return;
+    }
+
+    coinTossGeneration += 1;
+    const generation = coinTossGeneration;
+    isCoinTossing = true;
+    coinTossPendingWinner = null;
+    coinTossPendingLoser = null;
+
+    const slotAEl = document.getElementById('coin-toss-slot-a');
+    const slotBEl = document.getElementById('coin-toss-slot-b');
+    const stage = document.getElementById('coin-toss-stage');
+    const flightWrap = document.getElementById('coin-toss-flight-wrap');
+    const coin = document.getElementById('coin-toss-coin');
+    const flipBtn = document.getElementById('coin-toss-flip-btn');
+
+    if (flipBtn) flipBtn.disabled = true;
+    if (coin) coin.disabled = true;
+    updateDecisionButtonStates();
+    if (slotAEl) slotAEl.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser');
+    if (slotBEl) slotBEl.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser');
+
+    const winnerIsFront = Math.random() < 0.5;
+    const winner = winnerIsFront ? coinTossSlotA : coinTossSlotB;
+    const loser = winnerIsFront ? coinTossSlotB : coinTossSlotA;
+
+    setCoinTossLabelSpinFaces();
+    setMiddlePreviewMode(null);
+    setCoinTossStageVisible(true);
+    coinTossPhase = 'flipping';
+    await preloadCoinTossPosters();
+    if (generation !== coinTossGeneration) return;
+
+    if (stage) stage.classList.add('coin-toss-stage-active');
+    if (coin) {
+        clearCoinFlipClasses(coin);
+        coin.classList.remove('coin-toss-settled', 'coin-toss-awaiting');
+    }
+    if (flightWrap) {
+        flightWrap.classList.remove('coin-toss-landed');
+        flightWrap.style.transform = '';
+    }
+
+    const spinOk = await runCoinTossSpinSequence(generation, coin, winnerIsFront);
+    if (generation !== coinTossGeneration || !spinOk) return;
+
+    playCoinTossLandSound();
+
+    coinTossPendingWinner = winner;
+    coinTossPendingLoser = loser;
+    coinTossPendingWinnerIsFront = winnerIsFront;
+
+    if (coin) {
+        applyCoinTossWinnerReveal(winner, winnerIsFront);
+        snapCoinToWinnerAngle(coin, winnerIsFront);
+        coin.classList.add(
+            'coin-toss-settled',
+            'coin-toss-awaiting',
+            winnerIsFront ? 'coin-flip-lands-front' : 'coin-flip-lands-back'
+        );
+        coin.disabled = false;
+    }
+    if (flightWrap) flightWrap.classList.add('coin-toss-landed');
+    if (stage) stage.classList.add('coin-toss-landed');
+
+    coinTossPhase = 'awaitingConfirm';
+    setCoinTossStatus('Click the coin to keep the winner — Esc to cancel');
+}
+
+function renderCoinTossSlot(slotEl, entry) {
+    if (!slotEl) return;
+    slotEl.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser');
+    if (!entry) {
+        slotEl.classList.remove('filled');
+        slotEl.innerHTML = getInsertCoinMarkup();
+        return;
+    }
+
+    slotEl.classList.add('filled');
+    slotEl.innerHTML = '';
+
+    const posterUrl = getCoinTossPosterForEntry(entry);
+    if (posterUrl) {
+        const img = document.createElement('img');
+        img.className = 'coin-toss-slot-poster';
+        img.src = posterUrl;
+        img.alt = entry.label;
+        slotEl.appendChild(img);
+    } else {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'coin-toss-slot-poster coin-toss-slot-placeholder';
+        placeholder.textContent = getCoinTossEmojiForEntry(entry);
+        slotEl.appendChild(placeholder);
+    }
+
+    const title = document.createElement('span');
+    title.className = 'coin-toss-slot-title';
+    title.textContent = getKeeperListingLabel(entry.label);
+    slotEl.appendChild(title);
+}
+
+function assignCoinTossSlot(entry) {
+    if (isShuffleActive || isCoinTossing) return;
+    const resolved = resolveCoinTossEntry(entry);
+    if (!resolved) return;
+
+    if (coinTossSlotA && coinTossLabelsMatch(coinTossSlotA.label, resolved.label)) {
+        coinTossSlotA = null;
+        renderCoinTossSlot(document.getElementById('coin-toss-slot-a'), null);
+    } else if (coinTossSlotB && coinTossLabelsMatch(coinTossSlotB.label, resolved.label)) {
+        coinTossSlotB = null;
+        renderCoinTossSlot(document.getElementById('coin-toss-slot-b'), null);
+    } else if (!coinTossSlotA) {
+        coinTossSlotA = resolved;
+        renderCoinTossSlot(document.getElementById('coin-toss-slot-a'), resolved);
+    } else if (!coinTossSlotB) {
+        if (coinTossLabelsMatch(coinTossSlotA.label, resolved.label)) {
+            setCoinTossStatus('Pick two different movies.', true);
+            return;
+        }
+        coinTossSlotB = resolved;
+        renderCoinTossSlot(document.getElementById('coin-toss-slot-b'), resolved);
+    } else {
+        setCoinTossStatus('Both pick slots are full — click a slot to clear it.', true);
+        return;
+    }
+
+    setCoinTossStatus('');
+    updateCoinTossCoinFaces();
+    refreshCoinTossPreviewIfHovering();
+    updateDecisionButtonStates();
+    refreshCoinTossCandidatesUI();
+}
+
+function clearCoinTossSlot(slotKey) {
+    if (isShuffleActive || isCoinTossing) return;
+    if (slotKey === 'a') {
+        coinTossSlotA = null;
+        renderCoinTossSlot(document.getElementById('coin-toss-slot-a'), null);
+    } else if (slotKey === 'b') {
+        coinTossSlotB = null;
+        renderCoinTossSlot(document.getElementById('coin-toss-slot-b'), null);
+    }
+    setCoinTossStatus('');
+    updateCoinTossCoinFaces();
+    if (!canPreviewCoinToss()) {
+        setCoinTossStageVisible(false);
+    } else {
+        refreshCoinTossPreviewIfHovering();
+    }
+    updateDecisionButtonStates();
+    refreshCoinTossCandidatesUI();
+}
+
+function updateTicketShuffleButtonState() {
+    const shuffleBtn = document.getElementById('ticket-shuffle-start-btn');
+    if (!shuffleBtn) return;
+
+    let blockedReason = '';
+    if (isCoinTossing) {
+        blockedReason = 'Coin flip in progress.';
+    } else if (!coinTossSlotA || !coinTossSlotB) {
+        blockedReason = 'Pick two movies to shuffle.';
+    } else if (coinTossLabelsMatch(coinTossSlotA.label, coinTossSlotB.label)) {
+        blockedReason = 'Pick two different movies.';
+    } else if (getOpenKeeperSlots() === 0
+        && (coinTossWouldNeedKeeperSlot(coinTossSlotA) || coinTossWouldNeedKeeperSlot(coinTossSlotB))) {
+        blockedReason = 'Keeper full — discard a movie first.';
+    } else if (buildFilteredCoinTossPool([coinTossSlotA.label, coinTossSlotB.label]).length < 2) {
+        blockedReason = 'Need at least 2 other filtered movies for mystery tickets.';
+    }
+
+    shuffleBtn.disabled = !canStartTicketShuffle();
+    shuffleBtn.title = blockedReason;
+}
+
+function refreshCoinTossCandidatesUI() {
+    const list = document.getElementById('coin-toss-candidates');
+    if (!list) return;
+
+    list.innerHTML = '';
+    const candidates = getCoinTossCandidates();
+
+    if (!candidates.length) {
+        const empty = document.createElement('div');
+        empty.className = 'coin-toss-candidates-empty';
+        empty.textContent = 'Spin the wheel or keep a movie to build your pick list.';
+        list.appendChild(empty);
+        return;
+    }
+
+    candidates.forEach((entry) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'coin-toss-chip';
+        const selected = (coinTossSlotA && coinTossSlotA.label === entry.label)
+            || (coinTossSlotB && coinTossSlotB.label === entry.label);
+        if (selected) chip.classList.add('selected');
+
+        const sourceTag = document.createElement('span');
+        sourceTag.className = 'coin-toss-chip-source';
+        sourceTag.textContent = entry.source;
+        chip.appendChild(sourceTag);
+
+        const text = document.createElement('span');
+        text.className = 'coin-toss-chip-label';
+        text.textContent = getKeeperListingLabel(entry.label);
+        chip.appendChild(text);
+
+        chip.addEventListener('click', () => assignCoinTossSlot(entry));
+        list.appendChild(chip);
+    });
+}
+
+function shuffleRandomInt(min, max) {
+    return min + Math.floor(Math.random() * (max - min + 1));
+}
+
+function shuffleSlotOrder() {
+    const order = [0, 1, 2, 3];
+    for (let i = order.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [order[i], order[j]] = [order[j], order[i]];
+    }
+    return order;
+}
+
+function randomizeInitialShuffleSlots() {
+    const slotOrder = shuffleSlotOrder();
+    shuffleTicketSlots = shuffleTicketSlots.map((_, ticketIndex) => slotOrder[ticketIndex]);
+}
+
+function elementCenterInContainer(sourceEl, containerEl, targetSelector) {
+    const containerRect = containerEl.getBoundingClientRect();
+    if (containerRect.width <= 0 || containerRect.height <= 0) {
+        return { left: 50, top: 50 };
+    }
+
+    const target = targetSelector ? sourceEl?.querySelector(targetSelector) : sourceEl;
+    const rect = (target || sourceEl).getBoundingClientRect();
+    return {
+        left: ((rect.left + rect.width / 2 - containerRect.left) / containerRect.width) * 100,
+        top: ((rect.top + rect.height / 2 - containerRect.top) / containerRect.height) * 100
+    };
+}
+
+function posterCenterInIntro(slotEl, containerEl) {
+    return elementCenterInContainer(slotEl, containerEl, '.coin-toss-slot-poster');
+}
+
+function getPosterSpawnPoint(slotEl, containerEl) {
+    return posterCenterInIntro(slotEl, containerEl);
+}
+
+function getKnownSettlePoint(ticketIndex, slotEl, containerEl) {
+    const center = posterCenterInIntro(slotEl, containerEl);
+    return {
+        left: (center.left + 50) / 2,
+        top: center.top
+    };
+}
+
+function buildKnownEmergeKeyframesFromPoints(spawn, settle) {
+    const bulgeLeft = (spawn.left + settle.left) / 2;
+    const bulgeTop = Math.min(spawn.top, settle.top) - 8;
+
+    return [
+        {
+            left: `${spawn.left}%`,
+            top: `${spawn.top}%`,
+            transform: 'translate(-50%, -50%) scale(0.85)',
+            opacity: 0,
+            offset: 0
+        },
+        {
+            left: `${spawn.left}%`,
+            top: `${spawn.top}%`,
+            transform: 'translate(-50%, -50%) scale(1)',
+            opacity: 1,
+            offset: 0.18
+        },
+        {
+            left: `${bulgeLeft}%`,
+            top: `${bulgeTop}%`,
+            transform: 'translate(-50%, -50%) scale(1)',
+            opacity: 1,
+            offset: 0.55
+        },
+        {
+            left: `${settle.left}%`,
+            top: `${settle.top}%`,
+            transform: 'translate(-50%, -50%) scale(1)',
+            opacity: 1,
+            offset: 1
+        }
+    ];
+}
+
+function buildKnownEmergeKeyframes(ticketIndex, slotEl, containerEl) {
+    const spawn = getPosterSpawnPoint(slotEl, containerEl);
+    const settle = getKnownSettlePoint(ticketIndex, slotEl, containerEl);
+    return buildKnownEmergeKeyframesFromPoints(spawn, settle);
+}
+
+function stripShuffleTicketPosClasses(ticketEl) {
+    for (let s = 0; s < SHUFFLE_TICKET_COUNT; s += 1) {
+        ticketEl.classList.remove(`shuffle-ticket-pos-${s}`);
+    }
+}
+
+function primeKnownTicketAtPoster(ticketEl, slotEl, arenaEl) {
+    stripShuffleTicketPosClasses(ticketEl);
+    const spawn = getPosterSpawnPoint(slotEl, arenaEl);
+    ticketEl.style.transition = 'none';
+    setTicketPosition(ticketEl, spawn, { opacity: 0, zIndex: 4 });
+    void ticketEl.offsetWidth;
+    return spawn;
+}
+
+function getRowSlotForTicket(ticketIndex) {
+    const rowIndex = SHUFFLE_ROW_TICKET_ORDER.indexOf(ticketIndex);
+    return SHUFFLE_ROW_SLOTS[rowIndex >= 0 ? rowIndex : 0];
+}
+
+function setTicketPosition(ticketEl, pos, options = {}) {
+    const { transform = 'translate(-50%, -50%)', zIndex, opacity } = options;
+    ticketEl.style.left = `${pos.left}%`;
+    ticketEl.style.top = `${pos.top}%`;
+    ticketEl.style.transform = transform;
+    if (zIndex !== undefined) ticketEl.style.zIndex = String(zIndex);
+    if (opacity !== undefined) ticketEl.style.opacity = String(opacity);
+}
+
+function finalizeTicketAnimation(anim, ticketEl, pos, options = {}) {
+    if (anim && typeof anim.commitStyles === 'function') {
+        anim.commitStyles();
+    }
+    anim?.cancel();
+    setTicketPosition(ticketEl, pos, { opacity: 1, ...options });
+}
+
+function setArenaIntroLayout(arena, mode) {
+    arena.classList.remove('shuffle-intro-row', 'shuffle-intro-quadrant');
+    if (mode === 'row') arena.classList.add('shuffle-intro-row');
+    else if (mode === 'quadrant') arena.classList.add('shuffle-intro-quadrant');
+}
+
+async function runStackTicketsAtCenter(tickets, generation) {
+    const center = { left: 50, top: 50 };
+    const animations = tickets.map((ticketEl, ticketIndex) => {
+        const currentLeft = parseFloat(ticketEl.style.left);
+        const currentTop = parseFloat(ticketEl.style.top);
+
+        return ticketEl.animate([
+            {
+                left: `${currentLeft}%`,
+                top: `${currentTop}%`,
+                transform: 'translate(-50%, -50%) scale(1)'
+            },
+            {
+                left: `${center.left}%`,
+                top: `${center.top}%`,
+                transform: 'translate(-50%, -50%) scale(1)'
+            }
+        ], {
+            duration: SHUFFLE_STACK_MS,
+            fill: 'forwards',
+            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+        });
+    });
+
+    await shuffleSleep(SHUFFLE_STACK_MS);
+
+    if (generation !== coinTossGeneration) {
+        animations.forEach((anim) => anim.cancel());
+        return false;
+    }
+
+    animations.forEach((anim) => anim.cancel());
+    tickets.forEach((ticketEl, ticketIndex) => {
+        setTicketPosition(ticketEl, center, { zIndex: ticketIndex + 1, opacity: 1 });
+    });
+    return true;
+}
+
+async function collapseShuffleIntroOverlay(slotsRow) {
+    slotsRow?.classList.remove('coin-toss-shuffle-active');
+    await new Promise((resolve) => {
+        window.requestAnimationFrame(() => window.requestAnimationFrame(resolve));
+    });
+}
+
+async function runDeployFromStack(tickets, arena, slotsRow, generation) {
+    await collapseShuffleIntroOverlay(slotsRow);
+    randomizeInitialShuffleSlots();
+    setArenaIntroLayout(arena, 'quadrant');
+
+    const center = { left: 50, top: 50 };
+    tickets.forEach((ticketEl, ticketIndex) => {
+        setTicketPosition(ticketEl, center, { zIndex: ticketIndex + 1 });
+    });
+
+    const animations = tickets.map((ticketEl, ticketIndex) => {
+        const targetSlot = shuffleTicketSlots[ticketIndex];
+        const target = SHUFFLE_QUADRANT_SLOTS[targetSlot];
+
+        return ticketEl.animate([
+            {
+                left: `${center.left}%`,
+                top: `${center.top}%`,
+                transform: 'translate(-50%, -50%) scale(1)'
+            },
+            {
+                left: `${target.left}%`,
+                top: `${target.top}%`,
+                transform: 'translate(-50%, -50%) scale(1)'
+            }
+        ], {
+            duration: SHUFFLE_QUADRANT_DEPLOY_MS,
+            fill: 'forwards',
+            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+        });
+    });
+
+    await shuffleSleep(SHUFFLE_QUADRANT_DEPLOY_MS);
+
+    if (generation !== coinTossGeneration) {
+        animations.forEach((anim) => anim.cancel());
+        applyShufflePositionClasses(tickets);
+        clearShuffleIntroUI();
+        return false;
+    }
+
+    animations.forEach((anim) => anim.cancel());
+    applyShufflePositionClasses(tickets);
+    return true;
+}
+
+async function runShuffleCinematicIntro(tickets, arena, slotAEl, slotBEl, generation) {
+    const slotsRow = document.getElementById('coin-toss-slots-row');
+    const posContainer = arena;
+    const ticket0 = tickets[0];
+    const ticket1 = tickets[1];
+    const ticket2 = tickets[2];
+    const ticket3 = tickets[3];
+
+    await new Promise((resolve) => {
+        window.requestAnimationFrame(() => window.requestAnimationFrame(resolve));
+    });
+
+    arena.classList.add('shuffle-intro-emerge');
+
+    let centerA = posterCenterInIntro(slotAEl, posContainer);
+    let centerB = posterCenterInIntro(slotBEl, posContainer);
+
+    setTicketPosition(ticket2, centerA, { opacity: 0, zIndex: 1 });
+    setTicketPosition(ticket3, centerB, { opacity: 0, zIndex: 1 });
+    ticket2.classList.add('shuffle-ticket-intro-hidden');
+    ticket3.classList.add('shuffle-ticket-intro-hidden');
+
+    // Stage A — emerge from poster center, settle inward toward row center
+    const spawn0 = primeKnownTicketAtPoster(ticket0, slotAEl, posContainer);
+    const spawn1 = primeKnownTicketAtPoster(ticket1, slotBEl, posContainer);
+    const settle0 = getKnownSettlePoint(0, slotAEl, posContainer);
+    const settle1 = getKnownSettlePoint(1, slotBEl, posContainer);
+
+    const emergeAnims = [
+        ticket0.animate(
+            buildKnownEmergeKeyframesFromPoints(spawn0, settle0),
+            { duration: SHUFFLE_EMERGE_MS, fill: 'forwards', easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
+        ),
+        ticket1.animate(
+            buildKnownEmergeKeyframesFromPoints(spawn1, settle1),
+            { duration: SHUFFLE_EMERGE_MS, fill: 'forwards', easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
+        )
+    ];
+
+    await shuffleSleep(SHUFFLE_EMERGE_MS);
+    if (generation !== coinTossGeneration) {
+        emergeAnims.forEach((anim) => anim.cancel());
+        clearShuffleIntroUI();
+        return false;
+    }
+    finalizeTicketAnimation(emergeAnims[0], ticket0, settle0, { zIndex: 4 });
+    finalizeTicketAnimation(emergeAnims[1], ticket1, settle1, { zIndex: 4 });
+    ticket0.style.transition = '';
+    ticket1.style.transition = '';
+    arena.classList.remove('shuffle-intro-emerge');
+
+    // Stage B — rest with posters + known tickets
+    await shuffleSleep(SHUFFLE_PAIR_REST_MS);
+    if (generation !== coinTossGeneration) {
+        clearShuffleIntroUI();
+        return false;
+    }
+
+    // Stage C — slow poster fade, mysteries fade in at poster spots
+    centerA = posterCenterInIntro(slotAEl, posContainer);
+    centerB = posterCenterInIntro(slotBEl, posContainer);
+    slotsRow?.classList.add('coin-toss-slots-poster-fade');
+    setCoinTossSlotsBlind(true);
+    ticket2.classList.remove('shuffle-ticket-intro-hidden');
+    ticket3.classList.remove('shuffle-ticket-intro-hidden');
+
+    const mysteryFadeAnims = [
+        ticket2.animate([
+            { opacity: 0, transform: 'translate(-50%, -50%) scale(0.95)' },
+            { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' }
+        ], { duration: SHUFFLE_POSTER_FADE_MS, fill: 'forwards', easing: 'ease-out' }),
+        ticket3.animate([
+            { opacity: 0, transform: 'translate(-50%, -50%) scale(0.95)' },
+            { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' }
+        ], { duration: SHUFFLE_POSTER_FADE_MS, fill: 'forwards', easing: 'ease-out' })
+    ];
+
+    await shuffleSleep(SHUFFLE_POSTER_FADE_MS);
+    if (generation !== coinTossGeneration) {
+        mysteryFadeAnims.forEach((anim) => anim.cancel());
+        clearShuffleIntroUI();
+        return false;
+    }
+    mysteryFadeAnims.forEach((anim) => anim.cancel());
+    setTicketPosition(ticket2, centerA, { zIndex: 2, opacity: 1 });
+    setTicketPosition(ticket3, centerB, { zIndex: 2, opacity: 1 });
+
+    // Stage D — crossfade rest
+    await shuffleSleep(SHUFFLE_CROSSFADE_REST_MS);
+    if (generation !== coinTossGeneration) {
+        clearShuffleIntroUI();
+        return false;
+    }
+
+    // Stage E — align into even row (M1 | Pick A | Pick B | M2), collapse slot frames
+    setArenaIntroLayout(arena, 'row');
+    const rowAnims = tickets.map((ticketEl) => {
+        const ticketIndex = Number(ticketEl.dataset.ticketIndex);
+        const rowPos = getRowSlotForTicket(ticketIndex);
+        const currentLeft = parseFloat(ticketEl.style.left);
+        const currentTop = parseFloat(ticketEl.style.top);
+
+        return ticketEl.animate([
+            { left: `${currentLeft}%`, top: `${currentTop}%`, transform: 'translate(-50%, -50%) scale(1)' },
+            { left: `${rowPos.left}%`, top: `${rowPos.top}%`, transform: 'translate(-50%, -50%) scale(1)' }
+        ], {
+            duration: SHUFFLE_ROW_ALIGN_MS,
+            fill: 'forwards',
+            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+        });
+    });
+
+    await shuffleSleep(Math.round(SHUFFLE_ROW_ALIGN_MS * 0.65));
+    slotsRow?.classList.add('coin-toss-slots-shuffle-intro');
+
+    await shuffleSleep(Math.round(SHUFFLE_ROW_ALIGN_MS * 0.35));
+    if (generation !== coinTossGeneration) {
+        rowAnims.forEach((anim) => anim.cancel());
+        clearShuffleIntroUI();
+        return false;
+    }
+    rowAnims.forEach((anim) => anim.cancel());
+    tickets.forEach((ticketEl) => {
+        const rowPos = getRowSlotForTicket(Number(ticketEl.dataset.ticketIndex));
+        setTicketPosition(ticketEl, rowPos, { zIndex: 3, opacity: 1 });
+    });
+
+    // Stage F — stack at center
+    const stackOk = await runStackTicketsAtCenter(tickets, generation);
+    if (!stackOk) {
+        clearShuffleIntroUI();
+        return false;
+    }
+
+    // Stage G — stack rest
+    await shuffleSleep(SHUFFLE_STACK_REST_MS);
+    if (generation !== coinTossGeneration) {
+        clearShuffleIntroUI();
+        return false;
+    }
+
+    // Stage H — deploy to random quadrants
+    const deployOk = await runDeployFromStack(tickets, arena, slotsRow, generation);
+    if (!deployOk) return false;
+
+    // Stage I — flip face down
+    tickets.forEach((ticketEl) => {
+        ticketEl.classList.remove('shuffle-ticket-intro-hidden');
+        if (ticketEl.style.opacity === '0') ticketEl.style.opacity = '1';
+    });
+    shufflePhase = 'faceDown';
+    tickets.forEach((ticketEl) => ticketEl.classList.add('face-down'));
+    await shuffleSleep(SHUFFLE_FLIP_MS);
+    if (generation !== coinTossGeneration) {
+        clearShuffleIntroUI();
+        return false;
+    }
+    tickets.forEach((ticketEl) => ticketEl.classList.add('face-down-settled'));
+
+    // Stage J — pre-shuffle rest
+    await shuffleSleep(SHUFFLE_PRE_SHUFFLE_REST_MS);
+    if (generation !== coinTossGeneration) {
+        clearShuffleIntroUI();
+        return false;
+    }
+
+    return true;
+}
+
+function pickRandomDiagonalPair() {
+    return SHUFFLE_DIAGONAL_PAIRS[Math.floor(Math.random() * SHUFFLE_DIAGONAL_PAIRS.length)];
+}
+
+function pickRandomAdjacentPair() {
+    return SHUFFLE_ADJACENT_PAIRS[Math.floor(Math.random() * SHUFFLE_ADJACENT_PAIRS.length)];
+}
+
+function buildRandomShufflePlan() {
+    let logicalCount = shuffleRandomInt(8, 12);
+
+    const logicalMoves = [];
+    for (let i = 0; i < logicalCount; i += 1) {
+        if (Math.random() < 0.45) {
+            logicalMoves.push({
+                type: 'rotation',
+                direction: Math.random() < 0.5 ? 'cw' : 'ccw'
+            });
+        } else {
+            const [slotA, slotB] = pickRandomDiagonalPair();
+            logicalMoves.push({ type: 'crossSwap', slotA, slotB });
+        }
+    }
+
+    const targetJitterCount = shuffleRandomInt(2, 3);
+    const jitterIndices = new Set([logicalCount - 1]);
+    while (jitterIndices.size < targetJitterCount && logicalCount > 2) {
+        jitterIndices.add(shuffleRandomInt(1, logicalCount - 2));
+    }
+
+    logicalMoves.forEach((move, index) => {
+        const isFirst = index === 0 || index === 1;
+        const isLast = index === logicalMoves.length - 1;
+        move.durationMs = isLast
+            ? SHUFFLE_SWAP_MS_SLOW
+            : isFirst
+                ? SHUFFLE_SWAP_MS_FAST
+                : SHUFFLE_SWAP_MS;
+        if (Math.random() < 0.2) move.doubleBack = true;
+        if (jitterIndices.has(index)) move.crossingJitter = true;
+    });
+
+    const burstSize = shuffleRandomInt(2, 3);
+    const burstStartMin = Math.max(1, Math.floor(logicalCount / 3));
+    const burstStartMax = Math.min(logicalCount - burstSize, Math.floor((logicalCount * 2) / 3));
+    let burstStart = -1;
+    const burstIndices = new Set();
+    if (burstStartMax >= burstStartMin) {
+        burstStart = shuffleRandomInt(burstStartMin, burstStartMax);
+        for (let b = burstStart; b < burstStart + burstSize; b += 1) {
+            burstIndices.add(b);
+        }
+    }
+
+    const feintAfterMoves = new Set();
+    const feintCount = shuffleRandomInt(1, 2);
+    const feintA = Math.max(1, Math.floor(logicalCount * 0.25));
+    const feintB = Math.max(2, Math.floor(logicalCount * 0.55));
+    if (feintCount === 1) {
+        feintAfterMoves.add(feintA);
+    } else {
+        feintAfterMoves.add(feintA);
+        feintAfterMoves.add(feintB);
+    }
+
+    const misdirectAfterMove = shuffleRandomInt(3, Math.max(3, Math.floor(logicalCount * 0.7)));
+    const spinAfterA = Math.max(1, Math.floor(logicalCount * 0.3));
+    const spinAfterB = Math.max(2, Math.floor(logicalCount * 0.6));
+
+    const appendDecoys = (plan, moveNumber) => {
+        if (feintAfterMoves.has(moveNumber)) plan.push({ type: 'feint' });
+        if (moveNumber === misdirectAfterMove) plan.push({ type: 'misdirect' });
+        if (moveNumber === spinAfterA) plan.push({ type: 'spin', dir: 'cw' });
+        if (moveNumber === spinAfterB) plan.push({ type: 'spin', dir: 'ccw' });
+    };
+
+    const plan = [];
+    let moveNumber = 0;
+
+    for (let index = 0; index < logicalMoves.length; index += 1) {
+        if (burstIndices.has(index)) {
+            if (index === burstStart) {
+                const burstMoves = logicalMoves.slice(burstStart, burstStart + burstSize).map((move) => ({
+                    type: move.type,
+                    direction: move.direction,
+                    slotA: move.slotA,
+                    slotB: move.slotB,
+                    doubleBack: move.doubleBack ?? false,
+                    crossingJitter: move.crossingJitter ?? false
+                }));
+                plan.push({ type: 'burst', moves: burstMoves });
+                moveNumber += burstSize;
+                appendDecoys(plan, moveNumber);
+            }
+            continue;
+        }
+
+        moveNumber += 1;
+        plan.push(logicalMoves[index]);
+        appendDecoys(plan, moveNumber);
+    }
+
+    plan.push({ type: 'settle' });
+    return plan;
+}
+
+function playShuffleRevealSound() {
+    playKeeperClip('sounds/keeper-kaching.mp3');
+}
+
+function applyCoinTossResult(winner, loser) {
+    const loserKeeperIndex = getKeeperIndexForEntry(loser);
+    const winnerInKeeper = isEntryInKeeper(winner);
+    let winnerAdded = false;
+
+    if (loserKeeperIndex >= 0) {
+        const entry = keeperPicks[loserKeeperIndex];
+        keeperPicks.splice(loserKeeperIndex, 1);
+        recentSelections.unshift(entry.label);
+        if (recentSelections.length > 3) recentSelections.pop();
+    }
+
+    const canAddWinner = !winnerInKeeper && (getOpenKeeperSlots() > 0 || loserKeeperIndex >= 0);
+    if (canAddWinner) {
+        const recentIndex = recentSelections.indexOf(winner.label);
+        if (recentIndex >= 0) {
+            recentSelections.splice(recentIndex, 1);
+        }
+
+        const keeperEntry = {
+            label: winner.label,
+            poster: getCoinTossPosterForEntry(winner),
+            runtimeMinutes: winner.runtimeMinutes ?? getMovieRuntimeMinutes(winner.listing)
+        };
+        applyKeeperPosterFromMetadata(keeperEntry);
+
+        if (loserKeeperIndex >= 0) {
+            keeperPicks.splice(loserKeeperIndex, 0, keeperEntry);
+        } else {
+            keeperPicks.push(keeperEntry);
+        }
+
+        winnerAdded = true;
+        keeperUiGeneration += 1;
+        playKeeperSound(keeperPicks.length);
+    }
+
+    let keeperUiUpdate = false;
+    if (winnerAdded) {
+        keeperUiUpdate = true;
+    } else if (winnerInKeeper) {
+        const slotIndex = getKeeperIndexForEntry(winner);
+        if (slotIndex >= 0) {
+            keeperUiGeneration += 1;
+            playKeeperSound(slotIndex + 1);
+            keeperUiUpdate = { animateSlotIndex: slotIndex };
+        }
+    }
+
+    updateRecentSelectionsUI();
+    updateKeeperPicksUI(keeperUiUpdate);
+    updateKeeperButtonState();
+}
+
+const SHUFFLE_ANIM_CLASSES = [
+    'shuffle-misdirect-glow-a',
+    'shuffle-misdirect-glow-b',
+    'shuffle-reveal-pending',
+    'shuffle-ticket-waapi-spin'
+];
+
+function getTicketIndexAtSlot(slotIndex) {
+    return shuffleTicketSlots.indexOf(slotIndex);
+}
+
+function getTicketsAtSlots(tickets, slotA, slotB) {
+    const indexA = getTicketIndexAtSlot(slotA);
+    const indexB = getTicketIndexAtSlot(slotB);
+    return {
+        ticketA: indexA >= 0 ? tickets[indexA] : null,
+        ticketB: indexB >= 0 ? tickets[indexB] : null,
+        indexA,
+        indexB
+    };
+}
+
+function buildQuadrantArcKeyframes(fromSlot, toSlot, options = {}) {
+    const { arcOffsetPx = SHUFFLE_ARC_OFFSET_PX, leadShadow = false, doubleBack = false } = options;
+    const from = SHUFFLE_QUADRANT_SLOTS[fromSlot];
+    const to = SHUFFLE_QUADRANT_SLOTS[toSlot];
+    const midLeft = (from.left + to.left) / 2;
+    const midTop = (from.top + to.top) / 2;
+    const centerPull = 0.25;
+    const bulgeLeft = midLeft + (50 - midLeft) * centerPull;
+    const bulgeTop = midTop + (50 - midTop) * centerPull;
+    const arc = leadShadow ? arcOffsetPx : Math.round(arcOffsetPx * 0.65);
+    const baseFilter = 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))';
+    const leadFilter = 'drop-shadow(0 5px 12px rgba(0,0,0,0.55))';
+
+    const startFrame = {
+        left: `${from.left}%`,
+        top: `${from.top}%`,
+        transform: 'translate(-50%, -50%)',
+        filter: baseFilter,
+        offset: 0
+    };
+    const midFrame = {
+        left: `${bulgeLeft}%`,
+        top: `${bulgeTop}%`,
+        transform: `translate(-50%, calc(-50% - ${arc}px))`,
+        filter: leadShadow ? leadFilter : baseFilter,
+        offset: 0.5
+    };
+    const endFrame = {
+        left: `${to.left}%`,
+        top: `${to.top}%`,
+        transform: 'translate(-50%, -50%)',
+        filter: baseFilter,
+        offset: 1
+    };
+
+    if (doubleBack) {
+        const wiggleLeft = from.left + (to.left - from.left) * 0.35;
+        const wiggleTop = from.top + (to.top - from.top) * 0.35;
+        const forwardLeft = from.left + (to.left - from.left) * 0.65;
+        const forwardTop = from.top + (to.top - from.top) * 0.65;
+        return [
+            startFrame,
+            { ...midFrame, offset: 0.4 },
+            {
+                left: `${wiggleLeft}%`,
+                top: `${wiggleTop}%`,
+                transform: `translate(-50%, calc(-50% - ${Math.round(arc * 0.75)}px))`,
+                filter: leadShadow ? leadFilter : baseFilter,
+                offset: 0.55
+            },
+            {
+                left: `${forwardLeft}%`,
+                top: `${forwardTop}%`,
+                transform: `translate(-50%, calc(-50% - ${Math.round(arc * 0.88)}px))`,
+                filter: leadShadow ? leadFilter : baseFilter,
+                offset: 0.7
+            },
+            endFrame
+        ];
+    }
+
+    return [startFrame, midFrame, endFrame];
+}
+
+function isRotationLeadTicket(fromSlot, direction) {
+    if (direction === 'cw') return fromSlot === 1 || fromSlot === 3;
+    return fromSlot === 0 || fromSlot === 2;
+}
+
+function clearMidairJitter(ticketEl) {
+    ticketEl?.querySelector('.shuffle-ticket-inner')?.classList.remove('shuffle-midair-jitter');
+}
+
+function clearShuffleAnimClasses(ticketEl) {
+    if (!ticketEl) return;
+    ticketEl.classList.remove(...SHUFFLE_ANIM_CLASSES);
+    clearMidairJitter(ticketEl);
+}
+
+async function runCrossSwapStep(tickets, generation, step) {
+    const durationMs = step.durationMs ?? SHUFFLE_SWAP_MS;
+    const { ticketA, ticketB, indexA, indexB } = getTicketsAtSlots(tickets, step.slotA, step.slotB);
+    if (!ticketA || !ticketB || indexA < 0 || indexB < 0) return false;
+
+    tickets.forEach((ticketEl, ticketIndex) => {
+        if (ticketIndex !== indexA && ticketIndex !== indexB) {
+            ticketEl.classList.add('shuffle-ticket-stationary');
+        }
+    });
+
+    await shuffleSleep(SHUFFLE_CROSS_SWAP_PAUSE_MS);
+    if (generation !== coinTossGeneration) {
+        tickets.forEach((ticketEl) => ticketEl.classList.remove('shuffle-ticket-stationary'));
+        return false;
+    }
+
+    const moving = [ticketA, ticketB];
+    let jitterTimer = null;
+    let jitterEndTimer = null;
+
+    if (step.crossingJitter) {
+        const jitterAt = Math.round(durationMs * 0.48);
+        jitterTimer = window.setTimeout(() => {
+            moving.forEach((ticketEl) => {
+                ticketEl.querySelector('.shuffle-ticket-inner')?.classList.add('shuffle-midair-jitter');
+            });
+        }, jitterAt);
+        jitterEndTimer = window.setTimeout(() => {
+            moving.forEach(clearMidairJitter);
+        }, jitterAt + SHUFFLE_MIDAIR_JITTER_MS);
+    }
+
+    const toA = SHUFFLE_QUADRANT_SLOTS[step.slotB];
+    const toB = SHUFFLE_QUADRANT_SLOTS[step.slotA];
+    const leadA = (toA.left + toA.top) >= (toB.left + toB.top);
+
+    ticketA.style.zIndex = leadA ? '8' : '4';
+    ticketB.style.zIndex = leadA ? '4' : '8';
+    if (leadA) ticketA.classList.add('shuffle-ticket-leading');
+    else ticketB.classList.add('shuffle-ticket-leading');
+
+    const animA = ticketA.animate(
+        buildQuadrantArcKeyframes(step.slotA, step.slotB, {
+            leadShadow: leadA,
+            doubleBack: step.doubleBack ?? false
+        }),
+        { duration: durationMs, fill: 'forwards', easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
+    );
+    const animB = ticketB.animate(
+        buildQuadrantArcKeyframes(step.slotB, step.slotA, {
+            leadShadow: !leadA,
+            doubleBack: step.doubleBack ?? false
+        }),
+        { duration: durationMs, fill: 'forwards', easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
+    );
+
+    await shuffleSleep(durationMs);
+
+    if (jitterTimer !== null) window.clearTimeout(jitterTimer);
+    if (jitterEndTimer !== null) window.clearTimeout(jitterEndTimer);
+    moving.forEach(clearMidairJitter);
+
+    if (generation !== coinTossGeneration) {
+        animA.cancel();
+        animB.cancel();
+        tickets.forEach((ticketEl) => {
+            ticketEl.classList.remove('shuffle-ticket-stationary', 'shuffle-ticket-leading');
+        });
+        applyShufflePositionClasses(tickets);
+        return false;
+    }
+
+    animA.cancel();
+    animB.cancel();
+    shuffleTicketSlots[indexA] = step.slotB;
+    shuffleTicketSlots[indexB] = step.slotA;
+    tickets.forEach((ticketEl) => {
+        ticketEl.classList.remove('shuffle-ticket-stationary', 'shuffle-ticket-leading');
+    });
+    applyShufflePositionClasses(tickets);
+    return true;
+}
+
+async function runRotationStep(tickets, generation, step) {
+    const durationMs = step.durationMs ?? SHUFFLE_SWAP_MS;
+    const nextMap = step.direction === 'cw' ? SHUFFLE_CW_NEXT : SHUFFLE_CCW_NEXT;
+    const animations = [];
+    const moving = [];
+
+    for (let ticketIndex = 0; ticketIndex < SHUFFLE_TICKET_COUNT; ticketIndex += 1) {
+        const fromSlot = shuffleTicketSlots[ticketIndex];
+        const toSlot = nextMap[fromSlot];
+        const ticketEl = tickets[ticketIndex];
+        const leadShadow = isRotationLeadTicket(fromSlot, step.direction);
+
+        ticketEl.style.zIndex = String(4 + fromSlot + toSlot);
+        if (leadShadow) ticketEl.classList.add('shuffle-ticket-leading');
+        moving.push(ticketEl);
+
+        animations.push(ticketEl.animate(
+            buildQuadrantArcKeyframes(fromSlot, toSlot, {
+                leadShadow,
+                doubleBack: step.doubleBack ?? false
+            }),
+            { duration: durationMs, fill: 'forwards', easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
+        ));
+    }
+
+    let jitterTimer = null;
+    let jitterEndTimer = null;
+    if (step.crossingJitter) {
+        const jitterAt = Math.round(durationMs * 0.48);
+        jitterTimer = window.setTimeout(() => {
+            moving.forEach((ticketEl) => {
+                ticketEl.querySelector('.shuffle-ticket-inner')?.classList.add('shuffle-midair-jitter');
+            });
+        }, jitterAt);
+        jitterEndTimer = window.setTimeout(() => {
+            moving.forEach(clearMidairJitter);
+        }, jitterAt + SHUFFLE_MIDAIR_JITTER_MS);
+    }
+
+    await shuffleSleep(durationMs);
+
+    if (jitterTimer !== null) window.clearTimeout(jitterTimer);
+    if (jitterEndTimer !== null) window.clearTimeout(jitterEndTimer);
+    moving.forEach(clearMidairJitter);
+
+    if (generation !== coinTossGeneration) {
+        animations.forEach((anim) => anim.cancel());
+        moving.forEach((ticketEl) => ticketEl.classList.remove('shuffle-ticket-leading'));
+        applyShufflePositionClasses(tickets);
+        return false;
+    }
+
+    animations.forEach((anim) => anim.cancel());
+    for (let ticketIndex = 0; ticketIndex < SHUFFLE_TICKET_COUNT; ticketIndex += 1) {
+        shuffleTicketSlots[ticketIndex] = nextMap[shuffleTicketSlots[ticketIndex]];
+    }
+    moving.forEach((ticketEl) => ticketEl.classList.remove('shuffle-ticket-leading'));
+    applyShufflePositionClasses(tickets);
+    return true;
+}
+
+async function runBurstStep(tickets, generation, burstStep) {
+    for (const move of burstStep.moves) {
+        if (generation !== coinTossGeneration) return false;
+        const stepOptions = { ...move, durationMs: SHUFFLE_BURST_MS };
+        let ok = false;
+        if (move.type === 'rotation') {
+            ok = await runRotationStep(tickets, generation, stepOptions);
+        } else if (move.type === 'crossSwap') {
+            ok = await runCrossSwapStep(tickets, generation, stepOptions);
+        }
+        if (!ok) return false;
+    }
+    return true;
+}
+
+async function runFeintStep(tickets, generation) {
+    const [slotA, slotB] = pickRandomAdjacentPair();
+    const { ticketA, ticketB } = getTicketsAtSlots(tickets, slotA, slotB);
+    if (!ticketA || !ticketB) return false;
+
+    const fromA = SHUFFLE_QUADRANT_SLOTS[slotA];
+    const fromB = SHUFFLE_QUADRANT_SLOTS[slotB];
+    const midLeft = (fromA.left + fromB.left) / 2;
+    const midTop = (fromA.top + fromB.top) / 2;
+    const arc = Math.round(SHUFFLE_ARC_OFFSET_PX * 0.65);
+    const halfMs = Math.round(SHUFFLE_FEINT_MS * 0.45);
+
+    const animA = ticketA.animate([
+        { left: `${fromA.left}%`, top: `${fromA.top}%`, transform: 'translate(-50%, -50%)' },
+        { left: `${midLeft}%`, top: `${midTop}%`, transform: `translate(-50%, calc(-50% - ${arc}px))` }
+    ], { duration: halfMs, fill: 'forwards', easing: 'ease-out' });
+    const animB = ticketB.animate([
+        { left: `${fromB.left}%`, top: `${fromB.top}%`, transform: 'translate(-50%, -50%)' },
+        { left: `${midLeft}%`, top: `${midTop}%`, transform: `translate(-50%, calc(-50% + ${Math.round(arc * 0.5)}px))` }
+    ], { duration: halfMs, fill: 'forwards', easing: 'ease-out' });
+
+    await shuffleSleep(SHUFFLE_FEINT_MS);
+    animA.cancel();
+    animB.cancel();
+
+    if (generation !== coinTossGeneration) return false;
+
+    applyShufflePositionClasses(tickets);
+    return true;
+}
+
+async function runVisualMisdirection(tickets, generation) {
+    const shuffled = [...tickets].sort(() => Math.random() - 0.5);
+    const first = shuffled[0];
+    let second = shuffled[1];
+    if (tickets.length > 2) {
+        second = shuffled.find((t) => t !== first) ?? shuffled[1];
+    }
+
+    first.classList.add('shuffle-misdirect-glow-a');
+    await shuffleSleep(SHUFFLE_MISDIRECT_PULSE_MS);
+    if (generation !== coinTossGeneration) return false;
+
+    first.classList.remove('shuffle-misdirect-glow-a');
+    second.classList.add('shuffle-misdirect-glow-b');
+    await shuffleSleep(SHUFFLE_MISDIRECT_PULSE_MS);
+    second.classList.remove('shuffle-misdirect-glow-b');
+
+    return generation === coinTossGeneration;
+}
+
+async function runSpinStep(tickets, direction, generation) {
+    tickets.forEach((ticketEl) => ticketEl.classList.add('shuffle-ticket-waapi-spin'));
+
+    await shuffleSleep(SHUFFLE_SPIN_MS);
+    tickets.forEach(clearShuffleAnimClasses);
+
+    return generation === coinTossGeneration;
+}
+
+function applyShufflePositionClasses(tickets) {
+    tickets.forEach((ticketEl, ticketIndex) => {
+        const slot = shuffleTicketSlots[ticketIndex];
+        for (let s = 0; s < SHUFFLE_TICKET_COUNT; s += 1) {
+            ticketEl.classList.remove(`shuffle-ticket-pos-${s}`);
+        }
+        ticketEl.classList.remove('shuffle-ticket-stationary', 'shuffle-ticket-leading', 'shuffle-ticket-intro-hidden');
+        ticketEl.classList.add(`shuffle-ticket-pos-${slot}`);
+        const pos = SHUFFLE_QUADRANT_SLOTS[slot];
+        ticketEl.style.left = `${pos.left}%`;
+        ticketEl.style.top = `${pos.top}%`;
+        ticketEl.style.zIndex = String(slot + 1);
+        ticketEl.style.opacity = '';
+        ticketEl.style.pointerEvents = '';
+    });
+}
+
+function buildShuffleTicket(entry, index, options = {}) {
+    const { isMystery = false } = options;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `shuffle-ticket shuffle-ticket-pos-${index}${isMystery ? ' shuffle-ticket-mystery' : ''}`;
+    btn.dataset.ticketIndex = String(index);
+    btn.disabled = true;
+    btn._shuffleEntry = entry;
+    btn._isMystery = isMystery;
+
+    const inner = document.createElement('div');
+    inner.className = 'shuffle-ticket-inner';
+
+    const front = document.createElement('div');
+    front.className = 'shuffle-ticket-face shuffle-ticket-front';
+
+    const frontShape = document.createElement('div');
+    frontShape.className = 'ticket-stub-shape shuffle-ticket-shape-filled';
+    front.appendChild(frontShape);
+
+    const title = document.createElement('div');
+    title.className = 'shuffle-ticket-title';
+    title.textContent = isMystery
+        ? '? MYSTERY'
+        : `${getCoinTossEmojiForEntry(entry)} ${getKeeperListingLabel(entry.label)}`;
+    front.appendChild(title);
+
+    const back = document.createElement('div');
+    back.className = 'shuffle-ticket-face shuffle-ticket-back';
+
+    const backShape = document.createElement('div');
+    backShape.className = 'ticket-stub-shape shuffle-ticket-shape-back';
+    back.appendChild(backShape);
+
+    inner.appendChild(front);
+    inner.appendChild(back);
+    btn.appendChild(inner);
+
+    btn.addEventListener('click', () => { void onShuffleTicketPick(btn); });
+    return btn;
+}
+
+function finishTicketShuffleRound(winner) {
+    coinTossSlotA = null;
+    coinTossSlotB = null;
+
+    const slotAEl = document.getElementById('coin-toss-slot-a');
+    const slotBEl = document.getElementById('coin-toss-slot-b');
+    if (slotAEl) {
+        slotAEl.classList.remove('filled');
+        slotAEl.innerHTML = getInsertCoinMarkup();
+    }
+    if (slotBEl) {
+        slotBEl.classList.remove('filled');
+        slotBEl.innerHTML = getInsertCoinMarkup();
+    }
+
+    resetTicketShuffleArena();
+    isShuffleActive = false;
+    shufflePhase = 'idle';
+    resetCoinTossStage();
+    refreshCoinTossCandidatesUI();
+    updateDecisionButtonStates();
+}
+
+async function onShuffleTicketPick(ticketEl) {
+    if (!isShuffleActive) return;
+
+    const arena = document.getElementById('ticket-shuffle-arena');
+    if (!arena) return;
+
+    if (shufflePhase === 'picking') {
+        shufflePhase = 'confirming';
+        revealAllShuffleTicketTitles(arena);
+        setShuffleTicketSelection(arena, ticketEl);
+        setCoinTossStatus('Click again to keep — Esc to cancel');
+        return;
+    }
+
+    if (shufflePhase === 'confirming') {
+        if (!ticketEl.classList.contains('shuffle-ticket-selected')) {
+            setShuffleTicketSelection(arena, ticketEl);
+            return;
+        }
+        await confirmShuffleTicketPick(ticketEl);
+    }
+}
+
+async function confirmShuffleTicketPick(ticketEl) {
+    const pickGeneration = coinTossGeneration;
+    const index = Number(ticketEl.dataset.ticketIndex);
+    const winner = ticketEl._shuffleEntry;
+    if (!winner) return;
+
+    let loser;
+    if (index === 0 || index === 1) {
+        loser = index === 0 ? coinTossSlotB : coinTossSlotA;
+    } else {
+        loser = Math.random() < 0.5 ? coinTossSlotA : coinTossSlotB;
+    }
+    if (!loser) return;
+
+    const arena = document.getElementById('ticket-shuffle-arena');
+    const revealDelayMs = shuffleRandomInt(300, 600);
+    shufflePhase = 'revealPending';
+
+    ticketEl.classList.add('shuffle-reveal-pending');
+    arena?.querySelectorAll('.shuffle-ticket').forEach((btn) => {
+        btn.disabled = true;
+    });
+
+    await shuffleSleep(revealDelayMs);
+    if (pickGeneration !== coinTossGeneration || shufflePhase !== 'revealPending') return;
+
+    shufflePhase = 'reveal';
+    clearShuffleConfirmUI();
+    setCoinTossSlotsBlind(false);
+    ticketEl.classList.remove('face-down', 'face-down-settled', 'picking', 'shuffle-reveal-pending');
+    ticketEl.classList.add('revealed');
+
+    if (ticketEl._isMystery) {
+        const title = ticketEl.querySelector('.shuffle-ticket-title');
+        if (title) {
+            title.textContent = `${getCoinTossEmojiForEntry(winner)} ${getKeeperListingLabel(winner.label)}`;
+        }
+    }
+
+    if (ticketEl._isMystery) {
+        setMarqueeText(`MYSTERY REVEALED // ${getKeeperListingLabel(winner.label)} KEPT`);
+    } else {
+        setMarqueeText(`TICKET SHUFFLE // ${getKeeperListingLabel(winner.label)} KEPT`);
+    }
+
+    playShuffleRevealSound();
+
+    const slotAEl = document.getElementById('coin-toss-slot-a');
+    const slotBEl = document.getElementById('coin-toss-slot-b');
+    if (slotAEl && slotBEl) {
+        if (index === 0 || index === 1) {
+            const winnerIsA = index === 0;
+            (winnerIsA ? slotAEl : slotBEl).classList.add('coin-toss-slot-winner');
+            (winnerIsA ? slotBEl : slotAEl).classList.add('coin-toss-slot-loser');
+        } else {
+            slotAEl.classList.add('coin-toss-slot-loser');
+            slotBEl.classList.add('coin-toss-slot-loser');
+        }
+    }
+
+    applyCoinTossResult(winner, loser);
+    setCoinTossStatus(`${getKeeperListingLabel(winner.label)} kept!`);
+
+    window.setTimeout(() => finishTicketShuffleRound(winner), 800);
+}
+
+async function startTicketShuffle() {
+    if (!canStartTicketShuffle()) {
+        updateDecisionButtonStates();
+        return;
+    }
+
+    const mysteries = drawMysteryShuffleEntries(coinTossSlotA, coinTossSlotB);
+    if (!mysteries) {
+        setCoinTossStatus('Need at least 2 other filtered movies for mystery tickets.', true);
+        updateDecisionButtonStates();
+        return;
+    }
+
+    shuffleMysteryA = mysteries[0];
+    shuffleMysteryB = mysteries[1];
+
+    const roundEntries = [coinTossSlotA, coinTossSlotB, shuffleMysteryA, shuffleMysteryB];
+    if (roundEntries.some((entry) => coinTossWouldNeedKeeperSlot(entry)) && getOpenKeeperSlots() === 0) {
+        setCoinTossStatus('Keeper full — discard a movie first.', true);
+        shuffleMysteryA = null;
+        shuffleMysteryB = null;
+        updateDecisionButtonStates();
+        return;
+    }
+
+    coinTossGeneration += 1;
+    const generation = coinTossGeneration;
+    isShuffleActive = true;
+    shufflePhase = 'intro';
+    shuffleTicketSlots = [0, 1, 2, 3];
+
+    const shuffleBtn = document.getElementById('ticket-shuffle-start-btn');
+    if (shuffleBtn) shuffleBtn.disabled = true;
+
+    await playShuffleJokerDisintegrate(generation);
+    if (generation !== coinTossGeneration) return;
+
+    setCoinTossStageVisible(false);
+
+    const slotAEl = document.getElementById('coin-toss-slot-a');
+    const slotBEl = document.getElementById('coin-toss-slot-b');
+    if (slotAEl) slotAEl.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser');
+    if (slotBEl) slotBEl.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser');
+
+    const arena = document.getElementById('ticket-shuffle-arena');
+    if (!arena) return;
+
+    const slotsRow = document.getElementById('coin-toss-slots-row');
+    slotsRow?.classList.add('coin-toss-shuffle-active');
+
+    arena.innerHTML = '';
+    const ticket0 = buildShuffleTicket(coinTossSlotA, 0);
+    const ticket1 = buildShuffleTicket(coinTossSlotB, 1);
+    const ticket2 = buildShuffleTicket(shuffleMysteryA, 2, { isMystery: true });
+    const ticket3 = buildShuffleTicket(shuffleMysteryB, 3, { isMystery: true });
+    arena.appendChild(ticket0);
+    arena.appendChild(ticket1);
+    arena.appendChild(ticket2);
+    arena.appendChild(ticket3);
+
+    const tickets = [ticket0, ticket1, ticket2, ticket3];
+
+    setArenaIntroLayout(arena, 'row');
+    arena.hidden = false;
+    arena.classList.add('shuffle-arena-entering');
+    window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => arena.classList.add('is-visible'));
+    });
+
+    await new Promise((resolve) => {
+        window.requestAnimationFrame(() => window.requestAnimationFrame(resolve));
+    });
+
+    const introOk = await runShuffleCinematicIntro(tickets, arena, slotAEl, slotBEl, generation);
+    if (!introOk) return;
+
+    clearShuffleArenaEntering();
+    shufflePhase = 'shuffling';
+
+    const plan = buildRandomShufflePlan();
+    for (const step of plan) {
+        if (generation !== coinTossGeneration) return;
+        if (step.type === 'rotation') {
+            const ok = await runRotationStep(tickets, generation, step);
+            if (!ok) return;
+        } else if (step.type === 'crossSwap') {
+            const ok = await runCrossSwapStep(tickets, generation, step);
+            if (!ok) return;
+        } else if (step.type === 'burst') {
+            const ok = await runBurstStep(tickets, generation, step);
+            if (!ok) return;
+        } else if (step.type === 'feint') {
+            const ok = await runFeintStep(tickets, generation);
+            if (!ok) return;
+        } else if (step.type === 'spin') {
+            const ok = await runSpinStep(tickets, step.dir, generation);
+            if (!ok) return;
+        } else if (step.type === 'misdirect') {
+            const ok = await runVisualMisdirection(tickets, generation);
+            if (!ok) return;
+        } else if (step.type === 'settle') {
+            applyShufflePositionClasses(tickets);
+            await shuffleSleep(SHUFFLE_SWAP_MS / 2);
+        }
+    }
+
+    if (generation !== coinTossGeneration) return;
+
+    shufflePhase = 'picking';
+    setCoinTossStatus('Pick a ticket');
+    tickets.forEach((ticketEl) => {
+        ticketEl.disabled = false;
+        ticketEl.classList.add('picking');
+    });
+}
+
+function handleCoinTossManualSearch(slotKey) {
+    if (isShuffleActive || isCoinTossing) return;
+    const input = document.getElementById(slotKey === 'a' ? 'coin-toss-search-a' : 'coin-toss-search-b');
+    const dropdown = document.getElementById(slotKey === 'a' ? 'coin-toss-dropdown-a' : 'coin-toss-dropdown-b');
+    if (!input || !dropdown) return;
+
+    const query = input.value.trim();
+    if (!query) {
+        dropdown.hidden = true;
+        dropdown.innerHTML = '';
+        return;
+    }
+
+    const { matches } = findMovieListingInDatabase(query);
+    dropdown.innerHTML = '';
+
+    if (!matches.length) {
+        const empty = document.createElement('div');
+        empty.className = 'coin-toss-dropdown-empty';
+        empty.textContent = 'No matches in database.';
+        dropdown.appendChild(empty);
+        dropdown.hidden = false;
+        return;
+    }
+
+    matches.forEach((entry) => {
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'coin-toss-dropdown-option';
+        option.textContent = getKeeperListingLabel(entry.label);
+        option.addEventListener('click', () => {
+            input.value = getKeeperListingLabel(entry.label);
+            dropdown.hidden = true;
+            dropdown.innerHTML = '';
+            if (slotKey === 'a') {
+                coinTossSlotA = resolveCoinTossEntry(entry);
+                renderCoinTossSlot(document.getElementById('coin-toss-slot-a'), coinTossSlotA);
+            } else {
+                coinTossSlotB = resolveCoinTossEntry(entry);
+                renderCoinTossSlot(document.getElementById('coin-toss-slot-b'), coinTossSlotB);
+            }
+            setCoinTossStatus('');
+            updateCoinTossCoinFaces();
+            refreshCoinTossPreviewIfHovering();
+            updateDecisionButtonStates();
+            refreshCoinTossCandidatesUI();
+        });
+        dropdown.appendChild(option);
+    });
+
+    dropdown.hidden = false;
+}
+
+function buildCoinTossUI() {
+    const filtersPanel = document.getElementById('filters-panel');
+    if (!filtersPanel || document.getElementById('coin-toss')) return;
+
+    const section = document.createElement('div');
+    section.id = 'coin-toss';
+
+    const label = document.createElement('div');
+    label.id = 'coin-toss-label';
+    label.textContent = 'PICK BETWEEN TWO';
+    section.appendChild(label);
+
+    const hint = document.createElement('div');
+    hint.id = 'coin-toss-hint';
+    hint.textContent = 'Pick two movies — flip a coin for a random winner, or shuffle four tickets (two mystery) and pick one to keep.';
+    section.appendChild(hint);
+
+    const slotsRow = document.createElement('div');
+    slotsRow.id = 'coin-toss-slots-row';
+
+    const slotA = document.createElement('button');
+    slotA.type = 'button';
+    slotA.id = 'coin-toss-slot-a';
+    slotA.className = 'coin-toss-slot';
+    slotA.setAttribute('aria-label', 'Coin toss slot A');
+    slotA.innerHTML = getInsertCoinMarkup();
+    slotA.addEventListener('click', () => {
+        if (isShuffleActive || isCoinTossing) return;
+        if (coinTossSlotA) clearCoinTossSlot('a');
+    });
+    slotsRow.appendChild(slotA);
+
+    const middle = document.createElement('div');
+    middle.id = 'coin-toss-middle';
+
+    const coinStage = document.createElement('div');
+    coinStage.id = 'coin-toss-stage';
+    coinStage.hidden = true;
+
+    const flightWrap = document.createElement('div');
+    flightWrap.id = 'coin-toss-flight-wrap';
+
+    const coin = document.createElement('button');
+    coin.type = 'button';
+    coin.id = 'coin-toss-coin';
+    coin.setAttribute('aria-label', 'Confirm coin toss winner');
+    coin.disabled = true;
+    coin.innerHTML = `
+        <div class="coin-face coin-face-front"></div>
+        <div class="coin-face coin-face-back"></div>
+    `;
+    coin.addEventListener('click', () => { confirmCoinToss(); });
+    flightWrap.appendChild(coin);
+
+    const shufflePreview = document.createElement('div');
+    shufflePreview.id = 'shuffle-preview';
+    shufflePreview.hidden = true;
+    shufflePreview.setAttribute('aria-hidden', 'true');
+    shufflePreview.textContent = '🃏';
+    flightWrap.appendChild(shufflePreview);
+
+    coinStage.appendChild(flightWrap);
+    middle.appendChild(coinStage);
+
+    const arena = document.createElement('div');
+    arena.id = 'ticket-shuffle-arena';
+    arena.hidden = true;
+    middle.appendChild(arena);
+
+    slotsRow.appendChild(middle);
+
+    const slotB = document.createElement('button');
+    slotB.type = 'button';
+    slotB.id = 'coin-toss-slot-b';
+    slotB.className = 'coin-toss-slot';
+    slotB.setAttribute('aria-label', 'Coin toss slot B');
+    slotB.innerHTML = getInsertCoinMarkup();
+    slotB.addEventListener('click', () => {
+        if (isShuffleActive || isCoinTossing) return;
+        if (coinTossSlotB) clearCoinTossSlot('b');
+    });
+    slotsRow.appendChild(slotB);
+
+    section.appendChild(slotsRow);
+
+    const candidatesLabel = document.createElement('div');
+    candidatesLabel.className = 'coin-toss-candidates-label';
+    candidatesLabel.textContent = 'AVAILABLE PICKS';
+    section.appendChild(candidatesLabel);
+
+    const candidates = document.createElement('div');
+    candidates.id = 'coin-toss-candidates';
+    section.appendChild(candidates);
+
+    const searchRow = document.createElement('div');
+    searchRow.id = 'coin-toss-search-row';
+
+    ['a', 'b'].forEach((slotKey) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'coin-toss-search-wrap';
+
+        const searchLabel = document.createElement('label');
+        searchLabel.className = 'coin-toss-search-label';
+        searchLabel.textContent = slotKey === 'a' ? 'Search A' : 'Search B';
+        searchLabel.setAttribute('for', `coin-toss-search-${slotKey}`);
+        wrap.appendChild(searchLabel);
+
+        const input = document.createElement('input');
+        input.type = 'search';
+        input.id = `coin-toss-search-${slotKey}`;
+        input.className = 'coin-toss-search-input';
+        input.placeholder = 'Title (Year)';
+        input.autocomplete = 'off';
+        input.addEventListener('input', () => handleCoinTossManualSearch(slotKey));
+        wrap.appendChild(input);
+
+        const dropdown = document.createElement('div');
+        dropdown.id = `coin-toss-dropdown-${slotKey}`;
+        dropdown.className = 'coin-toss-dropdown';
+        dropdown.hidden = true;
+        wrap.appendChild(dropdown);
+
+        searchRow.appendChild(wrap);
+    });
+
+    section.appendChild(searchRow);
+
+    const actionRow = document.createElement('div');
+    actionRow.id = 'coin-toss-actions';
+
+    const flipBtn = document.createElement('button');
+    flipBtn.type = 'button';
+    flipBtn.id = 'coin-toss-flip-btn';
+    flipBtn.className = 'coin-toss-action-btn';
+    flipBtn.textContent = 'FLIP COIN';
+    flipBtn.disabled = true;
+    flipBtn.addEventListener('mouseenter', showCoinTossPreview);
+    flipBtn.addEventListener('mouseleave', hideCoinTossPreviewIfUnpinned);
+    flipBtn.addEventListener('click', () => { void runCoinToss(); });
+    actionRow.appendChild(flipBtn);
+
+    const shuffleBtn = document.createElement('button');
+    shuffleBtn.type = 'button';
+    shuffleBtn.id = 'ticket-shuffle-start-btn';
+    shuffleBtn.className = 'coin-toss-action-btn';
+    shuffleBtn.textContent = 'SHUFFLE';
+    shuffleBtn.disabled = true;
+    shuffleBtn.addEventListener('mouseenter', showShufflePreview);
+    shuffleBtn.addEventListener('mouseleave', hideMiddlePreviewIfUnpinned);
+    shuffleBtn.addEventListener('click', () => { void startTicketShuffle(); });
+    actionRow.appendChild(shuffleBtn);
+
+    section.appendChild(actionRow);
+
+    const status = document.createElement('div');
+    status.id = 'coin-toss-status';
+    status.setAttribute('aria-live', 'polite');
+    section.appendChild(status);
+
+    filtersPanel.appendChild(section);
+    refreshCoinTossCandidatesUI();
+    updateDecisionButtonStates();
+}
+
 const ticketStubsPrintClipPath = 'sounds/ticket-stubs-receipt-print.mp3';
 const ticketStubsShredClipPath = 'sounds/ticket-stubs-shred.mp3';
 const ticketStubsPrintDurationFallbackMs = 1590;
@@ -2748,16 +5527,46 @@ function copyTextFallback(text) {
     helper.remove();
 }
 
+function minimizeKeeperDeck() {
+    if (keeperPicks.length === 0) return;
+    isKeeperDeckMinimized = true;
+    updateKeeperPicksUI(false);
+}
+
+function expandKeeperDeck() {
+    if (keeperPicks.length === 0) return;
+    isKeeperDeckMinimized = false;
+    updateKeeperPicksUI(false);
+}
+
+function toggleKeeperDeck() {
+    if (keeperPicks.length === 0) return;
+    isKeeperDeckMinimized = !isKeeperDeckMinimized;
+    updateKeeperPicksUI(false);
+}
+
 function syncKeeperDeckTier(activeCount) {
     const keeperStage = document.getElementById('keeper-stage');
     if (!keeperStage) return { showRuntime: false };
 
-    const showFull = activeCount === 3 && isKeeperDeckFull();
+    const showExpandedLayout = activeCount > 0
+        && !isKeeperDeckMinimized
+        && keeperPicks.length === activeCount;
+    const showFullFeatures = activeCount === 3 && isKeeperDeckFull() && !isKeeperDeckMinimized;
     keeperStage.classList.toggle('visible', activeCount > 0);
-    keeperStage.classList.toggle('full', showFull);
-    syncTicketStubsUI(showFull);
+    keeperStage.classList.toggle('full', showExpandedLayout);
+    syncTicketStubsUI(showFullFeatures);
 
-    const showRuntime = showFull;
+    const hitbox = document.getElementById('keeper-header-hitbox');
+    if (hitbox) {
+        hitbox.hidden = activeCount === 0;
+        hitbox.setAttribute(
+            'aria-label',
+            isKeeperDeckMinimized ? 'Expand Keeper Flicks' : 'Minimize Keeper Flicks'
+        );
+    }
+
+    const showRuntime = showFullFeatures;
     const totalEl = document.getElementById('keeper-total-runtime');
     if (totalEl) {
         const totalMinutes = showRuntime ? getTotalKeeperRuntimeMinutes(keeperPicks) : null;
@@ -2773,7 +5582,7 @@ function syncKeeperDeckTier(activeCount) {
     return { showRuntime };
 }
 
-function renderKeeperSlots({ animateLatest = false, showRuntime = false } = {}) {
+function renderKeeperSlots({ animateLatest = false, animateSlotIndex = -1, showRuntime = false } = {}) {
     const activeCount = keeperPicks.length;
     const keeperItems = document.querySelectorAll('#keeper-slots .keeper-item');
     keeperItems.forEach((item, index) => {
@@ -2782,10 +5591,12 @@ function renderKeeperSlots({ animateLatest = false, showRuntime = false } = {}) 
 
         const pick = keeperPicks[index];
         if (pick) {
+            const shouldAnimate = (animateLatest && index === keeperPicks.length - 1)
+                || index === animateSlotIndex;
             renderKeeperMovieSlot(
                 item,
                 pick,
-                animateLatest && index === keeperPicks.length - 1,
+                shouldAnimate,
                 showRuntime
             );
         } else if (activeCount > 0 && index >= activeCount) {
@@ -2795,16 +5606,33 @@ function renderKeeperSlots({ animateLatest = false, showRuntime = false } = {}) 
     });
 }
 
-function updateKeeperPicksUI(animateLatest = false) {
+function updateKeeperPicksUI(animateOrOptions = false) {
     const keeperStage = document.getElementById('keeper-stage');
     if (!keeperStage) return;
 
+    const animateLatest = animateOrOptions === true;
+    const animateSlotIndex = typeof animateOrOptions === 'object' && animateOrOptions != null
+        && Number.isInteger(animateOrOptions.animateSlotIndex)
+        ? animateOrOptions.animateSlotIndex
+        : -1;
+    const shouldAnimateSlot = animateSlotIndex >= 0;
+
     const activeCount = keeperPicks.length;
+    if (activeCount === 0) {
+        isKeeperDeckMinimized = false;
+    } else if (animateLatest && activeCount === 3) {
+        isKeeperDeckMinimized = false;
+    } else if (shouldAnimateSlot && activeCount === 3) {
+        isKeeperDeckMinimized = false;
+    } else if (activeCount < 3 && (animateLatest || isDiscardingKeeper)) {
+        isKeeperDeckMinimized = true;
+    }
+
     const deferFullReveal = animateLatest && activeCount === 3;
     const tierCount = deferFullReveal ? 2 : activeCount;
     const { showRuntime } = syncKeeperDeckTier(tierCount);
 
-    renderKeeperSlots({ animateLatest, showRuntime });
+    renderKeeperSlots({ animateLatest, animateSlotIndex, showRuntime });
 
     if (deferFullReveal) {
         const generation = keeperUiGeneration;
@@ -2886,6 +5714,7 @@ function pickRandomKeeperEntries(count = 3) {
 function populateKeeperPicksDevShortcut() {
     keeperUiGeneration += 1;
     isDiscardingKeeper = false;
+    isKeeperDeckMinimized = false;
     keeperPicks = pickRandomKeeperEntries(3);
     keeperPicks.forEach(applyKeeperPosterFromMetadata);
     updateKeeperPicksUI(false);
@@ -2959,6 +5788,8 @@ function buildKeeperUI() {
     const keeperDeck = document.createElement('div');
     keeperDeck.id = 'keeper-deck';
     keeperDeck.innerHTML = `
+        <button type="button" id="keeper-header-hitbox"
+                aria-label="Expand Keeper Flicks" hidden></button>
         <div id="keeper-header">
             <span id="keeper-total-runtime" hidden></span>
         </div>
@@ -2968,6 +5799,8 @@ function buildKeeperUI() {
             <li class="keeper-item empty"></li>
         </ul>
     `;
+    keeperDeck.querySelector('#keeper-header-hitbox')
+        ?.addEventListener('click', toggleKeeperDeck);
     const keeperSlots = keeperDeck.querySelector('#keeper-slots');
     keeperSlots.addEventListener('dblclick', (event) => {
         const poster = event.target.closest('.keeper-poster');
@@ -3089,6 +5922,8 @@ buildKeeperUI();
 
 buildAddMovieUI();
 
+buildCoinTossUI();
+
 updateKeeperPicksUI();
 
 updateAudioControlButtons();
@@ -3100,7 +5935,28 @@ void loadSpinButtonBuffer();
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
+        if (isCoinTossing) {
+            cancelActiveCoinToss();
+            event.preventDefault();
+            return;
+        }
+        if (isShuffleActive) {
+            cancelActiveTicketShuffle();
+            event.preventDefault();
+            return;
+        }
+
         stopCabinetAudio();
+
+        const keeperExpanded = keeperPicks.length > 0 && !isKeeperDeckMinimized;
+        const ticketStubsActive = isTicketStubsPanelOpen() || isTicketStubsPanelVisible();
+
+        if (ticketStubsActive) {
+            void closeTicketStubsPanel();
+        }
+        if (keeperExpanded) {
+            minimizeKeeperDeck();
+        }
         return;
     }
 

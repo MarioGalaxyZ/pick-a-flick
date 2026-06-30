@@ -37,7 +37,8 @@ export function normalizePartNumbersForOmdb(title) {
 
 /** Cabinet listing -> OMDb search title when they differ */
 export const titleAliasesByListing = {
-    "Bill & Ted's Face The Music (2020)": 'Bill & Ted Face the Music'
+    "Bill & Ted's Face The Music (2020)": 'Bill & Ted Face the Music',
+    "Walk the Line EXTENDED (2005)": 'Walk the Line'
 };
 
 export function getOmdbSearchTitle(listing) {
