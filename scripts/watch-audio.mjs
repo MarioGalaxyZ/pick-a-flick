@@ -9,8 +9,7 @@ const DEBOUNCE_MS = 750;
 const AUDIO_EXTENSIONS = new Set(['.mp3', '.wav']);
 
 const watchDirs = [
-    path.join(projectRoot, 'win_sounds'),
-    path.join(projectRoot, 'sounds')
+    path.join(projectRoot, 'audio')
 ];
 
 const ignoredBasenames = new Set([
@@ -25,6 +24,21 @@ let refreshQueued = false;
 
 function runRefresh() {
     refreshInProgress = true;
+
+    const syncPathsResult = spawnSync(process.execPath, [path.join(__dirname, 'sync-audio-paths.mjs')], {
+        cwd: projectRoot,
+        stdio: 'inherit'
+    });
+
+    if (syncPathsResult.status !== 0) {
+        console.error('sync-audio-paths.mjs failed.');
+        refreshInProgress = false;
+        if (refreshQueued) {
+            refreshQueued = false;
+            scheduleRefresh();
+        }
+        return;
+    }
 
     const syncResult = spawnSync(process.execPath, [path.join(__dirname, 'sync-win-clips-manifest.mjs')], {
         cwd: projectRoot,
@@ -98,8 +112,8 @@ function watchDirectory(dirPath) {
     });
 }
 
-console.log('Watching win_sounds/ and sounds/ for audio changes...');
-console.log('Drop clips into category folders, then reload the browser when updated.');
+console.log('Watching audio/ for audio changes...');
+console.log('Drop clips into audio/win/<category>/, then reload the browser when updated.');
 console.log('Press Ctrl+C to stop.\n');
 
 watchDirs.forEach(watchDirectory);

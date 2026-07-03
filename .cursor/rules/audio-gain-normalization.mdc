@@ -2,7 +2,7 @@
 
 description: Re-scan audio gain map when win or intro clips are added or changed
 
-globs: main.js,win_sounds/**,sounds/**,audio-gain-map.js,win-clips-manifest.js
+globs: main.js,audio/**,audio-gain-map.js,win-clips-manifest.js,audio-paths.js
 
 alwaysApply: false
 
@@ -18,7 +18,11 @@ Victory and intro clips use per-file gains in `audio-gain-map.js` (target -16 LU
 
 
 
-Win clip rosters are auto-generated in `win-clips-manifest.js` from files in `win_sounds/<category>/`.
+Win clip rosters are auto-generated in `win-clips-manifest.js` from files in `audio/win/<category>/`.
+
+
+
+UI clip paths live in `scripts/audio-paths.mjs` and are emitted to `audio-paths.js`.
 
 
 
@@ -34,9 +38,9 @@ After any change that adds, removes, or renames clips:
 
 
 
-- Files under `win_sounds/<category>/` or `sounds/`
+- Files under `audio/win/<category>/` or `audio/ui/`
 
-- `spinIntroClips` in `main.js`
+- Paths in `scripts/audio-paths.mjs`
 
 
 
@@ -70,6 +74,10 @@ Do not skip this step unless the user explicitly asks to skip normalization.
 
 
 
+Drafts can also live in `audio/_staging/` (excluded from gain analysis and the victory roster).
+
+
+
 ## Refresh options
 
 
@@ -87,4 +95,3 @@ Do not skip this step unless the user explicitly asks to skip normalization.
 
 
 `getNormalizedVolume()` in `main.js` resolves paths and looks up `window.audioGainMap`.
-

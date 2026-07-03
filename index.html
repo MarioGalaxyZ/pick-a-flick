@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
-    <link rel="preload" href="sounds/spin-projector-button-push.mp3" as="fetch" type="audio/mpeg" crossorigin>
+    <link rel="preload" href="audio/ui/spin/spin-projector-button-push.mp3" as="fetch" type="audio/mpeg" crossorigin>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -51,6 +51,7 @@
                 <div id="result-meta" class="result-line"></div>
                 <div id="result-genre" class="result-line"></div>
                 <div id="result-plot" class="result-line"></div>
+                <button type="button" id="mark-watched-btn" class="mark-watched-btn" hidden>Mark watched</button>
             </div>
         </div>
 
@@ -110,13 +111,36 @@
             </div>
             <div id="decade-filter-options"></div>
         </div>
+
+        <div id="watched-filter">
+            <div id="watched-filter-label">WATCHED FILTER</div>
+            <div id="watched-filter-controls">
+                <label class="watched-filter-option">
+                    <input type="checkbox" id="include-watched-checkbox">
+                    Include watched
+                </label>
+            </div>
+            <div id="watched-filter-count" aria-live="polite">0 watched</div>
+        </div>
+    </div>
+
+    <div id="watched-flicks-panel">
+        <button type="button" id="watched-flicks-toggle" aria-expanded="false">WATCHED FLICKS</button>
+        <div id="watched-flicks-content" hidden>
+            <ul id="watched-flicks-list"></ul>
+            <p id="watched-flicks-empty">No watched flicks yet.</p>
+            <p id="watched-save-status" aria-live="polite"></p>
+        </div>
     </div>
     </div>
 
     <script src="movie-metadata.js"></script>
+    <script src="watched-movies.js"></script>
+    <script src="audio-paths.js"></script>
     <script src="win-clips-manifest.js"></script>
     <script src="audio-gain-map.js"></script>
     <script src="coin-flip-blip-map.js"></script>
+    <script src="shuffle-golden-ticket-map.js"></script>
     <script src="main.js"></script>
 </body>
 </html>

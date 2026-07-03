@@ -5,7 +5,7 @@ import { spawnSync } from 'child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
-const CLIP_REL = 'win_sounds/NEW/coin flip 1.mp3';
+const CLIP_REL = 'audio/ui/coin-flip/coin-flip-1.mp3';
 const CLIP_PATH = path.join(projectRoot, CLIP_REL);
 const OUT_PATH = path.join(projectRoot, 'coin-flip-blip-map.js');
 const LOCAL_FFMPEG = path.join(projectRoot, 'node_modules', 'ffmpeg-static', 'ffmpeg.exe');

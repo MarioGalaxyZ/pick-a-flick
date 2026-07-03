@@ -1,6 +1,6 @@
-# Sync win clip roster and analyze loudness (regenerates win-clips-manifest.js + audio-gain-map.js).
+# Sync win clip roster and analyze loudness (regenerates audio-paths.js, win-clips-manifest.js + audio-gain-map.js).
 #
-# Run this after adding new clips to win_sounds/<category>/ or sounds/:
+# Run this after adding new clips to audio/win/<category>/ or audio/ui/:
 #   .\scripts\analyze-audio-gains.ps1
 # Or: npm run refresh-audio
 #
@@ -47,6 +47,11 @@ try {
         }
     }
 
+    & $node (Join-Path $PSScriptRoot 'sync-audio-paths.mjs')
+    if ($LASTEXITCODE -ne 0) {
+        throw "sync-audio-paths.mjs failed with exit code $LASTEXITCODE"
+    }
+
     & $node (Join-Path $PSScriptRoot 'sync-win-clips-manifest.mjs')
     if ($LASTEXITCODE -ne 0) {
         throw "sync-win-clips-manifest.mjs failed with exit code $LASTEXITCODE"
@@ -58,7 +63,7 @@ try {
     }
 
     Write-Host ''
-    Write-Host 'Done. win-clips-manifest.js and audio-gain-map.js are ready.'
+    Write-Host 'Done. audio-paths.js, win-clips-manifest.js and audio-gain-map.js are ready.'
 } catch {
     Write-Host ''
     Write-Host $_.Exception.Message -ForegroundColor Red

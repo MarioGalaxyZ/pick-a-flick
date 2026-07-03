@@ -1,7 +1,7 @@
 @echo off
 cd /d "%~dp0"
 
-echo Watching win_sounds/ and sounds/ — drop clips and reload the browser when updated.
+echo Watching audio/ — drop clips and reload the browser when updated.
 echo Press Ctrl+C to stop watching.
 echo.
 

@@ -3,14 +3,16 @@
   "private": true,
   "description": "Dev tooling for Pick A Flick",
   "scripts": {
+    "sync-audio-paths": "node scripts/sync-audio-paths.mjs",
     "sync-win-clips": "node scripts/sync-win-clips-manifest.mjs",
     "analyze-audio-gains": "node scripts/analyze-audio-gains.mjs",
-    "refresh-audio": "node scripts/sync-win-clips-manifest.mjs && node scripts/analyze-audio-gains.mjs",
+    "refresh-audio": "node scripts/sync-audio-paths.mjs && node scripts/sync-win-clips-manifest.mjs && node scripts/analyze-audio-gains.mjs && node scripts/analyze-shuffle-golden-ticket.mjs",
     "watch-audio": "node scripts/watch-audio.mjs",
     "generate-metadata": "node scripts/generate-movie-metadata.mjs",
     "generate-metadata:ps": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/generate-movie-metadata.ps1",
     "bootstrap-metadata": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/bootstrap-movie-metadata.ps1",
-    "analyze-coin-flips": "node scripts/analyze-coin-flip-blips.mjs"
+    "analyze-coin-flips": "node scripts/analyze-coin-flip-blips.mjs",
+    "analyze-shuffle-golden-ticket": "node scripts/analyze-shuffle-golden-ticket.mjs"
   },
   "devDependencies": {
     "ffmpeg-static": "^5.2.0"

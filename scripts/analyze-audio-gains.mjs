@@ -102,15 +102,19 @@ async function ensureFfmpeg() {
     return LOCAL_FFMPEG_PATH;
 }
 
+function shouldSkipDirectory(name) {
+    return name.startsWith('_');
+}
+
 function collectAudioFiles(dir, files = []) {
     if (!fs.existsSync(dir)) return files;
 
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-        const fullPath = path.join(dir, entry.name);
         if (entry.isDirectory()) {
-            collectAudioFiles(fullPath, files);
+            if (shouldSkipDirectory(entry.name)) continue;
+            collectAudioFiles(path.join(dir, entry.name), files);
         } else if (AUDIO_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
-            files.push(fullPath);
+            files.push(path.join(dir, entry.name));
         }
     }
 
@@ -147,7 +151,11 @@ function measureLoudness(ffmpegPath, filePath) {
     const stats = JSON.parse(jsonMatch[0]);
     const measuredInput = parseFloat(stats.input_i);
     if (!Number.isFinite(measuredInput)) {
-        throw new Error('Missing input_i in loudnorm output');
+        // ffmpeg reports "-inf" for silent/near-silent clips
+        if (stats.input_i === '-inf' || measuredInput === -Infinity) {
+            return -100;
+        }
+        throw new Error(`Invalid input_i in loudnorm output: ${stats.input_i}`);
     }
 
     return measuredInput;
@@ -195,17 +203,11 @@ function isCacheHit(cache, relativePath, stats) {
 
 async function main() {
     const ffmpegPath = await ensureFfmpeg();
-    const audioDirs = [
-        path.join(projectRoot, 'win_sounds'),
-        path.join(projectRoot, 'sounds')
-    ];
-
-    const audioFiles = audioDirs
-        .flatMap((dir) => collectAudioFiles(dir))
-        .sort((a, b) => a.localeCompare(b));
+    const audioRoot = path.join(projectRoot, 'audio');
+    const audioFiles = collectAudioFiles(audioRoot).sort((a, b) => a.localeCompare(b));
 
     if (audioFiles.length === 0) {
-        console.error('No audio files found under win_sounds/ or sounds/.');
+        console.error('No audio files found under audio/.');
         process.exit(1);
     }
 

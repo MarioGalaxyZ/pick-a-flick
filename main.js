@@ -20,13 +20,11 @@
             "Atlantis: The Lost Empire (2001)", 
             "Osmosis Jones (2001)", 
             "Over the Hedge (2006)", 
-            "Shrek (2001)", 
             "The Croods (2013)", 
             "The Curse of the Were-Rabbit (2005)", 
             "The Last Unicorn (1982)", 
             "The Rescuers (1977)", 
             "The Secret of NIMH (1982)", 
-            "The Spongebob Squarepants Movie (2004)",
             "The Land Before Time (1988)",
             "A Scanner Darkly (2006)",
             "Balto (1995)",
@@ -64,15 +62,20 @@
         ],
         
         "CARREY'S CHARACTERS 🎭": [
+            "Batman Forever (1995)",
             "Dumb and Dumber To (2014)", 
             "Earth Girls Are Easy (1988)", 
             "Fun with Dick and Jane (2005)", 
+            "Horton Hears a Who! (2008)",
             "Liar Liar (1997)", 
+            "Me, Myself & Irene (2000)",
             "Mr. Popper's Penguins (2011)", 
+            "The Bad Batch (2016)",
+            "The Incredible Burt Wonderstone (2013)",
             "The Majestic (2001)",
             "The Number 23 (2007)",
-            "Dark Crimes (2018)",
-            "Jim & Andy: The Great Beyond (2017)"
+            "Yes Man (2008)",
+            "Dark Crimes (2018)"
         ],
         
         "KAUFMAN'S KORNER 🌞": [
@@ -84,15 +87,16 @@
         ],
         
         "MOVIES TO FALL ASLEEP TO 💤": [
-            "28 Years Later (2025)",
             "After Hours (1985)",
             "Brazil (1985)",
             "Evil Dead II (1987)",
             "Heretic (2024)",
             "Jacob's Ladder (1990)",
             "Natural Born Killers (1994)",
+            "Obsession (2025)",
             "Possessor (2020)",
             "Predator (1987)",
+            "Sicario (2015)",
             "The Sixth Sense (1999)",
             "The Sweet East (2023)",
             "Green Room (2015)",
@@ -103,7 +107,6 @@
             "20,000 Days on Earth (2014)", 
             "24 Hour Party People (2002)", 
             "A Complete Unknown (2024)", 
-            "Amadeus (1984)", 
             "Bohemian Rhapsody (2018)", 
             "CBGB (2013)", 
             "Head (1968)", 
@@ -144,13 +147,11 @@
             "Kung Fu Panda 3 (2016)",
             "Kung Fu Panda 4 (2024)",
             "Heavier Trip (2024)",
-            "Crank: High Voltage (2009)",
-            "28 Years Later: The Bone Temple (2026)"
+            "Crank: High Voltage (2009)"
         ],
         
         "WACKY WAY 🤪": [
             "Batteries Not Included (1987)", 
-            "Big Trouble in Little China (1986)", 
             "Braindead / Dead Alive (1992)", 
             "Death Race 2000 (1975)", 
             "Death to Smoochy (2002)", 
@@ -162,6 +163,7 @@
             "Good Luck Have Fun Don't Die (2025)", 
             "Greener Grass (2019)",
             "Howard the Duck (1986)", 
+            "Hundreds of Beavers (2022)",
             "Idle Hands (1999)", 
             "Innerspace (1987)", 
             "Jumanji (1995)", 
@@ -203,7 +205,6 @@
             "Used Cars (1980)",
             "Warm Bodies (2013)",
             "Speed Racer (2008)",
-            "Zombeavers (2014)",
             "Mega Time Squad (2019)",
             "Attack of the Killer Tomatoes (1978)",
             "The Man with Two Brains (1983)",
@@ -238,7 +239,7 @@
             "Parasite (2019)",
             "Shaolin Soccer (2001)", "A Town Called Panic (2009)", "Heavy Trip (2018)",
             "Peppermint Candy (1999)", "City of God (2002)", "No Other Choice (2025)",
-            "Train to Busan (2016)", "Another Round (2020)", "Save the Green Planet! (2003)",
+            "Another Round (2020)", "Save the Green Planet! (2003)",
             "Alienoid (2022)", "Crouching Tiger Hidden Dragon (2000)", "La Haine (1995)",
             "Delicatessen (1991)",
             "Kung Fu Yoga (2017)"
@@ -249,6 +250,7 @@
             "3:10 to Yuma (2007)", "Slow West (2015)", "Man of the West (1958)",
             "The Assassination of Jesse James by the Coward Robert Ford (2007)",
             "Hell or High Water (2016)",
+            "The Last Stop in Yuma County (2024)",
             "The Quick and the Dead (1995)",
             "The Revenant (2015)",
             "The Ballad of Buster Scruggs (2018)"
@@ -360,9 +362,140 @@
         return activeDecades.includes(decade);
     }
 
+    let includeWatchedMovies = false;
+    let watchedMovieSet = new Set();
+
+    function initWatchedMovies() {
+        const listings = Array.isArray(window.watchedMovieListings)
+            ? window.watchedMovieListings
+            : [];
+        watchedMovieSet = new Set(
+            listings.filter((item) => typeof item === 'string' && item.trim())
+        );
+    }
+
+    function isMovieWatched(listing) {
+        return watchedMovieSet.has(listing);
+    }
+
+    function moviePassesWatchedFilter(listing) {
+        if (includeWatchedMovies) return true;
+        return !isMovieWatched(listing);
+    }
+
+    function getWatchedMoviesInCatalog() {
+        const inCatalog = [];
+        for (const listing of watchedMovieSet) {
+            for (const movies of Object.values(movieDatabase)) {
+                if (movies.includes(listing)) {
+                    inCatalog.push(listing);
+                    break;
+                }
+            }
+        }
+        return inCatalog.sort((a, b) => a.localeCompare(b));
+    }
+
+    function findListingCategory(listing) {
+        for (const [category, movies] of Object.entries(movieDatabase)) {
+            if (movies.includes(listing)) return category;
+        }
+        return null;
+    }
+
+    function buildWatchedMoviesFileContent() {
+        const sorted = [...watchedMovieSet].sort((a, b) => a.localeCompare(b));
+        const lines = sorted.map(
+            (listing) => `    "${listing.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}",`
+        );
+        return `// Replace watched-movies.js in your Pick A Flick folder with this file.
+window.watchedMovieListings = [
+${lines.join('\n')}
+];
+`;
+    }
+
+    function showWatchedSaveStatus(message) {
+        const status = document.getElementById('watched-save-status');
+        if (!status) return;
+        status.textContent = message;
+        if (message) {
+            window.setTimeout(() => {
+                if (status.textContent === message) {
+                    status.textContent = '';
+                }
+            }, 5000);
+        }
+    }
+
+    function downloadWatchedMoviesFile() {
+        const content = buildWatchedMoviesFileContent();
+        const blob = new Blob([content], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'watched-movies.js';
+        link.click();
+        URL.revokeObjectURL(url);
+        showWatchedSaveStatus('Save downloaded file to your Pick A Flick folder to keep changes.');
+    }
+
+    function persistWatchedMovies() {
+        window.watchedMovieListings = [...watchedMovieSet];
+        downloadWatchedMoviesFile();
+    }
+
+    function markMoviesAsWatched(listings) {
+        let changed = false;
+        listings.forEach((listing) => {
+            if (!listing || watchedMovieSet.has(listing)) return;
+            watchedMovieSet.add(listing);
+            changed = true;
+        });
+        if (!changed) return;
+        updateWatchedFilterUI();
+        resetMovieSelectionPools();
+        updateSpinBlockerUI();
+        persistWatchedMovies();
+    }
+
+    function unmarkMovieAsWatched(listing) {
+        if (!watchedMovieSet.has(listing)) return;
+        watchedMovieSet.delete(listing);
+        updateWatchedFilterUI();
+        resetMovieSelectionPools();
+        updateSpinBlockerUI();
+        persistWatchedMovies();
+    }
+
+    function setIncludeWatchedMovies(include) {
+        includeWatchedMovies = include;
+        const checkbox = document.getElementById('include-watched-checkbox');
+        if (checkbox) checkbox.checked = include;
+        resetMovieSelectionPools();
+        updateSpinBlockerUI();
+    }
+
+    function resetWatchedFilter() {
+        setIncludeWatchedMovies(false);
+    }
+
+    function buildWatchedFilterUI() {
+        const checkbox = document.getElementById('include-watched-checkbox');
+        if (!checkbox) return;
+        checkbox.checked = includeWatchedMovies;
+        checkbox.addEventListener('change', () => {
+            setIncludeWatchedMovies(checkbox.checked);
+        });
+        updateWatchedFilterUI();
+    }
+
     function getEligibleMovies(category) {
         return movieDatabase[category].filter(
-            (listing) => moviePassesRuntimeFilter(listing) && moviePassesDecadeFilter(listing)
+            (listing) =>
+                moviePassesRuntimeFilter(listing) &&
+                moviePassesDecadeFilter(listing) &&
+                moviePassesWatchedFilter(listing)
         );
     }
 
@@ -498,6 +631,7 @@
         toggleAllCategories(true);
         clearRuntimeFilter();
         toggleAllDecades(true);
+        resetWatchedFilter();
     }
 
     function buildDecadeFilterUI() {
@@ -579,7 +713,7 @@
 
     let currentKeeperAudios = [];
 
-    const spinButtonClipPath = 'sounds/spin-projector-button-push.mp3';
+    const spinButtonClipPath = window.uiAudioPaths.spinButton;
     let spinButtonBuffer = null;
     let spinButtonBufferPromise = null;
     let spinButtonFallbackAudio = null;
@@ -685,16 +819,7 @@
     function playKeeperSound(keeperNumber) {
         stopKeeperAudio();
 
-        const keeperSoundSets = {
-            1: ['sounds/keeper-kaching.mp3'],
-            2: ['sounds/keeper-money-counting.mp3'],
-            3: [
-                'sounds/keeper-money-counting.mp3',
-                'sounds/keeper-kaching.mp3',
-                'sounds/keeper-jackpot-coins.mp3',
-                'sounds/keeper-casino-counter.wav'
-            ]
-        };
+        const keeperSoundSets = window.uiAudioPaths.keeperClipsBySlotCount;
 
         (keeperSoundSets[keeperNumber] || keeperSoundSets[1]).forEach(playKeeperClip);
     }
@@ -838,15 +963,7 @@
 
     // --- ARCADE AUDIO SETTINGS ---
 
-    const spinIntroClips = [
-
-        "sounds/output.wav", "sounds/output 2.wav", "sounds/output 3.wav", "sounds/output 4.wav",
-
-        "sounds/output 5.wav", "sounds/output 7.wav",
-
-        "sounds/output 19.wav", "sounds/output 21.wav", "sounds/output 29.wav"
-
-    ];
+    const spinIntroClips = window.uiAudioPaths.spinIntroClips;
 
 
 
@@ -1660,6 +1777,7 @@ function revealMovieResult(category, chosenMovie, categoryEmoji) {
     lastRevealedListing = chosenMovie;
     lastRevealedLabel = `${categoryEmoji} ${chosenMovie}`;
     refreshCoinTossCandidatesUI();
+    updateResultMarkWatchedButton();
 }
 
 
@@ -1821,21 +1939,98 @@ function getKeeperCategoryEmoji(label) {
     return match ? match[1].trim() : '';
 }
 
-function buildTicketStubsPrompt() {
-    const bullets = keeperPicks
-        .map((pick) => `- "${getKeeperListingLabel(pick.label)}"`)
-        .join('\n');
+function updateWatchedFilterUI() {
+    const countEl = document.getElementById('watched-filter-count');
+    if (countEl) {
+        const count = getWatchedMoviesInCatalog().length;
+        countEl.textContent = `${count} watched`;
+    }
+    updateWatchedFlicksListUI();
+    updateResultMarkWatchedButton();
+}
 
-    return `Remove these movies from the movieDatabase in main.js — I've already watched them:
+function updateWatchedFlicksListUI() {
+    const list = document.getElementById('watched-flicks-list');
+    const empty = document.getElementById('watched-flicks-empty');
+    if (!list || !empty) return;
 
-${bullets}
+    list.innerHTML = '';
+    const watched = getWatchedMoviesInCatalog();
 
-For each title:
-1. Find it in movieDatabase and remove the exact listing string (including year).
-2. Also remove its entry from movie-metadata.js if present (regenerate with npm run generate-metadata).
-3. Don't change anything else.
+    empty.hidden = watched.length > 0;
+    list.hidden = watched.length === 0;
 
-Only edit main.js (the live app). Don't update Pick-A-Flick - Cursor.html unless I ask.`;
+    watched.forEach((listing) => {
+        const li = document.createElement('li');
+        li.className = 'watched-flicks-item';
+
+        const category = findListingCategory(listing);
+        const emoji = category ? category.split(' ').pop() : '';
+        const title = document.createElement('span');
+        title.className = 'watched-flicks-title';
+        title.textContent = emoji ? `${emoji} ${listing}` : listing;
+
+        const returnBtn = document.createElement('button');
+        returnBtn.type = 'button';
+        returnBtn.className = 'watched-flicks-return-btn';
+        returnBtn.textContent = 'Return to rotation';
+        returnBtn.addEventListener('click', () => unmarkMovieAsWatched(listing));
+
+        li.appendChild(title);
+        li.appendChild(returnBtn);
+        list.appendChild(li);
+    });
+}
+
+function buildWatchedFlicksPanelUI() {
+    const toggle = document.getElementById('watched-flicks-toggle');
+    const content = document.getElementById('watched-flicks-content');
+    if (!toggle || !content) return;
+
+    toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!expanded));
+        content.hidden = expanded;
+    });
+
+    updateWatchedFlicksListUI();
+}
+
+function updateResultMarkWatchedButton() {
+    const btn = document.getElementById('mark-watched-btn');
+    if (!btn) return;
+
+    if (!hasSelectedMovie || !lastRevealedListing) {
+        btn.hidden = true;
+        return;
+    }
+
+    btn.hidden = false;
+    const watched = isMovieWatched(lastRevealedListing);
+    btn.textContent = watched ? 'Already watched' : 'Mark watched';
+    btn.disabled = watched;
+}
+
+function markCurrentResultAsWatched() {
+    if (!lastRevealedListing || isMovieWatched(lastRevealedListing)) return;
+    markMoviesAsWatched([lastRevealedListing]);
+}
+
+async function markTicketStubsAsWatched() {
+    if (keeperPicks.length !== 3) return;
+
+    const listings = keeperPicks.map((pick) => getKeeperListingLabel(pick.label));
+    markMoviesAsWatched(listings);
+
+    const copyStatus = document.getElementById('ticket-stubs-copy-status');
+    if (copyStatus) copyStatus.textContent = 'Marked as watched!';
+
+    keeperUiGeneration += 1;
+    keeperPicks = [];
+    updateKeeperPicksUI(false);
+    updateKeeperButtonState();
+
+    await closeTicketStubsPanel();
 }
 
 function resolveCategorySelect(categoryKey) {
@@ -2128,6 +2323,355 @@ function formatBatchWarnings(warnings) {
     return `(Skipped ${skipped} duplicate${skipped === 1 ? '' : 's'}.)`;
 }
 
+function findExactListingInCatalog(query) {
+    const lower = query.trim().toLowerCase();
+    for (const movies of Object.values(movieDatabase)) {
+        for (const listing of movies) {
+            if (listing.toLowerCase() === lower) {
+                return listing;
+            }
+        }
+    }
+    return null;
+}
+
+function resolveWatchedImportLine(rawLine) {
+    const trimmed = rawLine.trim();
+    if (!trimmed) {
+        return { skip: true };
+    }
+
+    const query = getKeeperListingLabel(trimmed);
+    if (!query) {
+        return { skip: true };
+    }
+
+    let listing = findExactListingInCatalog(query);
+    let warning = null;
+
+    if (!listing) {
+        const { matches } = findMovieListingInDatabase(query);
+        const listings = [...new Set(
+            matches
+                .map((match) => match.listing || getKeeperListingLabel(match.label))
+                .filter(Boolean)
+        )];
+
+        if (listings.length === 0) {
+            return { error: 'Not found in catalog.' };
+        }
+        if (listings.length > 1) {
+            const preview = listings.slice(0, 3).map((title) => `"${title}"`).join(', ');
+            const suffix = listings.length > 3 ? ', ...' : '';
+            return { error: `Ambiguous — ${listings.length} matches: ${preview}${suffix}` };
+        }
+
+        listing = listings[0];
+        if (query.toLowerCase() !== listing.toLowerCase()) {
+            warning = `Fuzzy match: "${listing}"`;
+        }
+    }
+
+    if (isMovieWatched(listing)) {
+        return { listing, warning: 'Already watched.', skipResolved: true };
+    }
+
+    return { listing, warning };
+}
+
+function parseBulkWatchedInput(raw) {
+    const lines = raw.split(/\r?\n/);
+    const resolved = [];
+    const errors = [];
+    const warnings = [];
+    const seenInBatch = new Set();
+
+    lines.forEach((line, index) => {
+        const lineNum = index + 1;
+        const trimmed = line.trim();
+        if (!trimmed) return;
+
+        const result = resolveWatchedImportLine(line);
+        if (result.skip) return;
+
+        if (result.error) {
+            errors.push({ lineNum, message: result.error });
+            return;
+        }
+
+        if (result.skipResolved) {
+            warnings.push({ lineNum, message: result.warning || 'Already watched.' });
+            return;
+        }
+
+        if (result.warning) {
+            warnings.push({ lineNum, message: result.warning });
+        }
+
+        if (seenInBatch.has(result.listing)) {
+            warnings.push({
+                lineNum,
+                message: `Duplicate in list: "${result.listing}" — skipped.`,
+            });
+            return;
+        }
+        seenInBatch.add(result.listing);
+
+        resolved.push({
+            listing: result.listing,
+            lineNum,
+            warning: result.warning,
+        });
+    });
+
+    if (!raw.trim()) {
+        errors.push({ lineNum: 0, message: 'Enter at least one movie.' });
+    }
+
+    return { resolved, errors, warnings };
+}
+
+function setMarkWatchedImportStatus(message, isError = false) {
+    const status = document.getElementById('mark-watched-bulk-status');
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle('mark-watched-bulk-status-error', isError);
+    status.classList.toggle(
+        'mark-watched-bulk-status-success',
+        !isError && message.startsWith('Imported')
+    );
+}
+
+function hideMarkWatchedBatchSummary() {
+    const preview = document.getElementById('mark-watched-bulk-preview');
+    if (preview) preview.hidden = true;
+}
+
+function showMarkWatchedBatchSummary(resolved) {
+    const preview = document.getElementById('mark-watched-bulk-preview');
+    let list = document.getElementById('mark-watched-bulk-preview-list');
+    if (!preview) return;
+
+    if (!list) {
+        list = document.createElement('ul');
+        list.id = 'mark-watched-bulk-preview-list';
+        preview.appendChild(list);
+    }
+
+    list.innerHTML = '';
+    resolved.forEach(({ listing }) => {
+        const item = document.createElement('li');
+        item.textContent = `\u2713 ${listing}`;
+        list.appendChild(item);
+    });
+
+    preview.hidden = false;
+}
+
+let markWatchedLineHighlightsTimer = null;
+
+function syncMarkWatchedHighlightScroll() {
+    const input = document.getElementById('mark-watched-bulk-input');
+    const highlightsInner = document.getElementById('mark-watched-bulk-highlights-inner');
+    if (!input || !highlightsInner) return;
+    highlightsInner.style.transform = `translateY(-${input.scrollTop}px)`;
+}
+
+function resizeMarkWatchedTextarea() {
+    const input = document.getElementById('mark-watched-bulk-input');
+    if (!input) return;
+    input.style.height = 'auto';
+    const minHeight = 90;
+    input.style.height = `${Math.max(minHeight, input.scrollHeight)}px`;
+}
+
+function updateMarkWatchedLineHighlights() {
+    const input = document.getElementById('mark-watched-bulk-input');
+    const highlightsInner = document.getElementById('mark-watched-bulk-highlights-inner');
+    if (!input || !highlightsInner) return;
+
+    const raw = input.value;
+    const lines = raw.split(/\r?\n/);
+    const { errors, warnings } = parseBulkWatchedInput(raw);
+    const errorLines = new Set(
+        errors.filter((entry) => entry.lineNum > 0).map((entry) => entry.lineNum)
+    );
+    const warningLines = new Set(
+        warnings.filter((entry) => entry.lineNum > 0).map((entry) => entry.lineNum)
+    );
+
+    highlightsInner.replaceChildren();
+    lines.forEach((line, index) => {
+        const lineEl = document.createElement('div');
+        lineEl.className = 'mark-watched-bulk-line';
+        const lineNum = index + 1;
+        if (errorLines.has(lineNum)) {
+            lineEl.classList.add('mark-watched-bulk-line-error');
+        } else if (warningLines.has(lineNum)) {
+            lineEl.classList.add('mark-watched-bulk-line-warning');
+        }
+        lineEl.textContent = line.length ? line : '\u00a0';
+        highlightsInner.appendChild(lineEl);
+    });
+
+    syncMarkWatchedHighlightScroll();
+
+    const lineErrors = errors.filter((entry) => entry.lineNum > 0);
+    if (lineErrors.length) {
+        const message = lineErrors
+            .map(({ lineNum, message: errorMessage }) => `Line ${lineNum}: ${errorMessage}`)
+            .join(' ');
+        setMarkWatchedImportStatus(message, true);
+    } else if (errors.length) {
+        setMarkWatchedImportStatus(errors[0].message, true);
+    } else {
+        const status = document.getElementById('mark-watched-bulk-status');
+        if (status?.classList.contains('mark-watched-bulk-status-error')) {
+            setMarkWatchedImportStatus('', false);
+        }
+    }
+}
+
+function scheduleMarkWatchedLineHighlights() {
+    if (markWatchedLineHighlightsTimer) {
+        clearTimeout(markWatchedLineHighlightsTimer);
+    }
+    markWatchedLineHighlightsTimer = setTimeout(() => {
+        markWatchedLineHighlightsTimer = null;
+        updateMarkWatchedLineHighlights();
+    }, 150);
+}
+
+function submitMarkWatchedBulkImport() {
+    const input = document.getElementById('mark-watched-bulk-input');
+    const submitBtn = document.getElementById('mark-watched-bulk-submit');
+    if (!input || !submitBtn) return;
+
+    const { resolved, errors, warnings } = parseBulkWatchedInput(input.value);
+
+    if (resolved.length === 0) {
+        if (errors.length) {
+            const message = errors
+                .map(({ lineNum, message: errorMessage }) => (
+                    lineNum > 0 ? `Line ${lineNum}: ${errorMessage}` : errorMessage
+                ))
+                .join(' ');
+            setMarkWatchedImportStatus(message, true);
+        } else if (warnings.length) {
+            setMarkWatchedImportStatus('All entries were already watched or duplicates.', true);
+        } else {
+            setMarkWatchedImportStatus('Enter at least one movie.', true);
+        }
+        hideMarkWatchedBatchSummary();
+        return;
+    }
+
+    submitBtn.disabled = true;
+    const listings = resolved.map((entry) => entry.listing);
+    markMoviesAsWatched(listings);
+
+    let statusMsg = `Imported ${listings.length} title${listings.length === 1 ? '' : 's'}.`;
+    const lineErrors = errors.filter((entry) => entry.lineNum > 0);
+    if (lineErrors.length) {
+        statusMsg += ` ${lineErrors
+            .map(({ lineNum, message: errorMessage }) => `Line ${lineNum}: ${errorMessage}`)
+            .join(' ')}`;
+    }
+    const warningSuffix = formatBatchWarnings(warnings);
+    if (warningSuffix) {
+        statusMsg += ` ${warningSuffix}`;
+    }
+
+    setMarkWatchedImportStatus(statusMsg, lineErrors.length > 0);
+    showMarkWatchedBatchSummary(resolved);
+    input.value = '';
+    resizeMarkWatchedTextarea();
+    updateMarkWatchedLineHighlights();
+    submitBtn.disabled = false;
+}
+
+function buildWatchedBulkImportUI() {
+    const filtersPanel = document.getElementById('filters-panel');
+    if (!filtersPanel || document.getElementById('mark-watched-bulk')) return;
+
+    const section = document.createElement('div');
+    section.id = 'mark-watched-bulk';
+
+    const label = document.createElement('div');
+    label.id = 'mark-watched-bulk-label';
+    label.textContent = 'MARK AS WATCHED';
+    section.appendChild(label);
+
+    const hint = document.createElement('div');
+    hint.id = 'mark-watched-bulk-hint';
+    hint.textContent = 'One per line: Title (Year) or partial title — Ctrl+Enter to import';
+    section.appendChild(hint);
+
+    const form = document.createElement('div');
+    form.id = 'mark-watched-bulk-form';
+
+    const editorWrap = document.createElement('div');
+    editorWrap.id = 'mark-watched-bulk-editor-wrap';
+
+    const highlights = document.createElement('div');
+    highlights.id = 'mark-watched-bulk-highlights';
+    highlights.setAttribute('aria-hidden', 'true');
+
+    const highlightsInner = document.createElement('div');
+    highlightsInner.id = 'mark-watched-bulk-highlights-inner';
+    highlights.appendChild(highlightsInner);
+    editorWrap.appendChild(highlights);
+
+    const titleInput = document.createElement('textarea');
+    titleInput.id = 'mark-watched-bulk-input';
+    titleInput.rows = 5;
+    titleInput.placeholder = 'Aliens (1986)\nDistrict 9 (2009)\nBlade Runner';
+    titleInput.autocomplete = 'off';
+    titleInput.addEventListener('input', () => {
+        resizeMarkWatchedTextarea();
+        scheduleMarkWatchedLineHighlights();
+    });
+    titleInput.addEventListener('scroll', syncMarkWatchedHighlightScroll);
+    titleInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+            event.preventDefault();
+            submitMarkWatchedBulkImport();
+        }
+    });
+    editorWrap.appendChild(titleInput);
+    form.appendChild(editorWrap);
+
+    const controlsRow = document.createElement('div');
+    controlsRow.id = 'mark-watched-bulk-controls';
+
+    const submitBtn = document.createElement('button');
+    submitBtn.type = 'button';
+    submitBtn.id = 'mark-watched-bulk-submit';
+    submitBtn.textContent = 'Import as Watched';
+    submitBtn.addEventListener('click', submitMarkWatchedBulkImport);
+    controlsRow.appendChild(submitBtn);
+
+    form.appendChild(controlsRow);
+    section.appendChild(form);
+
+    const preview = document.createElement('div');
+    preview.id = 'mark-watched-bulk-preview';
+    preview.hidden = true;
+    section.appendChild(preview);
+
+    const status = document.createElement('div');
+    status.id = 'mark-watched-bulk-status';
+    status.setAttribute('aria-live', 'polite');
+    section.appendChild(status);
+
+    const addAFlick = document.getElementById('add-a-flick');
+    if (addAFlick) {
+        filtersPanel.insertBefore(section, addAFlick);
+    } else {
+        filtersPanel.appendChild(section);
+    }
+}
+
 let addMovieLineHighlightsTimer = null;
 
 function syncAddMovieHighlightScroll() {
@@ -2395,20 +2939,235 @@ const SHUFFLE_CONFIRM_BOWER_POS = [
 const SHUFFLE_MYSTERY_SEQUEL_CATEGORY = 'SEQUEL STREET 🚗';
 
 const SHUFFLE_JOKER_DISINTEGRATE_MS = 1400;
+const SHUFFLE_JOKER_WHOOSH_PRE_ANIM_MS = 150;
+const SHUFFLE_CONFIRM_ANIM_MS = 450;
+const SHUFFLE_LOCK_IN_PATH = window.uiAudioPaths.shuffleLockIn;
+const SHUFFLE_SHORT_SHUFFLE_PATH = window.uiAudioPaths.shuffleShortShuffle;
+const SHUFFLE_JOKER_WHOOSH_PATH = window.uiAudioPaths.shuffleJokerWhoosh;
+const SHUFFLE_GOLDEN_TICKET_PATH = window.uiAudioPaths.shuffleGoldenTicket;
+const SHUFFLE_TROLL_PATH = window.uiAudioPaths.shuffleTroll;
+const SHUFFLE_LOCK_IN_DURATION_FALLBACK_MS = 800;
+const SHUFFLE_LOCK_IN_OVERLAY_DELAY_MS = 200;
+const SHUFFLE_GOLDEN_TICKET_MIN_PLAYBACK_RATE = 0.75;
+const SHUFFLE_GOLDEN_TICKET_MAX_PLAYBACK_RATE = 3.0;
 
-const COIN_FLIP_1_PATH = 'win_sounds/NEW/coin flip 1.mp3';
-const COIN_FLIP_2_PATH = 'win_sounds/NEW/coin flip 2.mp3';
+let shuffleIntroAudios = [];
+let shuffleUiAudio = null;
+let shuffleLockInAudio = null;
+let shuffleLockInOverlayAudio = null;
+let shuffleLockInOverlayTimer = null;
+let shuffleLockInDurationMs = null;
+let shuffleTrollAudio = null;
+
+function stopShuffleIntroAudio() {
+    shuffleIntroAudios.forEach((audio) => {
+        audio.pause();
+        audio.currentTime = 0;
+    });
+    shuffleIntroAudios = [];
+}
+
+function stopShuffleUiAudio() {
+    if (shuffleUiAudio) {
+        shuffleUiAudio.pause();
+        shuffleUiAudio.currentTime = 0;
+        shuffleUiAudio = null;
+    }
+}
+
+function stopShuffleLockInSounds() {
+    if (shuffleLockInOverlayTimer !== null) {
+        window.clearTimeout(shuffleLockInOverlayTimer);
+        shuffleLockInOverlayTimer = null;
+    }
+    if (shuffleLockInAudio) {
+        shuffleLockInAudio.pause();
+        shuffleLockInAudio.currentTime = 0;
+        shuffleLockInAudio = null;
+    }
+    if (shuffleLockInOverlayAudio) {
+        shuffleLockInOverlayAudio.pause();
+        shuffleLockInOverlayAudio.currentTime = 0;
+        shuffleLockInOverlayAudio = null;
+    }
+}
+
+function stopShuffleTrollAudio() {
+    if (shuffleTrollAudio) {
+        shuffleTrollAudio.pause();
+        shuffleTrollAudio.currentTime = 0;
+        shuffleTrollAudio = null;
+    }
+}
+
+function startShuffleTrollAudio() {
+    stopShuffleTrollAudio();
+    const audio = new Audio(SHUFFLE_TROLL_PATH);
+    shuffleTrollAudio = audio;
+    audio.volume = getNormalizedVolume(SHUFFLE_TROLL_PATH, cabinetMixer.victoryClipVolume);
+    audio.play().catch((err) => {
+        console.log('Shuffle troll audio blocked or file not found:', SHUFFLE_TROLL_PATH, err);
+        if (shuffleTrollAudio === audio) shuffleTrollAudio = null;
+    });
+    audio.onended = () => {
+        if (shuffleTrollAudio === audio) shuffleTrollAudio = null;
+    };
+}
+
+function clearShuffleLockInUI() {
+    const shufflePreview = document.getElementById('shuffle-preview');
+    const flightWrap = document.getElementById('coin-toss-flight-wrap');
+    shufflePreview?.classList.remove('shuffle-locking-in');
+    flightWrap?.classList.remove('shuffle-lock-in-active');
+    shufflePreview?.style.removeProperty('--shuffle-lock-in-duration');
+    flightWrap?.style.removeProperty('--shuffle-lock-in-duration');
+}
+
+function loadShuffleLockInDurationMs() {
+    if (shuffleLockInDurationMs != null) return Promise.resolve(shuffleLockInDurationMs);
+
+    return new Promise((resolve) => {
+        const audio = new Audio(SHUFFLE_LOCK_IN_PATH);
+        const finish = (ms) => {
+            shuffleLockInDurationMs = ms;
+            resolve(ms);
+        };
+        audio.addEventListener('loadedmetadata', () => {
+            const ms = Number.isFinite(audio.duration) && audio.duration > 0
+                ? Math.round(audio.duration * 1000)
+                : SHUFFLE_LOCK_IN_DURATION_FALLBACK_MS;
+            finish(ms);
+        }, { once: true });
+        audio.addEventListener('error', () => {
+            finish(SHUFFLE_LOCK_IN_DURATION_FALLBACK_MS);
+        }, { once: true });
+        audio.load();
+    });
+}
+
+function playShuffleUiClip(relativePath, options = {}) {
+    stopShuffleUiAudio();
+    const audio = new Audio(relativePath);
+    shuffleUiAudio = audio;
+    if (options.playbackRate) {
+        audio.playbackRate = options.playbackRate;
+    }
+    audio.volume = getNormalizedVolume(relativePath, cabinetMixer.victoryClipVolume);
+    audio.play().catch((err) => {
+        console.log('Shuffle UI audio blocked or file not found:', relativePath, err);
+        if (shuffleUiAudio === audio) shuffleUiAudio = null;
+    });
+    audio.onended = () => {
+        if (shuffleUiAudio === audio) shuffleUiAudio = null;
+    };
+    return audio;
+}
+
+function playShuffleOverlayClip(relativePath) {
+    const audio = new Audio(relativePath);
+    audio.volume = getNormalizedVolume(relativePath, cabinetMixer.victoryClipVolume);
+    audio.play().catch((err) => {
+        console.log('Shuffle overlay audio blocked or file not found:', relativePath, err);
+    });
+    return audio;
+}
+
+function playShuffleLockInSounds() {
+    stopShuffleLockInSounds();
+    shuffleLockInAudio = playShuffleOverlayClip(SHUFFLE_LOCK_IN_PATH);
+    shuffleLockInOverlayTimer = window.setTimeout(() => {
+        shuffleLockInOverlayTimer = null;
+        shuffleLockInOverlayAudio = playShuffleOverlayClip(SHUFFLE_SHORT_SHUFFLE_PATH);
+    }, SHUFFLE_LOCK_IN_OVERLAY_DELAY_MS);
+}
+
+function getShuffleGoldenTicketPlaybackRate() {
+    const map = window.shuffleGoldenTicketMap;
+    const clipDurationMs = map?.clipDurationMs ?? 2000;
+    const dingMs = map?.dingMs ?? Math.round(clipDurationMs * 0.75);
+    const rawRate = dingMs / SHUFFLE_CONFIRM_ANIM_MS;
+    return Math.min(
+        SHUFFLE_GOLDEN_TICKET_MAX_PLAYBACK_RATE,
+        Math.max(SHUFFLE_GOLDEN_TICKET_MIN_PLAYBACK_RATE, rawRate)
+    );
+}
+
+function playShuffleGoldenTicketSound() {
+    playShuffleUiClip(SHUFFLE_GOLDEN_TICKET_PATH, {
+        playbackRate: getShuffleGoldenTicketPlaybackRate()
+    });
+}
+
+async function playShuffleLockInTransition(durationMs, generation) {
+    const shufflePreview = document.getElementById('shuffle-preview');
+    const flightWrap = document.getElementById('coin-toss-flight-wrap');
+    if (!shufflePreview || !flightWrap) {
+        await shuffleSleep(durationMs);
+        return;
+    }
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const effectiveMs = reducedMotion ? Math.min(durationMs, 200) : durationMs;
+
+    shufflePreview.style.setProperty('--shuffle-lock-in-duration', `${effectiveMs}ms`);
+    flightWrap.style.setProperty('--shuffle-lock-in-duration', `${effectiveMs}ms`);
+    shufflePreview.classList.add('shuffle-locking-in');
+    flightWrap.classList.add('shuffle-lock-in-active');
+
+    await shuffleSleep(effectiveMs);
+    if (generation !== coinTossGeneration) return;
+
+    clearShuffleLockInUI();
+}
+
+function playShuffleIntroClip(key) {
+    return; // cinematic intro SFX disabled
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const relativePath = window.uiAudioPaths?.shuffleIntroSfx?.[key];
+    if (!relativePath) return;
+
+    const audio = new Audio(relativePath);
+    shuffleIntroAudios.push(audio);
+    audio.volume = getNormalizedVolume(relativePath, cabinetMixer.victoryClipVolume);
+    audio.play().catch((err) => {
+        console.log('Shuffle intro audio blocked or file not found:', relativePath, err);
+        shuffleIntroAudios = shuffleIntroAudios.filter((entry) => entry !== audio);
+    });
+    audio.onended = () => {
+        shuffleIntroAudios = shuffleIntroAudios.filter((entry) => entry !== audio);
+    };
+}
+
+const COIN_FLIP_1_PATH = window.uiAudioPaths.coinFlip1;
+const COIN_FLIP_2_PATH = window.uiAudioPaths.coinFlip2;
+const COIN_FLIP_SPIN_SHORT_PATH = window.uiAudioPaths.coinFlipSpinShort;
+const COIN_FLIP_SPIN_BED_CLIPS = window.uiAudioPaths.coinFlipSpinBedClips ?? [
+    'audio/win/neon_skyline/HKE3.2.mp3',
+    'audio/win/neon_skyline/HKE1.mp3',
+    'audio/win/neon_skyline/HKE2.mp3',
+    'audio/_staging/that-slow-motion-running-song-ii.mp3'
+];
+const COIN_FLIP_SPIN_BED_VOLUME_RATIO = 0.28;
+const COIN_FLIP_SPIN_BED_FADE_MS = 80;
 const COIN_FLIP_REGULAR_LOOPS = 1;
-const COIN_FLIP_ACCEL_LOOPS = 7;
+const COIN_FLIP_ACCEL_LOOPS = 19;
+const COIN_FLIP_RAMP_LOOPS = 4;
 const COIN_FLIP_1_DURATION_FALLBACK_MS = 770;
+const COIN_FLIP_SPIN_SHORT_DURATION_FALLBACK_MS = 450;
 const COIN_FLIP_ROTATIONS_PER_LOOP = 4;
 const COIN_FLIP_FINAL_SEGMENT_MAX_FLIPS = 6;
 const COIN_FLIP_TAIL_ROTATION_DEG = 180;
+const COIN_ARM_SPIN_FLIP_COUNT = 8;
+const COIN_ARM_SPIN_BED_MIN_VOLUME_RATIO = 0.12;
 
 let coinTossSpinAudio = null;
 let coinTossSpinAudioEnd = null;
 let coinFlip1DurationMs = null;
+let coinFlipSpinShortDurationMs = null;
 let coinSpinDeg = 0;
+let coinTossSpinShortAudio = null;
+let coinTossFlipBedAudio = null;
+let coinTossFlipBedFadeRaf = null;
 
 let isShuffleActive = false;
 let isCoinTossing = false;
@@ -2533,6 +3292,12 @@ function shuffleMoviePassesDecadeFilter(listing) {
     return checked.some((input) => parseInt(input.dataset.decade, 10) === decade);
 }
 
+function shuffleMoviePassesWatchedFilter(listing) {
+    const checkbox = document.getElementById('include-watched-checkbox');
+    if (checkbox?.checked) return true;
+    return !isMovieWatched(listing);
+}
+
 function buildFilteredCoinTossPool(excludeLabels = [], categories = null) {
     const exclude = new Set(excludeLabels);
     const seen = new Set();
@@ -2546,7 +3311,11 @@ function buildFilteredCoinTossPool(excludeLabels = [], categories = null) {
         const parts = category.split(' ');
         const emoji = parts[parts.length - 1];
         movies.forEach((listing) => {
-            if (!shuffleMoviePassesRuntimeFilter(listing) || !shuffleMoviePassesDecadeFilter(listing)) return;
+            if (
+                !shuffleMoviePassesRuntimeFilter(listing) ||
+                !shuffleMoviePassesDecadeFilter(listing) ||
+                !shuffleMoviePassesWatchedFilter(listing)
+            ) return;
             const label = `${emoji} ${listing}`;
             if (exclude.has(label) || seen.has(label)) return;
             seen.add(label);
@@ -2560,6 +3329,23 @@ function buildFilteredCoinTossPool(excludeLabels = [], categories = null) {
 function pickRandomCoinTossEntry(pool) {
     if (!pool.length) return null;
     return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function getMysteryFlickCoinTossPool() {
+    const exclude = [coinTossSlotA?.label, coinTossSlotB?.label].filter(Boolean);
+    return buildFilteredCoinTossPool(exclude);
+}
+
+function pickMysteryFlickForCoinToss() {
+    if (isShuffleActive || isCoinTossing) return;
+
+    const pool = getMysteryFlickCoinTossPool();
+    const picked = pickRandomCoinTossEntry(pool);
+    if (!picked) {
+        setCoinTossStatus('No movies match your filters.', true);
+        return;
+    }
+    assignCoinTossSlot(resolveCoinTossEntry(picked));
 }
 
 function drawMysteryShuffleEntries(slotA, slotB) {
@@ -2676,6 +3462,7 @@ function clearShuffleArenaEntering() {
 }
 
 function clearShuffleIntroUI() {
+    stopShuffleIntroAudio();
     const slotsRow = document.getElementById('coin-toss-slots-row');
     slotsRow?.classList.remove(
         'coin-toss-slots-shuffle-intro',
@@ -2755,6 +3542,7 @@ function setShuffleTicketSelection(arena, ticketEl) {
             btn.classList.add('shuffle-ticket-dimmed');
         }
     });
+    playShuffleGoldenTicketSound();
     layoutShuffleConfirmSelection(arena, ticketEl);
 }
 
@@ -2773,13 +3561,29 @@ function revealAllShuffleTicketTitles(arena) {
     arena.querySelectorAll('.shuffle-ticket').forEach(revealShuffleTicketTitle);
 }
 
+function setShuffleJokerArmed(armed) {
+    const shufflePreview = document.getElementById('shuffle-preview');
+    if (!shufflePreview) return;
+    shufflePreview.classList.toggle('shuffle-joker-armed', armed);
+    shufflePreview.disabled = !armed;
+    shufflePreview.setAttribute('aria-label', armed ? 'Start shuffle' : 'Shuffle preview');
+}
+
 function cancelActiveTicketShuffle() {
     coinTossGeneration += 1;
     isShuffleActive = false;
     shufflePhase = 'idle';
+    stopShuffleIntroAudio();
+    stopShuffleUiAudio();
+    stopShuffleLockInSounds();
+    stopShuffleTrollAudio();
+    clearShuffleLockInUI();
     setCoinTossSlotsBlind(false);
     clearShuffleConfirmUI();
     resetTicketShuffleArena();
+    setShuffleJokerArmed(false);
+    setCoinTossStageVisible(false);
+    setMiddlePreviewMode(null);
 
     renderCoinTossSlot(document.getElementById('coin-toss-slot-a'), coinTossSlotA);
     renderCoinTossSlot(document.getElementById('coin-toss-slot-b'), coinTossSlotB);
@@ -2800,6 +3604,11 @@ function resetTicketShuffleState() {
     shuffleTicketSlots = [0, 1, 2, 3];
     shuffleMysteryA = null;
     shuffleMysteryB = null;
+    stopShuffleIntroAudio();
+    stopShuffleUiAudio();
+    stopShuffleLockInSounds();
+    stopShuffleTrollAudio();
+    clearShuffleLockInUI();
     stopCoinTossSpinAudio();
     setCoinTossStatus('');
     setCoinTossSlotsBlind(false);
@@ -2816,6 +3625,7 @@ function resetTicketShuffleState() {
     }
 
     resetTicketShuffleArena();
+    setShuffleJokerArmed(false);
     resetCoinTossStage();
     refreshCoinTossCandidatesUI();
     updateDecisionButtonStates();
@@ -2853,6 +3663,7 @@ function clearCoinTossLandedUI() {
             'coin-toss-flipping',
             'coin-toss-settled',
             'coin-toss-awaiting',
+            'coin-toss-armed',
             'coin-flip-lands-front',
             'coin-flip-lands-back',
             'coin-toss-spinning'
@@ -2862,6 +3673,7 @@ function clearCoinTossLandedUI() {
         });
         stopCoinTossVisualSpin(coin);
         coin.disabled = true;
+        coin.setAttribute('aria-label', 'Confirm coin toss winner');
     }
 }
 
@@ -2961,12 +3773,12 @@ function resetCoinTossStage() {
 
 function canPreviewCoinToss() {
     return coinTossSlotA && coinTossSlotB && !isShuffleActive
-        && coinTossPhase !== 'flipping' && coinTossPhase !== 'awaitingConfirm';
+        && coinTossPhase !== 'armed' && coinTossPhase !== 'flipping' && coinTossPhase !== 'awaitingConfirm';
 }
 
 function canPreviewShuffle() {
     return coinTossSlotA && coinTossSlotB && !isShuffleActive && !isCoinTossing
-        && coinTossPhase !== 'flipping' && coinTossPhase !== 'awaitingConfirm';
+        && coinTossPhase !== 'armed' && coinTossPhase !== 'flipping' && coinTossPhase !== 'awaitingConfirm';
 }
 
 function setMiddlePreviewMode(mode) {
@@ -2980,7 +3792,10 @@ function setMiddlePreviewMode(mode) {
     coin.hidden = isShuffle;
     shufflePreview.hidden = !isShuffle;
     shufflePreview.setAttribute('aria-hidden', String(!isShuffle));
-    if (!isShuffle) shufflePreview.classList.remove('shuffle-preview-disintegrating');
+    if (!isShuffle) {
+        shufflePreview.classList.remove('shuffle-preview-disintegrating');
+        setShuffleJokerArmed(false);
+    }
     if (mode === 'coin' || mode === null) {
         coin.hidden = false;
     }
@@ -3161,7 +3976,7 @@ function updateCoinTossCoinFaces() {
     const coin = document.getElementById('coin-toss-coin');
     if (!coin) return;
 
-    if (coinTossPhase === 'flipping' || coinTossPhase === 'awaitingConfirm') return;
+    if (coinTossPhase === 'armed' || coinTossPhase === 'flipping' || coinTossPhase === 'awaitingConfirm') return;
     if (!coinTossSlotA || !coinTossSlotB || isShuffleActive) return;
 
     applyCoinTossFaceEntry(coinTossSlotA, coin.querySelector('.coin-face-front'), 'poster');
@@ -3207,6 +4022,109 @@ function preloadCoinTossPosters() {
         img.onerror = () => resolve();
         img.src = url;
     })));
+}
+
+function loadCoinFlipSpinShortDurationMs() {
+    if (coinFlipSpinShortDurationMs != null) return Promise.resolve(coinFlipSpinShortDurationMs);
+
+    const activeBed = coinTossSpinShortAudio;
+    if (activeBed) {
+        if (Number.isFinite(activeBed.duration) && activeBed.duration > 0) {
+            coinFlipSpinShortDurationMs = Math.round(activeBed.duration * 1000);
+            return Promise.resolve(coinFlipSpinShortDurationMs);
+        }
+        return new Promise((resolve) => {
+            const finish = (ms) => {
+                coinFlipSpinShortDurationMs = ms;
+                resolve(ms);
+            };
+            activeBed.addEventListener('loadedmetadata', () => {
+                const ms = Number.isFinite(activeBed.duration) && activeBed.duration > 0
+                    ? Math.round(activeBed.duration * 1000)
+                    : COIN_FLIP_SPIN_SHORT_DURATION_FALLBACK_MS;
+                finish(ms);
+            }, { once: true });
+            activeBed.addEventListener('error', () => {
+                finish(COIN_FLIP_SPIN_SHORT_DURATION_FALLBACK_MS);
+            }, { once: true });
+        });
+    }
+
+    return new Promise((resolve) => {
+        const audio = new Audio(COIN_FLIP_SPIN_SHORT_PATH);
+        const finish = (ms) => {
+            coinFlipSpinShortDurationMs = ms;
+            resolve(ms);
+        };
+        audio.addEventListener('loadedmetadata', () => {
+            const ms = Number.isFinite(audio.duration) && audio.duration > 0
+                ? Math.round(audio.duration * 1000)
+                : COIN_FLIP_SPIN_SHORT_DURATION_FALLBACK_MS;
+            finish(ms);
+        }, { once: true });
+        audio.addEventListener('error', () => {
+            finish(COIN_FLIP_SPIN_SHORT_DURATION_FALLBACK_MS);
+        }, { once: true });
+        audio.load();
+    });
+}
+
+function getCoinTossArmSpinBedVolume(flipMs, fastestFlipMs) {
+    const base = getNormalizedVolume(COIN_FLIP_SPIN_SHORT_PATH, cabinetMixer.victoryClipVolume);
+    const velocityRatio = fastestFlipMs / flipMs;
+    return base * Math.max(COIN_ARM_SPIN_BED_MIN_VOLUME_RATIO, Math.min(1, velocityRatio));
+}
+
+function setCoinTossArmSpinBedVolume(flipMs, fastestFlipMs) {
+    if (!coinTossSpinShortAudio) return;
+    coinTossSpinShortAudio.volume = getCoinTossArmSpinBedVolume(flipMs, fastestFlipMs);
+}
+
+function rampCoinTossArmSpinBedVolume(fromFlipMs, toFlipMs, fastestFlipMs, durationMs, generation) {
+    if (!coinTossSpinShortAudio || durationMs <= 0 || generation !== coinTossGeneration) return;
+    const fromVol = getCoinTossArmSpinBedVolume(fromFlipMs, fastestFlipMs);
+    const toVol = getCoinTossArmSpinBedVolume(toFlipMs, fastestFlipMs);
+    const start = performance.now();
+    const tick = () => {
+        if (generation !== coinTossGeneration || !coinTossSpinShortAudio) return;
+        const t = Math.min(1, (performance.now() - start) / durationMs);
+        coinTossSpinShortAudio.volume = fromVol + (toVol - fromVol) * t;
+        if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+}
+
+function buildArmSpinFlipDurations(totalMs, flipCount = COIN_ARM_SPIN_FLIP_COUNT) {
+    const weights = Array.from({ length: flipCount }, (_, i) => (i + 1) ** 2);
+    const sum = weights.reduce((a, b) => a + b, 0);
+    return weights.map((w) => Math.max(20, Math.round((totalMs * w) / sum)));
+}
+
+async function playCoinTossArmSpin(coin, durationMs, generation) {
+    if (!coin || generation !== coinTossGeneration) return;
+    stopCoinTossVisualSpin(coin);
+    coinSpinDeg = 0;
+    coin.style.transform = 'rotateY(0deg)';
+    coin.classList.add('coin-toss-spinning');
+
+    const flipDurations = buildArmSpinFlipDurations(durationMs);
+    const fastestFlipMs = flipDurations[0];
+    setCoinTossArmSpinBedVolume(fastestFlipMs, fastestFlipMs);
+
+    for (let i = 0; i < flipDurations.length; i += 1) {
+        const flipMs = flipDurations[i];
+        const nextFlipMs = flipDurations[i + 1] ?? flipMs;
+        if (generation !== coinTossGeneration) return;
+        rampCoinTossArmSpinBedVolume(flipMs, nextFlipMs, fastestFlipMs, flipMs, generation);
+        const ok = await animateCoinHalfFlip(coin, flipMs, generation);
+        if (!ok) return;
+    }
+
+    if (generation !== coinTossGeneration) return;
+    coin.classList.remove('coin-toss-spinning');
+    cancelCoinSpinAnimations(coin);
+    coinSpinDeg = 0;
+    coin.style.transform = 'rotateY(0deg)';
 }
 
 function loadCoinFlip1DurationMs() {
@@ -3268,13 +4186,101 @@ function getCoinFlipTailDurationMs(playbackRate) {
 }
 
 function buildCoinFlipLoopRates() {
+    const ramp = [];
+    for (let i = 1; i <= COIN_FLIP_RAMP_LOOPS; i += 1) {
+        const exponent = COIN_FLIP_ACCEL_LOOPS - COIN_FLIP_RAMP_LOOPS + i;
+        ramp.push(Math.pow(1.1, exponent));
+    }
+
     const rates = Array(COIN_FLIP_REGULAR_LOOPS).fill(1);
     let rate = 1;
     for (let i = 0; i < COIN_FLIP_ACCEL_LOOPS; i += 1) {
         rate *= 1.1;
         rates.push(rate);
     }
-    return rates.reverse();
+
+    return [...ramp, ...rates.reverse()];
+}
+
+function stopCoinTossFlipBed({ immediate = true } = {}) {
+    if (coinTossFlipBedFadeRaf !== null) {
+        cancelAnimationFrame(coinTossFlipBedFadeRaf);
+        coinTossFlipBedFadeRaf = null;
+    }
+    if (!coinTossFlipBedAudio) return;
+    if (immediate) {
+        coinTossFlipBedAudio.pause();
+        coinTossFlipBedAudio.currentTime = 0;
+        coinTossFlipBedAudio = null;
+    }
+}
+
+function fadeOutCoinTossFlipBed(fadeMs = COIN_FLIP_SPIN_BED_FADE_MS) {
+    const audio = coinTossFlipBedAudio;
+    if (!audio) return Promise.resolve();
+    if (coinTossFlipBedFadeRaf !== null) {
+        cancelAnimationFrame(coinTossFlipBedFadeRaf);
+        coinTossFlipBedFadeRaf = null;
+    }
+    const startVol = audio.volume;
+    const start = performance.now();
+    return new Promise((resolve) => {
+        const tick = () => {
+            if (!coinTossFlipBedAudio || coinTossFlipBedAudio !== audio) {
+                resolve();
+                return;
+            }
+            const t = Math.min(1, (performance.now() - start) / fadeMs);
+            audio.volume = startVol * (1 - t);
+            if (t >= 1) {
+                coinTossFlipBedFadeRaf = null;
+                stopCoinTossFlipBed({ immediate: true });
+                resolve();
+                return;
+            }
+            coinTossFlipBedFadeRaf = requestAnimationFrame(tick);
+        };
+        coinTossFlipBedFadeRaf = requestAnimationFrame(tick);
+    });
+}
+
+function startCoinTossFlipBed(generation) {
+    stopCoinTossFlipBed({ immediate: true });
+    if (generation !== coinTossGeneration || !COIN_FLIP_SPIN_BED_CLIPS.length) return;
+
+    const clipPath = COIN_FLIP_SPIN_BED_CLIPS[Math.floor(Math.random() * COIN_FLIP_SPIN_BED_CLIPS.length)];
+    const audio = new Audio(clipPath);
+    audio.volume = getNormalizedVolume(clipPath, cabinetMixer.victoryClipVolume) * COIN_FLIP_SPIN_BED_VOLUME_RATIO;
+    audio.play().catch((err) => {
+        console.log('Coin flip bed audio blocked or file not found:', clipPath, err);
+    });
+    coinTossFlipBedAudio = audio;
+}
+
+function stopCoinTossSpinBed() {
+    if (coinTossSpinShortAudio) {
+        coinTossSpinShortAudio.pause();
+        coinTossSpinShortAudio.currentTime = 0;
+        coinTossSpinShortAudio = null;
+    }
+}
+
+function playCoinTossBedClip(relativePath, { loop = false } = {}) {
+    const audio = new Audio(relativePath);
+    audio.loop = loop;
+    audio.volume = getNormalizedVolume(relativePath, cabinetMixer.victoryClipVolume);
+    audio.play().catch((err) => {
+        console.log('Coin toss bed audio blocked or file not found:', relativePath, err);
+    });
+    return audio;
+}
+
+function startCoinTossSpinBed(generation) {
+    stopCoinTossSpinBed();
+    if (generation !== coinTossGeneration) return;
+
+    coinTossSpinShortAudio = playCoinTossBedClip(COIN_FLIP_SPIN_SHORT_PATH);
+    if (coinTossSpinShortAudio) coinTossSpinShortAudio.volume = 0;
 }
 
 function stopCoinTossSpinAudio() {
@@ -3312,7 +4318,32 @@ function playCoinFlip1Segment(playbackRate) {
 }
 
 function playCoinTossLandSound() {
-    playKeeperClip(COIN_FLIP_2_PATH);
+    stopCoinTossSpinBed();
+
+    const landAudio = new Audio(COIN_FLIP_2_PATH);
+    currentKeeperAudios.push(landAudio);
+    landAudio.volume = getNormalizedVolume(COIN_FLIP_2_PATH, cabinetMixer.victoryClipVolume);
+
+    const finishHkeBed = () => {
+        fadeOutCoinTossFlipBed();
+    };
+    const cleanupLand = () => {
+        currentKeeperAudios = currentKeeperAudios.filter((entry) => entry !== landAudio);
+    };
+
+    landAudio.addEventListener('ended', () => {
+        cleanupLand();
+        finishHkeBed();
+    }, { once: true });
+    landAudio.addEventListener('error', () => {
+        cleanupLand();
+        finishHkeBed();
+    }, { once: true });
+    landAudio.play().catch((err) => {
+        console.log('Coin flip land audio blocked or file not found:', COIN_FLIP_2_PATH, err);
+        cleanupLand();
+        finishHkeBed();
+    });
 }
 
 function isCoinSpinShowingFront() {
@@ -3453,6 +4484,8 @@ function cancelActiveCoinToss() {
     coinTossGeneration += 1;
     isCoinTossing = false;
     stopCoinTossSpinAudio();
+    stopCoinTossSpinBed();
+    stopCoinTossFlipBed();
     stopCoinTossVisualSpin(document.getElementById('coin-toss-coin'));
     clearCoinTossPendingState();
     clearCoinTossLandedUI();
@@ -3510,7 +4543,7 @@ function confirmCoinToss() {
     updateDecisionButtonStates();
 }
 
-async function runCoinToss() {
+async function armCoinToss() {
     if (!canRunCoinTossFlip()) {
         updateDecisionButtonStates();
         return;
@@ -3519,6 +4552,45 @@ async function runCoinToss() {
     coinTossGeneration += 1;
     const generation = coinTossGeneration;
     isCoinTossing = true;
+    coinTossPhase = 'armed';
+    coinTossPendingWinner = null;
+    coinTossPendingLoser = null;
+
+    const coin = document.getElementById('coin-toss-coin');
+    const flipBtn = document.getElementById('coin-toss-flip-btn');
+
+    if (flipBtn) flipBtn.disabled = true;
+    updateDecisionButtonStates();
+
+    setMiddlePreviewMode('coin');
+    updateCoinTossCoinFaces();
+    setCoinTossStageVisible(true);
+
+    startCoinTossSpinBed(generation);
+    if (generation !== coinTossGeneration) return;
+
+    const spinDurationMs = await loadCoinFlipSpinShortDurationMs();
+    if (generation !== coinTossGeneration) return;
+
+    await Promise.all([
+        playCoinTossArmSpin(coin, spinDurationMs, generation),
+        preloadCoinTossPosters()
+    ]);
+    if (generation !== coinTossGeneration) return;
+
+    if (coin) {
+        coin.disabled = false;
+        coin.classList.add('coin-toss-armed');
+        coin.setAttribute('aria-label', 'Flip coin');
+    }
+
+    setCoinTossStatus('Click the coin to flip — Esc to cancel');
+}
+
+async function launchCoinToss() {
+    if (coinTossPhase !== 'armed') return;
+
+    const generation = coinTossGeneration;
     coinTossPendingWinner = null;
     coinTossPendingLoser = null;
 
@@ -3527,11 +4599,12 @@ async function runCoinToss() {
     const stage = document.getElementById('coin-toss-stage');
     const flightWrap = document.getElementById('coin-toss-flight-wrap');
     const coin = document.getElementById('coin-toss-coin');
-    const flipBtn = document.getElementById('coin-toss-flip-btn');
 
-    if (flipBtn) flipBtn.disabled = true;
-    if (coin) coin.disabled = true;
-    updateDecisionButtonStates();
+    if (coin) {
+        coin.disabled = true;
+        coin.classList.remove('coin-toss-armed');
+        coin.setAttribute('aria-label', 'Confirm coin toss winner');
+    }
     if (slotAEl) slotAEl.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser');
     if (slotBEl) slotBEl.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser');
 
@@ -3543,8 +4616,9 @@ async function runCoinToss() {
     setMiddlePreviewMode(null);
     setCoinTossStageVisible(true);
     coinTossPhase = 'flipping';
-    await preloadCoinTossPosters();
     if (generation !== coinTossGeneration) return;
+
+    startCoinTossFlipBed(generation);
 
     if (stage) stage.classList.add('coin-toss-stage-active');
     if (coin) {
@@ -3557,7 +4631,11 @@ async function runCoinToss() {
     }
 
     const spinOk = await runCoinTossSpinSequence(generation, coin, winnerIsFront);
-    if (generation !== coinTossGeneration || !spinOk) return;
+    if (generation !== coinTossGeneration || !spinOk) {
+        stopCoinTossSpinBed();
+        stopCoinTossFlipBed();
+        return;
+    }
 
     playCoinTossLandSound();
 
@@ -3672,7 +4750,11 @@ function updateTicketShuffleButtonState() {
     if (!shuffleBtn) return;
 
     let blockedReason = '';
-    if (isCoinTossing) {
+    if (shufflePhase === 'locking') {
+        blockedReason = 'Shuffle locking in...';
+    } else if (shufflePhase === 'armed') {
+        blockedReason = 'Click the joker to shuffle.';
+    } else if (isCoinTossing) {
         blockedReason = 'Coin flip in progress.';
     } else if (!coinTossSlotA || !coinTossSlotB) {
         blockedReason = 'Pick two movies to shuffle.';
@@ -3695,8 +4777,38 @@ function refreshCoinTossCandidatesUI() {
 
     list.innerHTML = '';
     const candidates = getCoinTossCandidates();
+    const mysteryPool = getMysteryFlickCoinTossPool();
+    const duelLocked = isShuffleActive || isCoinTossing;
+    const bothSlotsFull = coinTossSlotA && coinTossSlotB;
 
-    if (!candidates.length) {
+    const mysteryChip = document.createElement('button');
+    mysteryChip.type = 'button';
+    mysteryChip.className = 'coin-toss-chip coin-toss-chip-mystery';
+    mysteryChip.disabled = duelLocked || mysteryPool.length === 0 || bothSlotsFull;
+    if (mysteryChip.disabled) {
+        if (mysteryPool.length === 0) {
+            mysteryChip.title = 'No movies match your filters.';
+        } else if (bothSlotsFull) {
+            mysteryChip.title = 'Both pick slots are full — click a slot to clear it.';
+        } else if (duelLocked) {
+            mysteryChip.title = 'Coin flip or shuffle in progress.';
+        }
+    }
+
+    const mysterySource = document.createElement('span');
+    mysterySource.className = 'coin-toss-chip-source';
+    mysterySource.textContent = 'mystery';
+    mysteryChip.appendChild(mysterySource);
+
+    const mysteryLabel = document.createElement('span');
+    mysteryLabel.className = 'coin-toss-chip-label';
+    mysteryLabel.textContent = '? Mystery Flick';
+    mysteryChip.appendChild(mysteryLabel);
+
+    mysteryChip.addEventListener('click', () => pickMysteryFlickForCoinToss());
+    list.appendChild(mysteryChip);
+
+    if (!candidates.length && mysteryPool.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'coin-toss-candidates-empty';
         empty.textContent = 'Spin the wheel or keep a movie to build your pick list.';
@@ -3861,6 +4973,7 @@ function setArenaIntroLayout(arena, mode) {
 }
 
 async function runStackTicketsAtCenter(tickets, generation) {
+    playShuffleIntroClip('stack');
     const center = { left: 50, top: 50 };
     const animations = tickets.map((ticketEl, ticketIndex) => {
         const currentLeft = parseFloat(ticketEl.style.left);
@@ -3906,6 +5019,7 @@ async function collapseShuffleIntroOverlay(slotsRow) {
 }
 
 async function runDeployFromStack(tickets, arena, slotsRow, generation) {
+    playShuffleIntroClip('deploy');
     await collapseShuffleIntroOverlay(slotsRow);
     randomizeInitialShuffleSlots();
     setArenaIntroLayout(arena, 'quadrant');
@@ -3979,6 +5093,8 @@ async function runShuffleCinematicIntro(tickets, arena, slotAEl, slotBEl, genera
     const settle0 = getKnownSettlePoint(0, slotAEl, posContainer);
     const settle1 = getKnownSettlePoint(1, slotBEl, posContainer);
 
+    playShuffleIntroClip('emerge');
+
     const emergeAnims = [
         ticket0.animate(
             buildKnownEmergeKeyframesFromPoints(spawn0, settle0),
@@ -4017,6 +5133,8 @@ async function runShuffleCinematicIntro(tickets, arena, slotAEl, slotBEl, genera
     ticket2.classList.remove('shuffle-ticket-intro-hidden');
     ticket3.classList.remove('shuffle-ticket-intro-hidden');
 
+    playShuffleIntroClip('mystery');
+
     const mysteryFadeAnims = [
         ticket2.animate([
             { opacity: 0, transform: 'translate(-50%, -50%) scale(0.95)' },
@@ -4047,6 +5165,7 @@ async function runShuffleCinematicIntro(tickets, arena, slotAEl, slotBEl, genera
 
     // Stage E — align into even row (M1 | Pick A | Pick B | M2), collapse slot frames
     setArenaIntroLayout(arena, 'row');
+    playShuffleIntroClip('rowAlign');
     const rowAnims = tickets.map((ticketEl) => {
         const ticketIndex = Number(ticketEl.dataset.ticketIndex);
         const rowPos = getRowSlotForTicket(ticketIndex);
@@ -4103,6 +5222,7 @@ async function runShuffleCinematicIntro(tickets, arena, slotAEl, slotBEl, genera
     });
     shufflePhase = 'faceDown';
     tickets.forEach((ticketEl) => ticketEl.classList.add('face-down'));
+    playShuffleIntroClip('flip');
     await shuffleSleep(SHUFFLE_FLIP_MS);
     if (generation !== coinTossGeneration) {
         clearShuffleIntroUI();
@@ -4227,7 +5347,7 @@ function buildRandomShufflePlan() {
 }
 
 function playShuffleRevealSound() {
-    playKeeperClip('sounds/keeper-kaching.mp3');
+    playKeeperClip(window.uiAudioPaths.keeperKaching);
 }
 
 function applyCoinTossResult(winner, loser) {
@@ -4680,6 +5800,7 @@ function finishTicketShuffleRound(winner) {
     }
 
     resetTicketShuffleArena();
+    setShuffleJokerArmed(false);
     isShuffleActive = false;
     shufflePhase = 'idle';
     resetCoinTossStage();
@@ -4776,7 +5897,7 @@ async function confirmShuffleTicketPick(ticketEl) {
     window.setTimeout(() => finishTicketShuffleRound(winner), 800);
 }
 
-async function startTicketShuffle() {
+async function armTicketShuffle() {
     if (!canStartTicketShuffle()) {
         updateDecisionButtonStates();
         return;
@@ -4804,11 +5925,40 @@ async function startTicketShuffle() {
     coinTossGeneration += 1;
     const generation = coinTossGeneration;
     isShuffleActive = true;
-    shufflePhase = 'intro';
+    shufflePhase = 'locking';
     shuffleTicketSlots = [0, 1, 2, 3];
 
-    const shuffleBtn = document.getElementById('ticket-shuffle-start-btn');
-    if (shuffleBtn) shuffleBtn.disabled = true;
+    updateDecisionButtonStates();
+    setMiddlePreviewMode('shuffle');
+    setCoinTossStageVisible(true);
+    setCoinTossStatus('Locking in shuffle...');
+
+    const durationMs = await loadShuffleLockInDurationMs();
+    if (generation !== coinTossGeneration) return;
+
+    playShuffleLockInSounds();
+    await playShuffleLockInTransition(durationMs, generation);
+    if (generation !== coinTossGeneration) return;
+
+    shufflePhase = 'armed';
+    setShuffleJokerArmed(true);
+    setCoinTossStatus('Click the joker to shuffle — Esc to cancel');
+}
+
+async function launchTicketShuffle() {
+    if (shufflePhase !== 'armed') return;
+
+    const generation = coinTossGeneration;
+    playShuffleUiClip(SHUFFLE_JOKER_WHOOSH_PATH);
+    setShuffleJokerArmed(false);
+    shufflePhase = 'intro';
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const whooshLeadMs = reducedMotion ? 0 : SHUFFLE_JOKER_WHOOSH_PRE_ANIM_MS;
+    if (whooshLeadMs > 0) {
+        await shuffleSleep(whooshLeadMs);
+        if (generation !== coinTossGeneration) return;
+    }
 
     await playShuffleJokerDisintegrate(generation);
     if (generation !== coinTossGeneration) return;
@@ -4854,42 +6004,47 @@ async function startTicketShuffle() {
 
     clearShuffleArenaEntering();
     shufflePhase = 'shuffling';
+    startShuffleTrollAudio();
 
-    const plan = buildRandomShufflePlan();
-    for (const step of plan) {
-        if (generation !== coinTossGeneration) return;
-        if (step.type === 'rotation') {
-            const ok = await runRotationStep(tickets, generation, step);
-            if (!ok) return;
-        } else if (step.type === 'crossSwap') {
-            const ok = await runCrossSwapStep(tickets, generation, step);
-            if (!ok) return;
-        } else if (step.type === 'burst') {
-            const ok = await runBurstStep(tickets, generation, step);
-            if (!ok) return;
-        } else if (step.type === 'feint') {
-            const ok = await runFeintStep(tickets, generation);
-            if (!ok) return;
-        } else if (step.type === 'spin') {
-            const ok = await runSpinStep(tickets, step.dir, generation);
-            if (!ok) return;
-        } else if (step.type === 'misdirect') {
-            const ok = await runVisualMisdirection(tickets, generation);
-            if (!ok) return;
-        } else if (step.type === 'settle') {
-            applyShufflePositionClasses(tickets);
-            await shuffleSleep(SHUFFLE_SWAP_MS / 2);
+    try {
+        const plan = buildRandomShufflePlan();
+        for (const step of plan) {
+            if (generation !== coinTossGeneration) return;
+            if (step.type === 'rotation') {
+                const ok = await runRotationStep(tickets, generation, step);
+                if (!ok) return;
+            } else if (step.type === 'crossSwap') {
+                const ok = await runCrossSwapStep(tickets, generation, step);
+                if (!ok) return;
+            } else if (step.type === 'burst') {
+                const ok = await runBurstStep(tickets, generation, step);
+                if (!ok) return;
+            } else if (step.type === 'feint') {
+                const ok = await runFeintStep(tickets, generation);
+                if (!ok) return;
+            } else if (step.type === 'spin') {
+                const ok = await runSpinStep(tickets, step.dir, generation);
+                if (!ok) return;
+            } else if (step.type === 'misdirect') {
+                const ok = await runVisualMisdirection(tickets, generation);
+                if (!ok) return;
+            } else if (step.type === 'settle') {
+                applyShufflePositionClasses(tickets);
+                await shuffleSleep(SHUFFLE_SWAP_MS / 2);
+            }
         }
+
+        if (generation !== coinTossGeneration) return;
+
+        shufflePhase = 'picking';
+        setCoinTossStatus('Pick a ticket');
+        tickets.forEach((ticketEl) => {
+            ticketEl.disabled = false;
+            ticketEl.classList.add('picking');
+        });
+    } finally {
+        stopShuffleTrollAudio();
     }
-
-    if (generation !== coinTossGeneration) return;
-
-    shufflePhase = 'picking';
-    setCoinTossStatus('Pick a ticket');
-    tickets.forEach((ticketEl) => {
-        ticketEl.disabled = false;
-        ticketEl.classList.add('picking');
-    });
 }
 
 function handleCoinTossManualSearch(slotKey) {
@@ -4954,7 +6109,7 @@ function buildCoinTossUI() {
 
     const label = document.createElement('div');
     label.id = 'coin-toss-label';
-    label.textContent = 'PICK BETWEEN TWO';
+    label.textContent = 'Dueling Flicks';
     section.appendChild(label);
 
     const hint = document.createElement('div');
@@ -4996,14 +6151,24 @@ function buildCoinTossUI() {
         <div class="coin-face coin-face-front"></div>
         <div class="coin-face coin-face-back"></div>
     `;
-    coin.addEventListener('click', () => { confirmCoinToss(); });
+    coin.addEventListener('click', () => {
+        if (coinTossPhase === 'armed') {
+            void launchCoinToss();
+            return;
+        }
+        confirmCoinToss();
+    });
     flightWrap.appendChild(coin);
 
-    const shufflePreview = document.createElement('div');
+    const shufflePreview = document.createElement('button');
+    shufflePreview.type = 'button';
     shufflePreview.id = 'shuffle-preview';
     shufflePreview.hidden = true;
+    shufflePreview.disabled = true;
     shufflePreview.setAttribute('aria-hidden', 'true');
-    shufflePreview.textContent = '🃏';
+    shufflePreview.setAttribute('aria-label', 'Shuffle preview');
+    shufflePreview.innerHTML = '<span class="shuffle-joker-face"><span class="shuffle-joker-card-shell"><span class="shuffle-joker-glyph" aria-hidden="true">🃏</span></span></span>';
+    shufflePreview.addEventListener('click', () => { void launchTicketShuffle(); });
     flightWrap.appendChild(shufflePreview);
 
     coinStage.appendChild(flightWrap);
@@ -5083,7 +6248,7 @@ function buildCoinTossUI() {
     flipBtn.disabled = true;
     flipBtn.addEventListener('mouseenter', showCoinTossPreview);
     flipBtn.addEventListener('mouseleave', hideCoinTossPreviewIfUnpinned);
-    flipBtn.addEventListener('click', () => { void runCoinToss(); });
+    flipBtn.addEventListener('click', () => { void armCoinToss(); });
     actionRow.appendChild(flipBtn);
 
     const shuffleBtn = document.createElement('button');
@@ -5094,7 +6259,7 @@ function buildCoinTossUI() {
     shuffleBtn.disabled = true;
     shuffleBtn.addEventListener('mouseenter', showShufflePreview);
     shuffleBtn.addEventListener('mouseleave', hideMiddlePreviewIfUnpinned);
-    shuffleBtn.addEventListener('click', () => { void startTicketShuffle(); });
+    shuffleBtn.addEventListener('click', () => { void armTicketShuffle(); });
     actionRow.appendChild(shuffleBtn);
 
     section.appendChild(actionRow);
@@ -5109,8 +6274,8 @@ function buildCoinTossUI() {
     updateDecisionButtonStates();
 }
 
-const ticketStubsPrintClipPath = 'sounds/ticket-stubs-receipt-print.mp3';
-const ticketStubsShredClipPath = 'sounds/ticket-stubs-shred.mp3';
+const ticketStubsPrintClipPath = window.uiAudioPaths.ticketStubsPrint;
+const ticketStubsShredClipPath = window.uiAudioPaths.ticketStubsShred;
 const ticketStubsPrintDurationFallbackMs = 1590;
 const ticketStubsShredDurationFallbackMs = 1230;
 const ticketStubsAnimationDelayMs = 200;
@@ -5489,31 +6654,6 @@ function showTicketStubsMessage() {
     openTicketStubsPanel();
 }
 
-function copyTicketStubsPrompt() {
-    const copyStatus = document.getElementById('ticket-stubs-copy-status');
-    const text = buildTicketStubsPrompt();
-    const showCopied = () => {
-        if (copyStatus) {
-            copyStatus.textContent = 'Copied!';
-            setTimeout(() => {
-                if (copyStatus.textContent === 'Copied!') {
-                    copyStatus.textContent = '';
-                }
-            }, 2000);
-        }
-    };
-
-    if (navigator.clipboard?.writeText) {
-        navigator.clipboard.writeText(text).then(showCopied).catch(() => {
-            copyTextFallback(text);
-            showCopied();
-        });
-        return;
-    }
-
-    copyTextFallback(text);
-    showCopied();
-}
 
 function copyTextFallback(text) {
     const helper = document.createElement('textarea');
@@ -5733,6 +6873,7 @@ function makeItAKeeper() {
     keeperUiGeneration += 1;
     const keepGeneration = keeperUiGeneration;
 
+    playSpinButtonSounds();
     playKeeperSound(keeperPicks.length + 1);
 
     const keeperButton = document.getElementById('keeper-button');
@@ -5872,8 +7013,10 @@ function buildKeeperUI() {
     const ticketStubsCopy = document.createElement('button');
     ticketStubsCopy.id = 'ticket-stubs-copy';
     ticketStubsCopy.type = 'button';
-    ticketStubsCopy.textContent = 'Copy to Clipboard';
-    ticketStubsCopy.addEventListener('click', copyTicketStubsPrompt);
+    ticketStubsCopy.textContent = 'Mark as Watched';
+    ticketStubsCopy.addEventListener('click', () => {
+        void markTicketStubsAsWatched();
+    });
 
     const ticketStubsCopyStatus = document.createElement('span');
     ticketStubsCopyStatus.id = 'ticket-stubs-copy-status';
@@ -5912,17 +7055,30 @@ function buildCategoryFilterUI() {
 
 buildCategoryFilterUI();
 
+initWatchedMovies();
+
 buildRuntimeFilterUI();
 
 buildDecadeFilterUI();
+
+buildWatchedFilterUI();
+
+buildWatchedFlicksPanelUI();
+
+const markWatchedBtn = document.getElementById('mark-watched-btn');
+if (markWatchedBtn) {
+    markWatchedBtn.addEventListener('click', markCurrentResultAsWatched);
+}
 
 updateSpinBlockerUI();
 
 buildKeeperUI();
 
+buildCoinTossUI();
+
 buildAddMovieUI();
 
-buildCoinTossUI();
+buildWatchedBulkImportUI();
 
 updateKeeperPicksUI();
 
