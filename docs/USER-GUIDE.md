@@ -16,6 +16,12 @@ Then open [http://127.0.0.1:8765/](http://127.0.0.1:8765/).
 
 You can also open `app/index.html` directly in a browser, but some audio may not load without a local server.
 
+### Shared link (no install)
+
+**Live site:** [https://mariogalaxyz.github.io/pick-a-flick/](https://mariogalaxyz.github.io/pick-a-flick/)
+
+Works on phone and desktop browsers. Friends use your curated list as-is; their keeper deck and spin history stay in their own browser.
+
 ### Screen layout
 
 **Arcade area** (main view)
