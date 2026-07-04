@@ -2,7 +2,7 @@
 // Re-run npm run refresh-audio after adding clips to audio/win/<category>/.
 window.categoryWinClips = {
   "FOREIGN EMBASSY 🌐": {
-    folder: "audio/win/foreign_embassy/",
+    folder: "../audio/win/foreign_embassy/",
     files: [
     "007.mp3",
     "493125__fkunze__champagnebarnorskgem.mp3",
@@ -13,7 +13,7 @@ window.categoryWinClips = {
     ]
   },
   "TUMBLEWEED TURNPIKE 🏜️": {
-    folder: "audio/win/tumbleweed/",
+    folder: "../audio/win/tumbleweed/",
     files: [
     "256462__foreign_quiche__guitar-tremolo.mp3",
     "spongebob-sad-song.mp3",
@@ -21,7 +21,7 @@ window.categoryWinClips = {
     ]
   },
   "JB JUNCTION 🎸": {
-    folder: "audio/win/jb_junction/",
+    folder: "../audio/win/jb_junction/",
     files: [
     "and-here-i-am-saying-you-got-no-sense-of-humor.mp3",
     "and-i-can-sing-like-that-all-night.mp3",
@@ -54,7 +54,7 @@ window.categoryWinClips = {
     ]
   },
   "NEON & NINETIES 🌃": {
-    folder: "audio/win/neon_skyline/",
+    folder: "../audio/win/neon_skyline/",
     files: [
     "HKE1.mp3",
     "HKE2.mp3",
@@ -65,7 +65,7 @@ window.categoryWinClips = {
     ]
   },
   "ALIEN ALLEY 👽": {
-    folder: "audio/win/alien_alley/",
+    folder: "../audio/win/alien_alley/",
     files: [
     "alien alley1.mp3",
     "daviddumaisaudio-sci-fi-weapon-single-shot-warped-06-316417.mp3",
@@ -79,7 +79,7 @@ window.categoryWinClips = {
     ]
   },
   "ANIMATION STATION 👾": {
-    folder: "audio/win/animation_station/",
+    folder: "../audio/win/animation_station/",
     files: [
     "11325622-cartoon-violin-sound-effect-241389.mp3",
     "49053354-cartoon-fall-318229.mp3",
@@ -92,7 +92,7 @@ window.categoryWinClips = {
     ]
   },
   "CAGE STAGE 🐷": {
-    folder: "audio/win/cage_stage/",
+    folder: "../audio/win/cage_stage/",
     files: [
     "cage stage sfx1.mp3",
     "cage stage sfx10.mp3",
@@ -116,7 +116,7 @@ window.categoryWinClips = {
     ]
   },
   "CARREY'S CHARACTERS 🎭": {
-    folder: "audio/win/carrey_characters/",
+    folder: "../audio/win/carrey_characters/",
     files: [
     "carrey1.wav",
     "carrey2.wav",
@@ -137,7 +137,7 @@ window.categoryWinClips = {
     ]
   },
   "KAUFMAN'S KORNER 🌞": {
-    folder: "audio/win/kaufman_korner/",
+    folder: "../audio/win/kaufman_korner/",
     files: [
     "chill-guy-song.mp3",
     "sad rick and morty.mp3",
@@ -145,7 +145,7 @@ window.categoryWinClips = {
     ]
   },
   "MOVIES TO FALL ASLEEP TO 💤": {
-    folder: "audio/win/movies_to_fall_asleeepto/",
+    folder: "../audio/win/movies_to_fall_asleeepto/",
     files: [
     "3535__luffy__adjusting-the-spped-of-a-record.wav",
     "CRANK.mp3",
@@ -153,7 +153,7 @@ window.categoryWinClips = {
     ]
   },
   "MUSIC MOUNTAIN ⛰️": {
-    folder: "audio/win/music_mountain/",
+    folder: "../audio/win/music_mountain/",
     files: [
     "freesound_community-harp-glissando-down-69334.mp3",
     "music1.mp3",
@@ -162,7 +162,7 @@ window.categoryWinClips = {
     ]
   },
   "PEGG'S PLAYGROUND 🎡": {
-    folder: "audio/win/peggs_playground/",
+    folder: "../audio/win/peggs_playground/",
     files: [
     "p1.mp3",
     "p2.mp3",
@@ -170,7 +170,7 @@ window.categoryWinClips = {
     ]
   },
   "SEQUEL STREET 🚗": {
-    folder: "audio/win/sequel_street/",
+    folder: "../audio/win/sequel_street/",
     files: [
     "160907__racche__cue-scratch.wav",
     "gloria-gaynor-i-will-survive-mp3cut.mp3",
@@ -181,20 +181,20 @@ window.categoryWinClips = {
     ]
   },
   "WACKY WAY 🤪": {
-    folder: "audio/win/wacky_way/",
+    folder: "../audio/win/wacky_way/",
     files: [
     "screw-on-this-loose-2.mp3",
     "tunetank-kids-logo-483658.mp3"
     ]
   },
   "ZEMECKIS ZONE 🐇": {
-    folder: "audio/win/zemeckis_zone/",
+    folder: "../audio/win/zemeckis_zone/",
     files: [
     "alexzavesa-logo-fashion-future-bass-491977.mp3"
     ]
   },
   "PHOENIX FREEWAY 🃏": {
-    folder: "audio/win/phoenix_freeway/",
+    folder: "../audio/win/phoenix_freeway/",
     files: [
     "Voicy_All I Have Are Negative Thoughts.mp3",
     "Voicy_Dont Wanna Feel So Bad Anymore.mp3",
@@ -205,7 +205,7 @@ window.categoryWinClips = {
     ]
   },
   "U-Pick ⛏️": {
-    folder: "audio/win/u_pick/",
+    folder: "../audio/win/u_pick/",
     files: [
     "11325622-cartoon-trombone-sound-effect-241387.mp3",
     "freesound_community-wah-wah-sad-trombone-6347.mp3",

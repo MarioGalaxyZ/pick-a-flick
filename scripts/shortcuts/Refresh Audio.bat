@@ -1,5 +1,5 @@
 @echo off
-cd /d "%~dp0"
+cd /d "%~dp0\..\.."
 
 echo Refreshing audio database...
 echo.
@@ -18,5 +18,5 @@ pause
 exit /b %REFRESH_EXIT%
 
 :runRefresh
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\analyze-audio-gains.ps1"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0..\analyze-audio-gains.ps1"
 exit /b %ERRORLEVEL%

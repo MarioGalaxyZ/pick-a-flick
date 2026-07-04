@@ -7,7 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
-    <link rel="preload" href="audio/ui/spin/spin-projector-button-push.mp3" as="fetch" type="audio/mpeg" crossorigin>
+    <link rel="preload" href="../audio/ui/spin/spin-projector-button-push DOWN.mp3" as="fetch" type="audio/mpeg" crossorigin>
+    <link rel="preload" href="../audio/ui/spin/spin-projector-button-push RELEASE.mp3" as="fetch" type="audio/mpeg" crossorigin>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -27,16 +28,22 @@
             <div id="wheel-disc"></div>
         </div>
 
-        <div id="spin-button-wrap">
-            <button id="spin-button" class="arcade-btn" onclick="initiateSpin(event)"></button>
-            <div id="spin-no-match-message" class="spin-blocker-message" hidden aria-live="polite">
-                No movies match your selected categories and filters.
+        <div id="spin-controls-wrap">
+            <div id="spin-button-wrap">
+                <button type="button" id="spin-button" class="arcade-btn"></button>
+                <div id="spin-no-match-message" class="spin-blocker-message" hidden aria-live="polite">
+                    No movies match your selected categories and filters.
+                </div>
+            </div>
+            <div id="spin-power-gauge" aria-hidden="true">
+                <div id="spin-power-gauge-segments" class="spin-power-gauge-segments"></div>
             </div>
         </div>
 
         <div id="audio-controls">
             <button type="button" id="intro-audio-btn" class="audio-toggle-btn audio-disabled" onclick="toggleIntroAudio()">Intro Audio</button>
             <button type="button" id="victory-audio-btn" class="audio-toggle-btn audio-enabled" onclick="toggleVictoryAudio()">Victory Audio</button>
+            <button type="button" id="reveal-mode-btn" class="audio-toggle-btn audio-enabled" onclick="toggleRevealMode()">Classic Reveal</button>
             <button type="button" id="killswitch-btn" class="killswitch-btn" onclick="killswitch()">KILLSWITCH</button>
         </div>
 
@@ -89,42 +96,66 @@
         </div>
 
         <div id="runtime-filter">
-            <div id="runtime-filter-label">RUNTIME FILTER</div>
-            <div id="runtime-filter-controls">
-                <label class="runtime-filter-field">
-                    Min:
-                    <select id="min-runtime-select"></select>
-                </label>
-                <label class="runtime-filter-field">
-                    Max:
-                    <select id="max-runtime-select"></select>
-                </label>
-                <button type="button" onclick="clearRuntimeFilter()">Clear</button>
+            <button type="button" class="filter-panel-emblem filter-panel-emblem--stopwatch" aria-expanded="true" aria-controls="runtime-filter-body" aria-label="Toggle runtime filter">⏱️</button>
+            <div id="runtime-filter-body" class="filter-panel-body">
+                <div id="runtime-filter-label">RUNTIME FILTER</div>
+                <div id="runtime-filter-controls">
+                    <label class="runtime-filter-field">
+                        Min:
+                        <select id="min-runtime-select"></select>
+                    </label>
+                    <label class="runtime-filter-field">
+                        Max:
+                        <select id="max-runtime-select"></select>
+                    </label>
+                    <button type="button" onclick="clearRuntimeFilter()">Clear</button>
+                </div>
             </div>
         </div>
 
         <div id="decade-filter">
-            <div id="decade-filter-label">DECADE FILTER</div>
-            <div id="decade-filter-controls">
-                <button type="button" onclick="toggleAllDecades(true)">Select All</button>
-                <button type="button" onclick="toggleAllDecades(false)">Deselect All</button>
+            <button type="button" class="filter-panel-emblem filter-panel-emblem--calendar" aria-expanded="true" aria-controls="decade-filter-body" aria-label="Toggle decade filter">📅</button>
+            <div id="decade-filter-body" class="filter-panel-body">
+                <div id="decade-filter-label">DECADE FILTER</div>
+                <div id="decade-filter-controls">
+                    <button type="button" onclick="toggleAllDecades(true)">Select All</button>
+                    <button type="button" onclick="toggleAllDecades(false)">Deselect All</button>
+                </div>
+                <div id="decade-filter-options"></div>
             </div>
-            <div id="decade-filter-options"></div>
         </div>
 
-        <div id="watched-filter">
-            <div id="watched-filter-label">WATCHED FILTER</div>
-            <div id="watched-filter-controls">
-                <label class="watched-filter-option">
-                    <input type="checkbox" id="include-watched-checkbox">
-                    Include watched
-                </label>
+        <div id="watched-filter-column">
+            <div id="watched-filter">
+                <button type="button" class="filter-panel-emblem filter-panel-emblem--scroll" aria-expanded="true" aria-controls="watched-filter-body" aria-label="Toggle watched filter">📜</button>
+                <div id="watched-filter-body" class="filter-panel-body">
+                    <div id="watched-filter-label">WATCHED FILTER</div>
+                    <div id="watched-filter-controls">
+                        <label class="watched-filter-option">
+                            <input type="checkbox" id="include-watched-checkbox">
+                            Include watched
+                        </label>
+                    </div>
+                    <div id="watched-filter-count" aria-live="polite">0 watched</div>
+                </div>
             </div>
-            <div id="watched-filter-count" aria-live="polite">0 watched</div>
+            <div id="wheel-art-toggle">
+                <button type="button" class="filter-panel-emblem filter-panel-emblem--wheel-art" aria-expanded="true" aria-controls="wheel-art-toggle-body" aria-label="Toggle wheel art">🎨</button>
+                <div id="wheel-art-toggle-body" class="filter-panel-body">
+                    <div id="wheel-art-toggle-label">WHEEL ART</div>
+                    <div id="wheel-art-toggle-controls">
+                        <label class="wheel-art-toggle-option">
+                            <input type="checkbox" id="undead-wheel-checkbox">
+                            Undead wheel
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="watched-flicks-panel">
+        <div class="watched-flicks-emblem" aria-hidden="true">📜</div>
         <button type="button" id="watched-flicks-toggle" aria-expanded="false">WATCHED FLICKS</button>
         <div id="watched-flicks-content" hidden>
             <ul id="watched-flicks-list"></ul>
@@ -134,13 +165,13 @@
     </div>
     </div>
 
-    <script src="movie-metadata.js"></script>
+    <script src="generated/movie-metadata.js"></script>
     <script src="watched-movies.js"></script>
-    <script src="audio-paths.js"></script>
-    <script src="win-clips-manifest.js"></script>
-    <script src="audio-gain-map.js"></script>
-    <script src="coin-flip-blip-map.js"></script>
-    <script src="shuffle-golden-ticket-map.js"></script>
+    <script src="generated/audio-paths.js"></script>
+    <script src="generated/win-clips-manifest.js"></script>
+    <script src="generated/audio-gain-map.js"></script>
+    <script src="generated/coin-flip-blip-map.js"></script>
+    <script src="generated/shuffle-golden-ticket-map.js"></script>
     <script src="main.js"></script>
 </body>
 </html>

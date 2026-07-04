@@ -103,5 +103,5 @@ export function extractRuntimeMinutesFromMainJs(mainJsPath) {
 }
 
 export function getDefaultMainJsPath() {
-    return path.join(__dirname, '..', '..', 'main.js');
+    return path.join(__dirname, '..', '..', 'app', 'main.js');
 }

@@ -74,7 +74,7 @@ function extractListings(mainJs) {
     return [...new Set(listings)];
 }
 
-const mainJsPath = path.join(__dirname, '..', 'main.js');
+const mainJsPath = path.join(__dirname, '..', 'app', 'main.js');
 const mainJs = fs.readFileSync(mainJsPath, 'utf8');
 const listings = extractListings(mainJs);
 

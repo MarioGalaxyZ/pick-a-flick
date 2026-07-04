@@ -3,8 +3,8 @@
 
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $PSScriptRoot
-$MainJs = Join-Path $Root 'main.js'
-$OutputPath = Join-Path $Root 'movie-metadata.js'
+$MainJs = Join-Path $Root 'app\main.js'
+$OutputPath = Join-Path $Root 'app\generated\movie-metadata.js'
 $OverridesPath = Join-Path $PSScriptRoot 'poster-overrides.json'
 
 function Parse-MovieListing([string]$Listing) {

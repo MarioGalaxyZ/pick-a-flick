@@ -1,4 +1,4 @@
-$mainJs = Get-Content (Join-Path $PSScriptRoot '..\main.js') -Raw
+$mainJs = Get-Content (Join-Path $PSScriptRoot '..\app\main.js') -Raw
 
 function Test-FilterLogic {
     param(

@@ -14,7 +14,7 @@ import {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
-const OUTPUT_PATH = path.join(ROOT, 'movie-metadata.js');
+const OUTPUT_PATH = path.join(ROOT, 'app', 'generated', 'movie-metadata.js');
 const OVERRIDES_PATH = path.join(__dirname, 'poster-overrides.json');
 const THROTTLE_MS = 250;
 
@@ -277,6 +277,12 @@ async function main() {
 
             metadataMap[listing] = record;
             console.log(validatedPoster ? 'OK (OMDb)' : 'OK (OMDb, no poster)');
+        } else if (existingRecord?.Response === 'True' && existingRecord?.Poster && existingRecord?.Plot) {
+            metadataMap[listing] = existingRecord;
+            console.log('KEEP (existing full record; API miss)');
+        } else if (existingRecord?.Poster && existingRecord.Poster !== 'N/A') {
+            metadataMap[listing] = existingRecord;
+            console.log('KEEP (existing poster; API miss)');
         } else {
             const runtimeMinutes = runtimes[listing] ?? null;
             const poster = listingPosterOverride;

@@ -1,5 +1,5 @@
 param(
-    [string]$InputPath = "C:\Users\james\Documents\Pick A Flick Cursor\ticket_dispenser.png",
+    [string]$InputPath = "C:\Users\james\Documents\Pick A Flick Cursor\graphics\ui\ticket-dispenser.png",
     [string]$SourcePath = "C:\Users\james\.cursor\projects\c-Users-james-Documents-Pick-A-Flick-Cursor\assets\c__Users_james_AppData_Roaming_Cursor_User_workspaceStorage_empty-window_images_ticket_dispenser-fc099831-bce7-4dec-863c-d977ad08c6b6.png",
     [int]$Threshold = 24
 )

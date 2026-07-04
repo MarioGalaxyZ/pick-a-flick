@@ -1,0 +1,18 @@
+﻿# Dependencies and caches
+node_modules/
+.cache/
+
+# Staging / draft audio (see .cursor/rules/audio-gain-normalization.mdc)
+audio/_staging/
+
+# Staging / draft visual assets (WIP title cards, etc.)
+graphics/_staging/
+
+# Superseded artwork
+graphics/_archive/
+
+# DAW sidecar files
+*.reapeaks
+
+# Cursor debug logs
+.cursor/debug-*.log

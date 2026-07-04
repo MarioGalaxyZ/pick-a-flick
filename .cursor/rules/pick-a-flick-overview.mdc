@@ -1,0 +1,53 @@
+---
+
+description: Pick A Flick project overview — stack, layout, and editing conventions
+
+alwaysApply: true
+
+---
+
+# Pick A Flick
+
+Neon arcade movie wheel: spin → category → movie → ticket-style result with synced audio.
+
+Static HTML/JS/CSS under `app/` — no app build step. Use `scripts/serve-static.ps1` for local dev (required for fetch/audio).
+
+## Key files
+
+| Path | Role |
+|------|------|
+| `app/index.html`, `app/main.js`, `app/style.css` | App UI and logic |
+| `scripts/` | Metadata, audio, and dev utilities |
+| `audio/` | Win clips (`audio/win/<category>/`) and UI clips (`audio/ui/`) |
+| `graphics/` | UI artwork (`graphics/ui/`), Tix Mix title cards (`graphics/tix-mix/`) |
+
+## Source of truth vs generated — edit the left, not the right
+
+| Edit this | Generated (do not hand-edit) |
+|-----------|-------------------------------|
+| `app/main.js` → `movieDatabase` | `app/generated/movie-metadata.js` |
+| `app/watched-movies.js` | — |
+| `scripts/audio-paths.mjs` | `app/generated/audio-paths.js` |
+| `scripts/win-clip-categories.mjs` + clip folders | `app/generated/win-clips-manifest.js` |
+| (after clip changes) run refresh | `app/generated/audio-gain-map.js`, `coin-flip-blip-map.js`, `shuffle-golden-ticket-map.js` |
+
+## Category names must match across
+
+`movieDatabase` keys, `scripts/win-clip-categories.mjs`, and `audio/win/<folder>/`.
+
+## Code style
+
+- `app/main.js` is intentionally monolithic (~6,700 lines) — do not split or refactor unless asked.
+- Prefer minimal, focused diffs; match existing patterns.
+- Draft audio clips: `audio/_staging/` or prefix filenames with `_` in win folders.
+- Draft graphics: `graphics/_staging/` or prefix filenames with `_` in `graphics/tix-mix/`.
+
+## npm scripts (common)
+
+- `npm run refresh-audio` — sync paths, manifests, gain maps
+- `npm run generate-metadata:ps` — regenerate `app/generated/movie-metadata.js` (needs `.env` / `OMDB_API_KEY`)
+- `npm run watch-audio` — auto-refresh on clip changes
+
+## Architecture detail
+
+See `docs/AGENTS.md` for `app/main.js` region map and subsystem entry points.

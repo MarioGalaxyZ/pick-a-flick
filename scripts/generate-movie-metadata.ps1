@@ -5,12 +5,14 @@
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $PSScriptRoot
 . (Join-Path $PSScriptRoot 'load-env.ps1')
+$cliApiKey = $env:OMDB_API_KEY
 Import-DotEnv (Join-Path $Root '.env')
+if ($cliApiKey) { $env:OMDB_API_KEY = $cliApiKey }
 
-$MainJs = Join-Path $Root 'main.js'
-$OutputPath = Join-Path $Root 'movie-metadata.js'
+$MainJs = Join-Path $Root 'app\main.js'
+$OutputPath = Join-Path $Root 'app\generated\movie-metadata.js'
 $OverridesPath = Join-Path $PSScriptRoot 'poster-overrides.json'
-$ThrottleMs = 250
+$ThrottleMs = 500
 $ApiKey = if ($env:OMDB_API_KEY) { $env:OMDB_API_KEY } else { '14e2f0ac' }
 
 function Parse-MovieListing([string]$Listing) {
@@ -34,7 +36,10 @@ function Normalize-PartNumbers([string]$Title) {
 }
 
 function Get-OmdbSearchTitle([string]$Listing) {
-    $aliases = @{ "Bill & Ted's Face The Music (2020)" = 'Bill & Ted Face the Music' }
+    $aliases = @{
+        "Bill & Ted's Face The Music (2020)" = 'Bill & Ted Face the Music'
+        "Walk the Line EXTENDED (2005)" = 'Walk the Line'
+    }
     if ($aliases.ContainsKey($Listing)) { return $aliases[$Listing] }
     return (Parse-MovieListing $Listing).cleanTitle
 }
@@ -140,8 +145,14 @@ function Load-ExistingMetadata([string]$Path) {
     $content = Get-Content -Raw -LiteralPath $Path -Encoding UTF8
     $match = [regex]::Match($content, 'window\.movieMetadataByListing\s*=\s*(\{[\s\S]*\});')
     if (-not $match.Success) { return @{} }
+    $json = $match.Groups[1].Value -replace ',(\s*\})', '$1'
     try {
-        return (Invoke-Expression ("return $($match.Groups[1].Value)"))
+        $parsed = ConvertFrom-Json $json
+        $hash = [ordered]@{}
+        foreach ($prop in $parsed.PSObject.Properties) {
+            $hash[$prop.Name] = $prop.Value
+        }
+        return $hash
     } catch {
         return @{}
     }
@@ -213,6 +224,14 @@ foreach ($listing in $listings) {
         $metadata[$listing] = Build-MetadataRecord $data $poster
         $omdbFetched++
         Write-Host ($(if ($poster) { 'OK' } else { 'OK (no poster)' }))
+    } elseif (Test-FullMetadataRecord $existingRecord) {
+        $metadata[$listing] = $existingRecord
+        Write-Host 'KEEP (existing full record; API miss)'
+        $skipped++
+    } elseif ($existingRecord -and $existingRecord.Poster -and $existingRecord.Poster -ne 'N/A') {
+        $metadata[$listing] = $existingRecord
+        Write-Host 'KEEP (existing poster; API miss)'
+        $skipped++
     } else {
         $poster = $listingPosterOverride
         if ($poster -and -not (Test-PosterUrl $poster)) { $poster = $null }

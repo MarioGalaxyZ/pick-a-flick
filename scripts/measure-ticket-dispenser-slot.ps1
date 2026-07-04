@@ -1,6 +1,6 @@
 Add-Type -AssemblyName System.Drawing
 
-$path = (Join-Path $PSScriptRoot '..\ticket_dispenser.png' | Resolve-Path).Path
+$path = (Join-Path $PSScriptRoot '..\graphics\ui\ticket-dispenser.png' | Resolve-Path).Path
 $bmp = [System.Drawing.Bitmap]::FromFile($path)
 $w = $bmp.Width
 $h = $bmp.Height

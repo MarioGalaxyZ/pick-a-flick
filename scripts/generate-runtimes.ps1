@@ -1,5 +1,5 @@
 $OMDB_API_KEY = '14e2f0ac'
-$mainJsPath = Join-Path $PSScriptRoot '..\main.js'
+$mainJsPath = Join-Path $PSScriptRoot '..\app\main.js'
 $mainJs = Get-Content $mainJsPath -Raw
 
 $listings = [regex]::Matches($mainJs, '"([^"]+\(\d{4}\)[^"]*)"') |

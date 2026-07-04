@@ -61,7 +61,7 @@ One concern per rule, triggered by globs:
 | Shuffle minigame | `main.js` (shuffle section), `style.css` | Key constants, audio paths, timing constants |
 | Keeper deck | same | 3-slot behavior, ticket-stubs flow |
 | Coin toss | same | Slot assignment, flip audio |
-| Tix Mix / themes | `Tix Mix Graphics/`, `style.css` | Visual direction (Mario Party–inspired title cards, not asset copies) |
+| Tix Mix / themes | `graphics/tix-mix/`, `style.css` | Visual direction (Mario Party–inspired title cards, not asset copies) |
 
 Your audio rule already shows the right shape: **trigger → source of truth → required commands → verification**.
 
@@ -97,10 +97,10 @@ That keeps evolving work visible without rewriting rules every week.
 
 ### 5. Integrate brainstorm docs into the workflow
 
-`Tix Mix Themes.txt` is useful creative context but isolated. Either:
+`docs/TIX-MIX-THEMES.md` is useful creative context but isolated. Either:
 
-- Reference it from a Tix Mix rule (“see `Tix Mix Themes.txt` for theme vocabulary”), or  
-- `@Tix Mix Themes.txt` when asking for theme-related work  
+- Reference it from a Tix Mix rule (“see `docs/TIX-MIX-THEMES.md` for theme vocabulary”), or  
+- `@docs/TIX-MIX-THEMES.md` when asking for theme-related work  
 
 Otherwise I may not know it exists.
 
@@ -164,7 +164,7 @@ A few facts worth encoding in rules because they are easy to get wrong:
 2. **Category names must match across** `movieDatabase`, `win-clip-categories.mjs`, and `audio/win/<folder>/`.  
 3. **Audio has two pipelines:** UI paths (`audio-paths.mjs` → sync) and win clips (folder scan → manifest → gain map). Your existing rule covers this well.  
 4. **`main.js` is intentionally monolithic** — say explicitly if you want it to stay that way; otherwise I may suggest splitting it.  
-5. **Large asset folders** (`audio/_staging/`, `Tix Mix Graphics/`) are not fully indexed in git status snapshots — mention which assets matter for the task.
+5. **Large asset folders** (`audio/_staging/`, `graphics/tix-mix/`) are not fully indexed in git status snapshots — mention which assets matter for the task.
 
 ---
 

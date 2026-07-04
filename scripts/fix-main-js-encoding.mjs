@@ -8,8 +8,8 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
-const mainPath = path.join(root, 'main.js');
-const manifestPath = path.join(root, 'win-clips-manifest.js');
+const mainPath = path.join(root, 'app', 'main.js');
+const manifestPath = path.join(root, 'app', 'generated', 'win-clips-manifest.js');
 
 function categoryLabel(key) {
   let label = '';

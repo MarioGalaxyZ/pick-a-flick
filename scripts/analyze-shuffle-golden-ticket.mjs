@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
 const CLIP_REL = 'audio/ui/shuffle/current golden ticket1.mp3';
 const CLIP_PATH = path.join(projectRoot, CLIP_REL);
-const OUT_PATH = path.join(projectRoot, 'shuffle-golden-ticket-map.js');
+const OUT_PATH = path.join(projectRoot, 'app', 'generated', 'shuffle-golden-ticket-map.js');
 const LOCAL_FFMPEG = path.join(projectRoot, 'node_modules', 'ffmpeg-static', 'ffmpeg.exe');
 
 async function resolveFfmpeg() {

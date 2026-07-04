@@ -1,0 +1,83 @@
+---
+
+description: Edit movieDatabase listings in main.js — format, categories, and metadata follow-up
+
+globs: app/main.js
+
+alwaysApply: false
+
+---
+
+
+
+# Movie database
+
+
+
+Movie listings live in `movieDatabase` at the top of `app/main.js`. This is the source of truth for which movies appear on the wheel.
+
+
+
+## Listing format
+
+
+
+- Standard: `"Title (Year)"` — e.g. `"Aliens (1986)"`
+
+- Series/franchise: `"Franchise (Series)"` — e.g. `"Alien (Series)"`, `"Men in Black (Series)"`
+
+- Use the exact string everywhere (metadata keys, watched list, keeper labels)
+
+
+
+## Adding movies
+
+
+
+1. Append to the correct category array — category key must match exactly, including emoji (e.g. `"CAGE STAGE 🐷"`)
+
+2. Check for duplicates with `isDuplicateListing` logic — do not add the same listing twice
+
+3. Run `npm run generate-metadata:ps` to refresh `app/generated/movie-metadata.js`
+
+4. Do not hand-edit `app/generated/movie-metadata.js`
+
+
+
+The in-app Add Movies UI generates a prompt via `buildAddMoviesPrompt` (~line 2675) with the same instructions.
+
+
+
+## Removing movies
+
+
+
+When the user marks keeper picks as watched via Ticket Stubs, the app generates a remove prompt listing exact strings to delete from `movieDatabase`.
+
+
+
+1. Find the exact listing string in the named category array (including year)
+
+2. Remove only that entry — do not reformat surrounding listings
+
+3. Regenerate metadata if the listing had OMDb data: `npm run generate-metadata:ps`
+
+
+
+## Category sync
+
+
+
+If adding a new category, also update:
+
+
+
+- `scripts/win-clip-categories.mjs` — maps category name to `audio/win/<folder>/`
+
+- Create the matching folder under `audio/win/` and run `npm run refresh-audio`
+
+- `docs/CATEGORIES.md` — add a blurb entry for the new wheel
+
+
+
+Category names must match across all locations. Category blurbs and grouping logic live in `docs/CATEGORIES.md` (when choosing which wheel a title belongs on).

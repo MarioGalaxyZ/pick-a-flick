@@ -1,0 +1,33 @@
+---
+
+description: Tix Mix title-card themes — Mario Party-inspired visuals, original assets only
+
+globs: app/style.css,graphics/tix-mix/**,docs/TIX-MIX-THEMES.md
+
+alwaysApply: false
+
+---
+
+# Tix Mix themes
+
+Mario Party–inspired minigame title cards for the ticket shuffle intro. Original artwork only — do not copy Nintendo assets, fonts, or trademarked characters.
+
+## Reference material
+
+- `docs/TIX-MIX-THEMES.md` — theme vocabulary (volcano, neon, beach, space, etc.)
+
+- `graphics/tix-mix/` — finished title-card artwork ready to wire into the app
+
+- `graphics/_staging/` — WIP/experiment title cards (ignored by Cursor index; move to `graphics/tix-mix/` when ready)
+
+## Visual direction
+
+- Strong thematic identity per card (background motif, border treatment, title typography)
+
+- Match the existing neon arcade palette in `app/style.css` where cards appear in-app
+
+- Title cards are decorative overlays — keep performance and readability in mind
+
+## Integration
+
+When wiring a theme into the shuffle intro, coordinate with the shuffle minigame rule (`SHUFFLE_*` timing, intro clip keys in `playShuffleIntroClip`).

@@ -1,18 +1,26 @@
 ﻿// Fully calibrated movie lists + Prospector Pete logic integration
 
+    // --- MOVIE DATABASE ---
+
     const movieDatabase = {
 
         "ALIEN ALLEY 👽": [
+            "Alien (1979)",
             "Alien (Series)", 
             "Aliens (1986)", 
+            "Annihilation (2018)",
+            "Close Encounters of the Third Kind (1977)",
             "District 9 (2009)", 
+            "E.T. the Extra Terrestrial (1982)",
             "Evolution (2001)", 
             "Meet Dave (2008)", 
             "Men in Black (Series)", 
             "The Hitchhiker's Guide to the Galaxy (2005)",
             "They Live (1988)", 
             "Project Hail Mary (2026)",
-            "Mars Attacks! (1996)"
+            "Mars Attacks! (1996)",
+            "Signs (2002)",
+            "War of the Worlds (2005)"
         ],
         
         "ANIMATION STATION 👾": [
@@ -36,7 +44,17 @@
             "A Shaun the Sheep Movie: Farmageddon (2019)",
             "Marvin the Martian in the Third Dimension (1996)",
             "Sherlock Gnomes (2018)",
-            "Chicken Run: Dawn of the Nugget (2023)"
+            "Chicken Run: Dawn of the Nugget (2023)",
+            "Rango (2011)",
+            "Robots (2005)",
+            "Shrek (2001)",
+            "Sonic the Hedgehog (2020)",
+            "The Iron Giant (1999)",
+            "The SpongeBob SquarePants Movie (2004)",
+            "The Super Mario Bros. Movie (2023)",
+            "The Tune (1992)",
+            "We're Back! A Dinosaur's Story (1993)",
+            "Wreck-It Ralph (2012)"
         ],
         
         "CAGE STAGE 🐷": [ 
@@ -58,7 +76,13 @@
             "The Family Man (2000)", 
             "The Rock (1996)", 
             "The Weather Man (2005)", 
-            "Willy's Wonderland (2021)"
+            "Willy's Wonderland (2021)",
+            "Arcadian (2024)",
+            "Bringing Out the Dead (1999)",
+            "Peggy Sue Got Married (1986)",
+            "Raising Arizona (1987)",
+            "Red Rock West (1993)",
+            "Snake Eye (1998)"
         ],
         
         "CARREY'S CHARACTERS 🎭": [
@@ -75,7 +99,15 @@
             "The Majestic (2001)",
             "The Number 23 (2007)",
             "Yes Man (2008)",
-            "Dark Crimes (2018)"
+            "Dark Crimes (2018)",
+            "Dumb and Dumber (1994)",
+            "I Love You Phillip Morris (2009)",
+            "Man On The Moon (1999)",
+            "Once Bitten (1985)",
+            "Sonic the Hedgehog 3 (2024)",
+            "The Cable Guy (1996)",
+            "The Mask (1994)",
+            "The Truman Show (1998)"
         ],
         
         "KAUFMAN'S KORNER 🌞": [
@@ -83,20 +115,33 @@
             "Eternal Sunshine of the Spotless Mind (2004)", 
             "Human Nature (2001)", 
             "Orion And The Dark (2024)", 
-    
+            "Adaptation. (2002)",
+            "Anomalisa (2015)",
+            "Being John Malkovich (1999)",
+            "I'm Thinking of Ending Things (2020)",
+            "Synecdoche, New York (2008)"
         ],
         
         "MOVIES TO FALL ASLEEP TO 💤": [
+            "28 Years Later (2025)",
+            "28 Years Later: The Bone Temple (2026)",
             "After Hours (1985)",
+            "Beau is Afraid (2023)",
             "Brazil (1985)",
+            "Crank (2006)",
             "Evil Dead II (1987)",
+            "Good Boy (2025)",
             "Heretic (2024)",
             "Jacob's Ladder (1990)",
+            "Mandy (2018)",
+            "Midsommar (2019)",
             "Natural Born Killers (1994)",
             "Obsession (2025)",
             "Possessor (2020)",
             "Predator (1987)",
             "Sicario (2015)",
+            "The King of Comedy (1982)",
+            "The Northman (2022)",
             "The Sixth Sense (1999)",
             "The Sweet East (2023)",
             "Green Room (2015)",
@@ -120,7 +165,10 @@
             "Rocketman (2019)", 
             "The Blues Brothers (1980)", 
             "The Doors (1991)", 
-            "Walk the Line (2005)"
+            "Walk the Line (2005)",
+            "Amadeus (1984)",
+            "Someday (2003)",
+            "Tenacious D in The Pick of Destiny (2006)"
         ],
         
         "PEGG'S PLAYGROUND 🎡": [
@@ -133,7 +181,12 @@
             "Shaun of the Dead (2004)", 
             "Slaughterhouse Rulez (2018)", 
             "The Adventures of Tintin (2011)", 
-            "The Boxtrolls (2014)"
+            "The Boxtrolls (2014)",
+            "Absolutely Anything (2015)",
+            "Nandor Fodor and the Talking Mongoose (2023)",
+            "Ready Player One (2018)",
+            "Run Fatboy Run (2007)",
+            "The World's End (2013)"
         ],
         
         "SEQUEL STREET 🚗": [
@@ -147,7 +200,18 @@
             "Kung Fu Panda 3 (2016)",
             "Kung Fu Panda 4 (2024)",
             "Heavier Trip (2024)",
-            "Crank: High Voltage (2009)"
+            "Crank: High Voltage (2009)",
+            "Bill & Ted's Bogus Journey (1991)",
+            "Ip Man 2 (2010)",
+            "Ip Man 3 (2015)",
+            "Ip Man 4: The Finale (2019)",
+            "Master Z: Ip Man Legacy (2018)",
+            "Master Z: Ip Man Legacy (2020)",
+            "Ralph Breaks the Internet (2018)",
+            "Son of the Mask (2005)",
+            "Sonic the Hedgehog 2 (2022)",
+            "Shrek 2 (2004)",
+            "The Super Mario Galaxy Movie (2026)"
         ],
         
         "WACKY WAY 🤪": [
@@ -208,15 +272,31 @@
             "Mega Time Squad (2019)",
             "Attack of the Killer Tomatoes (1978)",
             "The Man with Two Brains (1983)",
-            "The Borrowers (1998)"
+            "The Borrowers (1998)",
+            "Big Trouble in Little China (1986)",
+            "Bill & Ted's Excellent Adventure (1989)",
+            "Colour Me Kubrick (2005)",
+            "Freaked (1993)",
+            "Game Night (2018)",
+            "Rollerball (1975)",
+            "Strawberry Mansion (2021)",
+            "The Adventures of Buckaroo Banzai Across the 8th Dimension (1984)",
+            "The Country Bears (2002)",
+            "The Velocipastor (2018)",
+            "Zombeavers (2014)"
         ],
         
         "ZEMECKIS ZONE 🐇": [
+            "Back to the Future (1985)",
             "Beowulf (2007)", 
-            "Used Cars (1980)", 
+            "Cast Away (2000)",
+            "Contact (1997)",
+            "Death Becomes Her (1992)",
             "Flight (2012)", 
+            "I Wanna Hold Your Hand (1978)",
             "Romancing the Stone (1984)",
-            "Cast Away (2000)"
+            "Used Cars (1980)",
+            "Who Framed Roger Rabbit (1988)"
         ],
         
         "PHOENIX FREEWAY 🃏": [
@@ -232,7 +312,8 @@
             "We Own the Night (2007)",
             "You Were Never Really Here (2017)",
             "Her (2013)",
-            "The Yards (2000)"
+            "The Yards (2000)",
+            "8MM (1999)"
         ],
 
         "FOREIGN EMBASSY 🌐": [
@@ -242,7 +323,10 @@
             "Another Round (2020)", "Save the Green Planet! (2003)",
             "Alienoid (2022)", "Crouching Tiger Hidden Dragon (2000)", "La Haine (1995)",
             "Delicatessen (1991)",
-            "Kung Fu Yoga (2017)"
+            "Kung Fu Yoga (2017)",
+            "Ip Man (2008)",
+            "The Way of the Dragon (1972)",
+            "Train to Busan (2016)"
         ],
         
         "TUMBLEWEED TURNPIKE 🏜️": [
@@ -284,6 +368,8 @@
 
 
     };
+
+    // --- FILTERS ---
 
     const RUNTIME_FILTER_OPTIONS = [60, 75, 90, 105, 120, 135, 150, 165, 180];
 
@@ -362,8 +448,153 @@
         return activeDecades.includes(decade);
     }
 
+    // --- WATCHED MOVIES ---
+
     let includeWatchedMovies = false;
+    let useUndeadWheelDisc = false;
     let watchedMovieSet = new Set();
+    let watchedMoviesFileHandle = null;
+
+    const WATCHED_FILE_HANDLE_DB_NAME = 'pick-a-flick-watched';
+    const WATCHED_FILE_HANDLE_STORE = 'handles';
+    const WATCHED_FILE_HANDLE_KEY = 'watched-movies';
+
+    function isFileSystemAccessSupported() {
+        return typeof window.showOpenFilePicker === 'function';
+    }
+
+    function openWatchedFileHandleDb() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(WATCHED_FILE_HANDLE_DB_NAME, 1);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => resolve(request.result);
+            request.onupgradeneeded = () => {
+                request.result.createObjectStore(WATCHED_FILE_HANDLE_STORE);
+            };
+        });
+    }
+
+    async function loadWatchedMoviesFileHandle() {
+        if (!isFileSystemAccessSupported()) return;
+
+        try {
+            const db = await openWatchedFileHandleDb();
+            const handle = await new Promise((resolve, reject) => {
+                const tx = db.transaction(WATCHED_FILE_HANDLE_STORE, 'readonly');
+                const req = tx.objectStore(WATCHED_FILE_HANDLE_STORE).get(WATCHED_FILE_HANDLE_KEY);
+                req.onsuccess = () => resolve(req.result ?? null);
+                req.onerror = () => reject(req.error);
+            });
+            db.close();
+            if (handle) {
+                watchedMoviesFileHandle = handle;
+            }
+        } catch (err) {
+            console.log('Could not restore watched file handle:', err);
+        }
+    }
+
+    async function storeWatchedMoviesFileHandle(handle) {
+        const db = await openWatchedFileHandleDb();
+        await new Promise((resolve, reject) => {
+            const tx = db.transaction(WATCHED_FILE_HANDLE_STORE, 'readwrite');
+            tx.objectStore(WATCHED_FILE_HANDLE_STORE).put(handle, WATCHED_FILE_HANDLE_KEY);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+        });
+        db.close();
+    }
+
+    async function writeWatchedMoviesToHandle(handle, content) {
+        const writable = await handle.createWritable();
+        await writable.write(content);
+        await writable.close();
+    }
+
+    async function ensureWatchedMoviesFileHandle(allowPrompt = true) {
+        if (!isFileSystemAccessSupported()) return null;
+
+        if (watchedMoviesFileHandle) {
+            const permission = await watchedMoviesFileHandle.queryPermission({ mode: 'readwrite' });
+            if (permission === 'granted') {
+                return watchedMoviesFileHandle;
+            }
+            if (permission === 'prompt' && allowPrompt) {
+                const requested = await watchedMoviesFileHandle.requestPermission({ mode: 'readwrite' });
+                if (requested === 'granted') {
+                    return watchedMoviesFileHandle;
+                }
+            }
+            if (!allowPrompt) {
+                return null;
+            }
+        }
+
+        if (!allowPrompt) return null;
+
+        const [handle] = await window.showOpenFilePicker({
+            types: [{
+                description: 'JavaScript',
+                accept: { 'application/javascript': ['.js'] },
+            }],
+            multiple: false,
+        });
+        watchedMoviesFileHandle = handle;
+        await storeWatchedMoviesFileHandle(handle);
+        return handle;
+    }
+
+    async function saveWatchedMoviesFile(allowPrompt = true) {
+        window.watchedMovieListings = [...watchedMovieSet];
+        const content = buildWatchedMoviesFileContent();
+
+        if (!isFileSystemAccessSupported()) {
+            downloadWatchedMoviesFile(content);
+            return;
+        }
+
+        try {
+            const handle = await ensureWatchedMoviesFileHandle(allowPrompt);
+            if (!handle) {
+                downloadWatchedMoviesFile(content);
+                return;
+            }
+            await writeWatchedMoviesToHandle(handle, content);
+            showWatchedSaveStatus('Saved watched-movies.js.');
+        } catch (err) {
+            if (err?.name === 'AbortError') {
+                downloadWatchedMoviesFile(content);
+                return;
+            }
+            console.log('Watched file save failed:', err);
+            downloadWatchedMoviesFile(content);
+        }
+    }
+
+    async function linkWatchedMoviesSaveFile() {
+        if (!isFileSystemAccessSupported()) {
+            showWatchedSaveStatus('Direct save not supported in this browser. Use downloaded file.');
+            return;
+        }
+
+        try {
+            const [handle] = await window.showOpenFilePicker({
+                types: [{
+                    description: 'JavaScript',
+                    accept: { 'application/javascript': ['.js'] },
+                }],
+                multiple: false,
+            });
+            watchedMoviesFileHandle = handle;
+            await storeWatchedMoviesFileHandle(handle);
+            await saveWatchedMoviesFile(false);
+            showWatchedSaveStatus('Linked and saved watched-movies.js.');
+        } catch (err) {
+            if (err?.name === 'AbortError') return;
+            console.log('Could not link watched file:', err);
+            showWatchedSaveStatus('Could not link save file.');
+        }
+    }
 
     function initWatchedMovies() {
         const listings = Array.isArray(window.watchedMovieListings)
@@ -408,7 +639,7 @@
         const lines = sorted.map(
             (listing) => `    "${listing.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}",`
         );
-        return `// Replace watched-movies.js in your Pick A Flick folder with this file.
+        return `// Personal watched list for Pick A Flick — edit via the app or by hand.
 window.watchedMovieListings = [
 ${lines.join('\n')}
 ];
@@ -428,8 +659,7 @@ ${lines.join('\n')}
         }
     }
 
-    function downloadWatchedMoviesFile() {
-        const content = buildWatchedMoviesFileContent();
+    function downloadWatchedMoviesFile(content = buildWatchedMoviesFileContent()) {
         const blob = new Blob([content], { type: 'application/javascript' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -441,8 +671,7 @@ ${lines.join('\n')}
     }
 
     function persistWatchedMovies() {
-        window.watchedMovieListings = [...watchedMovieSet];
-        downloadWatchedMoviesFile();
+        void saveWatchedMoviesFile(true);
     }
 
     function markMoviesAsWatched(listings) {
@@ -488,6 +717,49 @@ ${lines.join('\n')}
             setIncludeWatchedMovies(checkbox.checked);
         });
         updateWatchedFilterUI();
+    }
+
+    function applyWheelDiscArt() {
+        const disc = document.getElementById('wheel-disc');
+        if (!disc) return;
+        disc.classList.toggle('wheel-disc-undead', useUndeadWheelDisc);
+    }
+
+    function setUseUndeadWheelDisc(enabled) {
+        useUndeadWheelDisc = enabled;
+        const checkbox = document.getElementById('undead-wheel-checkbox');
+        if (checkbox) checkbox.checked = enabled;
+        applyWheelDiscArt();
+    }
+
+    function buildWheelArtToggleUI() {
+        const checkbox = document.getElementById('undead-wheel-checkbox');
+        if (!checkbox) return;
+        checkbox.checked = useUndeadWheelDisc;
+        checkbox.addEventListener('change', () => {
+            setUseUndeadWheelDisc(checkbox.checked);
+        });
+        applyWheelDiscArt();
+    }
+
+    function buildFilterPanelToggles() {
+        const panels = [
+            { panel: 'runtime-filter', label: 'runtime filter' },
+            { panel: 'decade-filter', label: 'decade filter' },
+            { panel: 'watched-filter', label: 'watched filter' },
+            { panel: 'wheel-art-toggle', label: 'wheel art' },
+        ];
+        panels.forEach(({ panel, label }) => {
+            const root = document.getElementById(panel);
+            const btn = root?.querySelector('.filter-panel-emblem');
+            const body = root?.querySelector('.filter-panel-body');
+            if (!root || !btn || !body) return;
+            btn.addEventListener('click', () => {
+                const collapsed = root.classList.toggle('is-collapsed');
+                body.hidden = collapsed;
+                btn.setAttribute('aria-expanded', String(!collapsed));
+            });
+        });
     }
 
     function getEligibleMovies(category) {
@@ -652,6 +924,8 @@ ${lines.join('\n')}
         });
     }
 
+    // --- CATEGORY FILTER AND SPIN STATE ---
+
     let categories = Object.keys(movieDatabase);
 
     let activeCategories = [...categories];
@@ -705,6 +979,73 @@ ${lines.join('\n')}
 
     let victoryEnabled = true;
 
+    let revealMode = 'classic';
+
+    let pendingSpinReveal = null;
+
+    const REVEAL_TIMING = {
+        classic: { postWheelMs: 800, selectionMs: 1500, spinDurationMs: 4000, victoryLeadMs: 1000 },
+        snappy: { postWheelMs: 0, selectionMs: 0, spinDurationMs: 4000, victoryLeadMs: 1000 },
+        speedRun: { postWheelMs: 0, selectionMs: 0, spinDurationMs: 1000, victoryAtSpinStart: true }
+    };
+
+    const SNAPPY_HOLD_INSTANT_MS = 100;
+    const SNAPPY_SPIN_MAX_MS = 10000;
+    const SNAPPY_SPIN_MULT_MIN = 1.3;
+    const SNAPPY_SPIN_MULT_MAX = 3.6;
+    const SNAPPY_SPIN_MULT_TAU_MS = 217;
+    const SNAPPY_SPIN_CURVE_POWER = 0.48;
+
+    function getSnappySpinHoldMultiplier(holdMs) {
+        if (holdMs < SNAPPY_HOLD_INSTANT_MS) return SNAPPY_SPIN_MULT_MIN;
+        const elapsed = holdMs - SNAPPY_HOLD_INSTANT_MS;
+        const progress = 1 - Math.exp(-elapsed / SNAPPY_SPIN_MULT_TAU_MS);
+        const aggressive = Math.pow(progress, SNAPPY_SPIN_CURVE_POWER);
+        return SNAPPY_SPIN_MULT_MIN + (SNAPPY_SPIN_MULT_MAX - SNAPPY_SPIN_MULT_MIN) * aggressive;
+    }
+
+    function getSnappySpinDurationFromHoldMs(holdMs) {
+        if (holdMs < SNAPPY_HOLD_INSTANT_MS) return 0;
+        return Math.min(
+            Math.round(holdMs * getSnappySpinHoldMultiplier(holdMs)),
+            SNAPPY_SPIN_MAX_MS
+        );
+    }
+
+    function getSnappySpinDurationFromGaugeRatio(releaseRatio, holdMs) {
+        if (holdMs < SNAPPY_HOLD_INSTANT_MS) return 0;
+        return Math.round(Math.max(0, Math.min(1, releaseRatio)) * SNAPPY_SPIN_MAX_MS);
+    }
+
+    function getSnappySpinDurationEstimateMs(holdMs) {
+        if (holdMs < SNAPPY_HOLD_INSTANT_MS) return 0;
+        return Math.min(holdMs * getSnappySpinHoldMultiplier(holdMs), SNAPPY_SPIN_MAX_MS);
+    }
+
+    function getSnappyPowerGaugeRiseRatio(holdMs) {
+        if (holdMs <= 0) return 0;
+        if (holdMs < SNAPPY_HOLD_INSTANT_MS) {
+            const thresholdRatio = (SNAPPY_HOLD_INSTANT_MS * SNAPPY_SPIN_MULT_MIN) / SNAPPY_SPIN_MAX_MS;
+            return (holdMs / SNAPPY_HOLD_INSTANT_MS) * thresholdRatio;
+        }
+        return getSnappySpinDurationEstimateMs(holdMs) / SNAPPY_SPIN_MAX_MS;
+    }
+
+    function getSnappyGaugePingPongRatio(cycleMs) {
+        const phase = (cycleMs % SNAPPY_GAUGE_CYCLE_MS) / SNAPPY_GAUGE_CYCLE_MS;
+        return Math.abs(phase * 2 - 1);
+    }
+
+    function isInstantRevealMode() {
+        return revealMode === 'snappy' || revealMode === 'speedRun';
+    }
+
+    function isSpeedRunMode() {
+        return revealMode === 'speedRun';
+    }
+
+    // --- CORE AUDIO ---
+
     let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     let currentIntroAudio = null;
@@ -713,86 +1054,205 @@ ${lines.join('\n')}
 
     let currentKeeperAudios = [];
 
-    const spinButtonClipPath = window.uiAudioPaths.spinButton;
-    let spinButtonBuffer = null;
-    let spinButtonBufferPromise = null;
-    let spinButtonFallbackAudio = null;
+    const spinButtonPressClipPath = window.uiAudioPaths.spinButtonPress;
+    const spinButtonReleaseClipPath = window.uiAudioPaths.spinButtonRelease;
 
-    function getSpinButtonVolume() {
-        return getNormalizedVolume(spinButtonClipPath, cabinetMixer.introClipVolume);
+    const spinButtonClipState = {
+        press: { clipPath: spinButtonPressClipPath, buffer: null, bufferPromise: null, fallbackAudio: null },
+        release: { clipPath: spinButtonReleaseClipPath, buffer: null, bufferPromise: null, fallbackAudio: null }
+    };
+
+    const SPIN_BUTTON_RELEASE_AUDIO_DELAY_MS = 150;
+    const CLASSIC_SPIN_BUTTON_RELEASE_EXTRA_DURATION_SEC = 0.3;
+    const CLASSIC_RELEASE_SKIP_PHASE_RATIO = 0.2;
+    const CLASSIC_RELEASE_SKIP_SPEED_MULT = 4;
+    let spinButtonReleaseAudioTimeout = null;
+    let spinButtonReleaseReturnCleanup = null;
+
+    function getSpinButtonReleaseDelayMs() {
+        return SPIN_BUTTON_RELEASE_AUDIO_DELAY_MS;
     }
 
-    function loadSpinButtonBuffer() {
-        if (spinButtonBuffer) return Promise.resolve(spinButtonBuffer);
-        if (spinButtonBufferPromise) return spinButtonBufferPromise;
+    function getSpinButtonReleaseClipDurationSec() {
+        const releaseState = spinButtonClipState.release;
+        return releaseState.buffer?.duration
+            ?? (Number.isFinite(releaseState.fallbackAudio?.duration) ? releaseState.fallbackAudio.duration : 0);
+    }
 
-        spinButtonBufferPromise = fetch(spinButtonClipPath)
+    function getSpinButtonReleasePlaybackRate(durationSec) {
+        if (revealMode !== 'classic') return 1;
+        if (!durationSec || durationSec <= 0) return 1;
+        return durationSec / (durationSec + CLASSIC_SPIN_BUTTON_RELEASE_EXTRA_DURATION_SEC);
+    }
+
+    function getSpinButtonReleaseAnimationDurationMs(durationSec) {
+        if (revealMode !== 'classic') return null;
+        if (!durationSec || durationSec <= 0) return 1000;
+        return Math.round((durationSec + CLASSIC_SPIN_BUTTON_RELEASE_EXTRA_DURATION_SEC) * 1000);
+    }
+
+    function clearClassicSpinButtonReleaseAnimation(wrap = document.getElementById('spin-button-wrap')) {
+        if (!wrap) return;
+        if (spinButtonReleaseReturnCleanup) {
+            wrap.removeEventListener('animationend', spinButtonReleaseReturnCleanup);
+            spinButtonReleaseReturnCleanup = null;
+        }
+        wrap.classList.remove('is-release-return');
+    }
+
+    function cancelClassicSpinButtonReleaseReturn() {
+        const wrap = document.getElementById('spin-button-wrap');
+        clearClassicSpinButtonReleaseAnimation(wrap);
+        wrap?.classList.remove('is-pressed');
+    }
+
+    function beginClassicSpinButtonReleaseReturn(wrap, animationMs) {
+        if (!wrap) return;
+        clearClassicSpinButtonReleaseAnimation(wrap);
+        if (animationMs) {
+            wrap.style.setProperty('--spin-button-release-duration', `${animationMs}ms`);
+        }
+        wrap.classList.remove('is-pressed');
+        wrap.classList.add('is-release-return');
+        spinButtonReleaseReturnCleanup = (event) => {
+            if (event.target !== wrap) return;
+            if (event.pseudoElement !== '::before') return;
+            if (event.animationName !== 'spinButtonClassicReturn') return;
+            clearClassicSpinButtonReleaseAnimation(wrap);
+        };
+        wrap.addEventListener('animationend', spinButtonReleaseReturnCleanup);
+    }
+
+    function getSpinButtonClipVolume(clipPath) {
+        return getNormalizedVolume(clipPath, cabinetMixer.introClipVolume);
+    }
+
+    function loadSpinButtonClipBuffer(state) {
+        if (state.buffer) return Promise.resolve(state.buffer);
+        if (state.bufferPromise) return state.bufferPromise;
+
+        state.bufferPromise = fetch(state.clipPath)
             .then((response) => response.arrayBuffer())
             .then((arrayBuffer) => audioCtx.decodeAudioData(arrayBuffer))
             .then((buffer) => {
-                spinButtonBuffer = buffer;
+                state.buffer = buffer;
                 return buffer;
             })
             .catch((err) => {
-                console.log('Spin button buffer preload failed:', err);
-                spinButtonBufferPromise = null;
+                console.log('Spin button buffer preload failed:', state.clipPath, err);
+                state.bufferPromise = null;
                 return null;
             });
 
-        return spinButtonBufferPromise;
+        return state.bufferPromise;
     }
 
-    function ensureSpinButtonFallbackAudio() {
-        if (spinButtonFallbackAudio) return spinButtonFallbackAudio;
-        spinButtonFallbackAudio = new Audio(spinButtonClipPath);
-        spinButtonFallbackAudio.preload = 'auto';
-        spinButtonFallbackAudio.load();
-        return spinButtonFallbackAudio;
+    function ensureSpinButtonClipFallbackAudio(state) {
+        if (state.fallbackAudio) return state.fallbackAudio;
+        state.fallbackAudio = new Audio(state.clipPath);
+        state.fallbackAudio.preload = 'auto';
+        state.fallbackAudio.load();
+        return state.fallbackAudio;
     }
 
-    function playSpinButtonFromBuffer() {
+    function playSpinButtonClipFromBuffer(state, options = {}) {
         const source = audioCtx.createBufferSource();
-        source.buffer = spinButtonBuffer;
+        source.buffer = state.buffer;
+        source.playbackRate.value = options.playbackRate ?? 1;
         const gainNode = audioCtx.createGain();
-        gainNode.gain.value = getSpinButtonVolume();
+        gainNode.gain.value = getSpinButtonClipVolume(state.clipPath);
         source.connect(gainNode);
         gainNode.connect(audioCtx.destination);
         source.start(0);
     }
 
-    function playSpinButtonFallback() {
-        const audio = ensureSpinButtonFallbackAudio();
-        audio.volume = getSpinButtonVolume();
+    function playSpinButtonClipFallback(state, options = {}) {
+        const audio = ensureSpinButtonClipFallbackAudio(state);
+        audio.playbackRate = options.playbackRate ?? 1;
+        audio.volume = getSpinButtonClipVolume(state.clipPath);
         if (!audio.paused) audio.pause();
         audio.currentTime = 0;
         void audio.play().catch((err) => {
-            console.log('Spin button audio playback blocked or file not found:', err);
+            console.log('Spin button audio playback blocked or file not found:', state.clipPath, err);
         });
     }
 
-    function playSpinButtonSounds() {
+    function playSpinButtonClip(state, options = {}) {
         void audioCtx.resume();
 
-        if (spinButtonBuffer) {
-            playSpinButtonFromBuffer();
+        if (state.buffer) {
+            playSpinButtonClipFromBuffer(state, options);
             return;
         }
 
-        playSpinButtonFallback();
-        void loadSpinButtonBuffer();
+        playSpinButtonClipFallback(state, options);
+        void loadSpinButtonClipBuffer(state);
+    }
+
+    function playSpinButtonPress() {
+        playSpinButtonClip(spinButtonClipState.press);
+    }
+
+    function playSpinButtonRelease() {
+        if (spinButtonReleaseAudioTimeout != null) {
+            clearTimeout(spinButtonReleaseAudioTimeout);
+        }
+
+        const releaseState = spinButtonClipState.release;
+        const durationSec = getSpinButtonReleaseClipDurationSec();
+        const playbackRate = getSpinButtonReleasePlaybackRate(durationSec);
+
+        if (revealMode === 'classic') {
+            const wrap = document.getElementById('spin-button-wrap');
+            const animationMs = getSpinButtonReleaseAnimationDurationMs(durationSec);
+            if (wrap && animationMs) {
+                wrap.style.setProperty('--spin-button-release-duration', `${animationMs}ms`);
+            }
+        }
+
+        spinButtonReleaseAudioTimeout = setTimeout(() => {
+            spinButtonReleaseAudioTimeout = null;
+            playSpinButtonClip(releaseState, { playbackRate });
+            if (revealMode === 'classic') {
+                const wrap = document.getElementById('spin-button-wrap');
+                const animationMs = getSpinButtonReleaseAnimationDurationMs(durationSec);
+                beginClassicSpinButtonReleaseReturn(wrap, animationMs);
+            }
+        }, getSpinButtonReleaseDelayMs());
+    }
+
+    function playSpinButtonSounds() {
+        playSpinButtonPress();
+        setTimeout(() => playSpinButtonRelease(), 40);
     }
 
     function stopSpinButtonAudio() {
-        if (spinButtonFallbackAudio) {
-            spinButtonFallbackAudio.pause();
-            spinButtonFallbackAudio.currentTime = 0;
+        if (spinButtonReleaseAudioTimeout != null) {
+            clearTimeout(spinButtonReleaseAudioTimeout);
+            spinButtonReleaseAudioTimeout = null;
         }
+        cancelClassicSpinButtonReleaseReturn();
+        Object.values(spinButtonClipState).forEach((state) => {
+            if (state.fallbackAudio) {
+                state.fallbackAudio.pause();
+                state.fallbackAudio.currentTime = 0;
+            }
+        });
     }
 
     function resetSpinButtonAudioCache() {
-        spinButtonBuffer = null;
-        spinButtonBufferPromise = null;
-        spinButtonFallbackAudio = null;
+        Object.values(spinButtonClipState).forEach((state) => {
+            state.buffer = null;
+            state.bufferPromise = null;
+            state.fallbackAudio = null;
+        });
+    }
+
+    function preloadSpinButtonClipAudio() {
+        ensureSpinButtonClipFallbackAudio(spinButtonClipState.press);
+        ensureSpinButtonClipFallbackAudio(spinButtonClipState.release);
+        void loadSpinButtonClipBuffer(spinButtonClipState.press);
+        void loadSpinButtonClipBuffer(spinButtonClipState.release);
     }
 
     function stopKeeperAudio() {
@@ -880,6 +1340,40 @@ ${lines.join('\n')}
         updateAudioControlButtons();
     }
 
+    function updateRevealModeUI() {
+        const btn = document.getElementById('reveal-mode-btn');
+        const container = document.getElementById('arcade-container');
+        const labels = {
+            classic: 'Classic Reveal',
+            snappy: 'Snappy Reveal',
+            speedRun: 'Speed Run'
+        };
+
+        if (btn) {
+            btn.textContent = labels[revealMode] || labels.classic;
+            btn.classList.toggle('audio-enabled', true);
+            btn.classList.toggle('audio-disabled', false);
+        }
+
+        if (container) {
+            container.classList.toggle('snappy-reveal', isInstantRevealMode());
+            container.classList.toggle('snappy-mode', revealMode === 'snappy');
+        }
+
+        resetSnappyPowerGauge();
+    }
+
+    function toggleRevealMode() {
+        if (revealMode === 'classic') {
+            revealMode = 'snappy';
+        } else if (revealMode === 'snappy') {
+            revealMode = 'speedRun';
+        } else {
+            revealMode = 'classic';
+        }
+        updateRevealModeUI();
+    }
+
     function stopCabinetAudio() {
         if (currentIntroAudio) {
             currentIntroAudio.pause();
@@ -905,14 +1399,16 @@ ${lines.join('\n')}
         const oldCtx = audioCtx;
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         resetSpinButtonAudioCache();
-        ensureSpinButtonFallbackAudio();
-        void loadSpinButtonBuffer();
+        preloadSpinButtonClipAudio();
 
         if (oldCtx && oldCtx.state !== 'closed') {
             oldCtx.close();
         }
 
         isSpinning = false;
+        pendingSpinReveal = null;
+        spinButtonPressStartMs = null;
+        pendingSpinHoldMs = 0;
         hasSelectedMovie = false;
         recentSelections = [];
         keeperPicks = [];
@@ -931,6 +1427,7 @@ ${lines.join('\n')}
         updateKeeperPicksUI();
         updateKeeperButtonState();
         resetTicketShuffleState();
+        resetSnappyPowerGauge();
     }
 
 
@@ -967,14 +1464,330 @@ ${lines.join('\n')}
 
 
 
+    // --- SPIN WHEEL ---
+
+    let spinButtonArmed = false;
+    let spinButtonKeyArmed = false;
+    let spinButtonPressStartMs = null;
+    let pendingSpinHoldMs = 0;
+    const SNAPPY_POWER_GAUGE_SEGMENT_COUNT = 30;
+    const SNAPPY_GAUGE_CYCLE_MS = 1200;
+    const SNAPPY_GAUGE_RISE_EXP_K = 7;
+    function getSnappyGaugeRiseFillShape(progress) {
+        const t = Math.max(0, Math.min(1, progress));
+        const denom = 1 - Math.exp(-SNAPPY_GAUGE_RISE_EXP_K);
+        if (denom <= 0) return t;
+        return (1 - Math.exp(-SNAPPY_GAUGE_RISE_EXP_K * t)) / denom;
+    }
+    function getSnappyGaugePingPongRate() {
+        return 2 / SNAPPY_GAUGE_CYCLE_MS;
+    }
+    function getSnappyGaugeRiseVelocityAtProgress(progress, pingPongRate) {
+        const t = Math.max(0, Math.min(1, progress));
+        if (t <= 0) return 0;
+        const denom = 1 - Math.exp(-SNAPPY_GAUGE_RISE_EXP_K);
+        if (denom <= 0) return pingPongRate * t;
+        return pingPongRate * (1 - Math.exp(-SNAPPY_GAUGE_RISE_EXP_K * t)) / denom;
+    }
+    const SNAPPY_GAUGE_DRAIN_MIN_MS = 300;
+    const SNAPPY_GAUGE_DRAIN_EASE_POWER = 2;
+    let snappyPowerGaugeSegments = null;
+    let snappyPowerGaugeRaf = null;
+    let snappyGaugeDrainRaf = null;
+    let snappyGaugeMaxReachedAtMs = null;
+    let snappyGaugeDisplayRatio = 0;
+    let snappyGaugeReleaseRatio = 0;
+    let snappyGaugeLastTickMs = null;
+    let snappyGaugeDrainStartMs = null;
+    let snappyGaugeDrainDurationMs = 0;
+    let snappyGaugeDrainStartRatio = 0;
+
+    function initSnappyPowerGaugeSegments() {
+        const container = document.getElementById('spin-power-gauge-segments');
+        if (!container) return;
+        if (container.children.length !== SNAPPY_POWER_GAUGE_SEGMENT_COUNT) {
+            container.replaceChildren();
+            for (let i = 0; i < SNAPPY_POWER_GAUGE_SEGMENT_COUNT; i++) {
+                const segment = document.createElement('div');
+                segment.className = 'spin-power-segment';
+                segment.dataset.segment = String(i);
+                const fillEl = document.createElement('div');
+                fillEl.className = 'spin-power-segment-fill';
+                segment.appendChild(fillEl);
+                container.appendChild(segment);
+            }
+            snappyPowerGaugeSegments = null;
+        }
+        if (!snappyPowerGaugeSegments) {
+            snappyPowerGaugeSegments = Array.from(container.querySelectorAll('.spin-power-segment'))
+                .sort((a, b) => Number(a.dataset.segment) - Number(b.dataset.segment));
+            snappyPowerGaugeSegments.forEach((segment) => {
+                if (!segment.querySelector('.spin-power-segment-fill')) {
+                    const fillEl = document.createElement('div');
+                    fillEl.className = 'spin-power-segment-fill';
+                    segment.appendChild(fillEl);
+                }
+            });
+        }
+    }
+
+    function applySnappyGaugeSegmentColor(fillEl, index) {
+        const t = index / (SNAPPY_POWER_GAUGE_SEGMENT_COUNT - 1);
+        const r = Math.round(255 + (68 - 255) * t);
+        const g = Math.round(244 + (255 - 244) * t);
+        const b = Math.round(77 + (136 - 77) * t);
+        fillEl.style.background = `rgb(${r}, ${g}, ${b})`;
+        fillEl.style.boxShadow =
+            `inset 0 0 2px rgba(255, 255, 255, 0.45), 0 0 5px rgba(${r}, ${g}, ${b}, 0.9), 0 0 10px rgba(${r}, ${g}, ${b}, 0.45)`;
+    }
+
+    function clearSnappyGaugeSegmentStyle(segment, fillEl) {
+        segment.classList.remove('is-lit');
+        if (!fillEl) return;
+        fillEl.style.height = '0%';
+        fillEl.style.background = '';
+        fillEl.style.boxShadow = '';
+    }
+
+    function setSnappyPowerGaugeFill(ratio) {
+        initSnappyPowerGaugeSegments();
+        if (!snappyPowerGaugeSegments || snappyPowerGaugeSegments.length === 0) return;
+        const clamped = Math.max(0, Math.min(1, ratio));
+        const exactLit = clamped * SNAPPY_POWER_GAUGE_SEGMENT_COUNT;
+        snappyPowerGaugeSegments.forEach((segment, index) => {
+            const fillEl = segment.querySelector('.spin-power-segment-fill');
+            const segmentFill = Math.max(0, Math.min(1, exactLit - index));
+            if (!fillEl || segmentFill <= 0) {
+                clearSnappyGaugeSegmentStyle(segment, fillEl);
+                return;
+            }
+            segment.classList.add('is-lit');
+            fillEl.style.height = `${segmentFill * 100}%`;
+            applySnappyGaugeSegmentColor(fillEl, index);
+        });
+    }
+
+    function stopSnappyPowerGaugeLoop() {
+        if (snappyPowerGaugeRaf != null) {
+            cancelAnimationFrame(snappyPowerGaugeRaf);
+            snappyPowerGaugeRaf = null;
+        }
+    }
+
+    function stopSnappyPowerGaugeDrain() {
+        if (snappyGaugeDrainRaf != null) {
+            cancelAnimationFrame(snappyGaugeDrainRaf);
+            snappyGaugeDrainRaf = null;
+        }
+        snappyGaugeDrainStartMs = null;
+        snappyGaugeDrainDurationMs = 0;
+        snappyGaugeDrainStartRatio = 0;
+    }
+
+    function startSnappyPowerGaugeDrain(startRatio, durationMs) {
+        stopSnappyPowerGaugeDrain();
+        const clampedStart = Math.max(0, Math.min(1, startRatio));
+        if (clampedStart <= 0) {
+            resetSnappyPowerGauge();
+            return;
+        }
+        snappyGaugeDrainStartRatio = clampedStart;
+        snappyGaugeDrainDurationMs = durationMs;
+        snappyGaugeDrainStartMs = performance.now();
+        snappyGaugeDisplayRatio = clampedStart;
+        tickSnappyPowerGaugeDrain();
+    }
+
+    function tickSnappyPowerGaugeDrain() {
+        if (snappyGaugeDrainStartMs == null) {
+            snappyGaugeDrainRaf = null;
+            return;
+        }
+        const elapsed = performance.now() - snappyGaugeDrainStartMs;
+        const progress = Math.min(elapsed / snappyGaugeDrainDurationMs, 1);
+        const ease = 1 - Math.pow(1 - progress, SNAPPY_GAUGE_DRAIN_EASE_POWER);
+        snappyGaugeDisplayRatio = snappyGaugeDrainStartRatio * (1 - ease);
+        setSnappyPowerGaugeFill(snappyGaugeDisplayRatio);
+        if (progress < 1) {
+            snappyGaugeDrainRaf = requestAnimationFrame(tickSnappyPowerGaugeDrain);
+            return;
+        }
+        stopSnappyPowerGaugeDrain();
+        snappyGaugeMaxReachedAtMs = null;
+        snappyGaugeDisplayRatio = 0;
+        snappyGaugeReleaseRatio = 0;
+        setSnappyPowerGaugeFill(0);
+    }
+
+    function resetSnappyPowerGauge() {
+        stopSnappyPowerGaugeLoop();
+        stopSnappyPowerGaugeDrain();
+        snappyGaugeMaxReachedAtMs = null;
+        snappyGaugeDisplayRatio = 0;
+        snappyGaugeReleaseRatio = 0;
+        snappyGaugeLastTickMs = null;
+        setSnappyPowerGaugeFill(0);
+    }
+
+    function tickSnappyPowerGauge() {
+        if (revealMode !== 'snappy' || spinButtonPressStartMs == null) {
+            snappyPowerGaugeRaf = null;
+            return;
+        }
+        const holdMs = performance.now() - spinButtonPressStartMs;
+        const now = performance.now();
+        const deltaMs = snappyGaugeLastTickMs != null
+            ? Math.min(now - snappyGaugeLastTickMs, 50)
+            : 16;
+        snappyGaugeLastTickMs = now;
+
+        const targetRatio = getSnappyPowerGaugeRiseRatio(holdMs);
+        const pingPongRate = getSnappyGaugePingPongRate();
+        const atMaxTarget = targetRatio >= 1;
+
+        if (snappyGaugeMaxReachedAtMs != null) {
+            snappyGaugeDisplayRatio = getSnappyGaugePingPongRatio(holdMs - snappyGaugeMaxReachedAtMs);
+        } else {
+            const riseCap = atMaxTarget ? 1 : targetRatio;
+            let progressForVelocity = 0;
+            if (riseCap > 0) {
+                const fillProgress = Math.min(snappyGaugeDisplayRatio / riseCap, 1);
+                if (fillProgress > 0) {
+                    progressForVelocity = fillProgress;
+                } else {
+                    progressForVelocity = Math.min(holdMs / (SNAPPY_GAUGE_CYCLE_MS / 2), 1);
+                }
+            }
+            const velocity = getSnappyGaugeRiseVelocityAtProgress(progressForVelocity, pingPongRate);
+            const nextDisplay = snappyGaugeDisplayRatio + velocity * deltaMs;
+            snappyGaugeDisplayRatio = riseCap > 0
+                ? Math.min(riseCap, nextDisplay)
+                : nextDisplay;
+
+            if (atMaxTarget && snappyGaugeDisplayRatio >= 1) {
+                snappyGaugeDisplayRatio = 1;
+                snappyGaugeMaxReachedAtMs = holdMs;
+            }
+        }
+        setSnappyPowerGaugeFill(snappyGaugeDisplayRatio);
+        snappyPowerGaugeRaf = requestAnimationFrame(tickSnappyPowerGauge);
+    }
+
+    function startSnappyPowerGaugeLoop() {
+        if (revealMode !== 'snappy') return;
+        stopSnappyPowerGaugeLoop();
+        stopSnappyPowerGaugeDrain();
+        snappyGaugeMaxReachedAtMs = null;
+        snappyGaugeDisplayRatio = 0;
+        snappyGaugeReleaseRatio = 0;
+        snappyGaugeLastTickMs = null;
+        tickSnappyPowerGauge();
+    }
+
+    function captureSpinButtonHoldMs() {
+        stopSnappyPowerGaugeLoop();
+        pendingSpinHoldMs = spinButtonPressStartMs != null
+            ? performance.now() - spinButtonPressStartMs
+            : 0;
+        if (revealMode === 'snappy') {
+            snappyGaugeReleaseRatio = snappyGaugeDisplayRatio;
+            setSnappyPowerGaugeFill(snappyGaugeReleaseRatio);
+        }
+        spinButtonPressStartMs = null;
+    }
+
+    function clearSpinButtonHoldState() {
+        spinButtonPressStartMs = null;
+        pendingSpinHoldMs = 0;
+        resetSnappyPowerGauge();
+    }
+
+    function canInteractWithSpinButton() {
+        return !isSpinning;
+    }
+
+    function setSpinButtonPressed(pressed) {
+        const wrap = document.getElementById('spin-button-wrap');
+        if (!wrap) return;
+        wrap.classList.toggle('is-pressed', pressed);
+    }
+
+    function isSpinButtonActivationKey(key) {
+        return key === ' ' || key === 'Enter';
+    }
+
+    function onSpinButtonPointerDown(event) {
+        if (event.button !== 0) return;
+        if (!canInteractWithSpinButton()) return;
+        event.preventDefault();
+        spinButtonArmed = true;
+        spinButtonPressStartMs = performance.now();
+        event.currentTarget.setPointerCapture(event.pointerId);
+        clearClassicSpinButtonReleaseAnimation();
+        setSpinButtonPressed(true);
+        startSnappyPowerGaugeLoop();
+        playSpinButtonPress();
+    }
+
+    function onSpinButtonPointerUp(event) {
+        if (!spinButtonArmed) return;
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+            event.currentTarget.releasePointerCapture(event.pointerId);
+        }
+        spinButtonArmed = false;
+        if (revealMode !== 'classic') {
+            setSpinButtonPressed(false);
+        }
+        playSpinButtonRelease();
+        captureSpinButtonHoldMs();
+        initiateSpin(event);
+    }
+
+    function onSpinButtonPointerCancel(event) {
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+            event.currentTarget.releasePointerCapture(event.pointerId);
+        }
+        spinButtonArmed = false;
+        if (spinButtonReleaseAudioTimeout != null) {
+            clearTimeout(spinButtonReleaseAudioTimeout);
+            spinButtonReleaseAudioTimeout = null;
+        }
+        cancelClassicSpinButtonReleaseReturn();
+        clearSpinButtonHoldState();
+    }
+
+    function onSpinButtonKeyDown(event) {
+        if (!isSpinButtonActivationKey(event.key)) return;
+        if (event.repeat) return;
+        if (!canInteractWithSpinButton()) return;
+        event.preventDefault();
+        spinButtonKeyArmed = true;
+        spinButtonPressStartMs = performance.now();
+        clearClassicSpinButtonReleaseAnimation();
+        setSpinButtonPressed(true);
+        startSnappyPowerGaugeLoop();
+        playSpinButtonPress();
+    }
+
+    function onSpinButtonKeyUp(event) {
+        if (!isSpinButtonActivationKey(event.key)) return;
+        if (!spinButtonKeyArmed) return;
+        spinButtonKeyArmed = false;
+        if (revealMode !== 'classic') {
+            setSpinButtonPressed(false);
+        }
+        playSpinButtonRelease();
+        captureSpinButtonHoldMs();
+        initiateSpin(event);
+    }
+
     function initiateSpin(event) {
 
         if (isSpinning) return;
 
-        playSpinButtonSounds();
-
         if (shouldShowNoMatchOverlay()) {
             updateSpinBlockerUI();
+            resetSnappyPowerGauge();
             return;
         }
 
@@ -1004,7 +1817,10 @@ ${lines.join('\n')}
 
         setMarqueeText('PREPARING CABINET...');
 
-
+        if (revealMode === 'speedRun') {
+            triggerPhysicalSpin();
+            return;
+        }
 
         if (introEnabled && spinIntroClips.length > 0) {
 
@@ -1065,12 +1881,14 @@ ${lines.join('\n')}
         if (activeCategories.length === 0) {
             alert('Please select at least one category');
             isSpinning = false;
+            resetSnappyPowerGauge();
             return;
         }
 
         if (activeDecades.length === 0) {
             alert('Please select at least one decade');
             isSpinning = false;
+            resetSnappyPowerGauge();
             return;
         }
 
@@ -1079,6 +1897,7 @@ ${lines.join('\n')}
         if (isRuntimeFilterActive() && !isRuntimeFilterValid()) {
             alert('Minimum runtime cannot exceed maximum runtime.');
             isSpinning = false;
+            resetSnappyPowerGauge();
             return;
         }
 
@@ -1086,11 +1905,33 @@ ${lines.join('\n')}
         if (eligibleCategories.length === 0) {
             updateSpinBlockerUI();
             isSpinning = false;
+            resetSnappyPowerGauge();
             return;
         }
 
         let selectedCategory = eligibleCategories[Math.floor(Math.random() * eligibleCategories.length)];
         let randomCategoryIndex = categories.indexOf(selectedCategory);
+
+        pendingSpinReveal = null;
+        if (isInstantRevealMode()) {
+            const eligibleMovies = getEligibleMovies(selectedCategory);
+            if (eligibleMovies.length === 0) {
+                updateSpinBlockerUI();
+                isSpinning = false;
+                resetSnappyPowerGauge();
+                return;
+            }
+            const chosenMovie = drawNextMovie(selectedCategory, eligibleMovies);
+            const parts = selectedCategory.split(' ');
+            pendingSpinReveal = {
+                category: selectedCategory,
+                chosenMovie,
+                categoryEmoji: parts[parts.length - 1]
+            };
+            preloadSpinPoster(chosenMovie);
+        }
+
+        const timing = REVEAL_TIMING[revealMode];
 
         
 
@@ -1116,7 +1957,13 @@ ${lines.join('\n')}
 
         let start = null;
 
-        let duration = 4000; // Total spin window = 4 seconds
+        let duration = timing.spinDurationMs;
+        if (revealMode === 'snappy') {
+            duration = getSnappySpinDurationFromGaugeRatio(snappyGaugeReleaseRatio, pendingSpinHoldMs);
+            const drainMs = duration === 0 ? SNAPPY_GAUGE_DRAIN_MIN_MS : duration;
+            startSnappyPowerGaugeDrain(snappyGaugeReleaseRatio, drainMs);
+            pendingSpinHoldMs = 0;
+        }
 
         let lastClickDegree = baseRotation;
 
@@ -1126,7 +1973,28 @@ ${lines.join('\n')}
 
         let hasFiredVictorySound = false;
 
+        if (timing.victoryAtSpinStart) {
+            playCategoryVictorySound(selectedCategory);
+            hasFiredVictorySound = true;
+        }
 
+        if (revealMode === 'snappy' && duration === 0) {
+            currentRotation = finalDegrees;
+            disc.style.transform = `rotate(${currentRotation}deg)`;
+            playCategoryVictorySound(selectedCategory);
+            if (pendingSpinReveal) {
+                const reveal = pendingSpinReveal;
+                pendingSpinReveal = null;
+                setTimeout(() => {
+                    completeSpinReveal(reveal.category, reveal.chosenMovie, reveal.categoryEmoji);
+                }, timing.postWheelMs);
+            } else {
+                isSpinning = false;
+            }
+            return;
+        }
+
+        const victoryLeadMs = Math.min(timing.victoryLeadMs ?? 1000, duration * 0.5);
 
         function animate(timestamp) {
 
@@ -1158,9 +2026,11 @@ ${lines.join('\n')}
 
 
 
-            // SUSPENSE TIMING MECHANIC: Fire victory sound exactly 1 second (3000ms) before stop
+            // CLASSIC TIMING MECHANIC: Fire victory sound before stop (1s lead by default)
 
-            if (progress >= 3000 && !hasFiredVictorySound) {
+            const victoryFireMs = duration - victoryLeadMs;
+
+            if (progress >= victoryFireMs && !hasFiredVictorySound) {
 
                 hasFiredVictorySound = true;
 
@@ -1183,10 +2053,17 @@ ${lines.join('\n')}
                 
 
                 setTimeout(() => {
-
-                    executeMovieTierSelection(selectedCategory);
-
-                }, 800);
+                    if (isInstantRevealMode() && pendingSpinReveal) {
+                        completeSpinReveal(
+                            pendingSpinReveal.category,
+                            pendingSpinReveal.chosenMovie,
+                            pendingSpinReveal.categoryEmoji
+                        );
+                        pendingSpinReveal = null;
+                    } else {
+                        executeMovieTierSelection(selectedCategory);
+                    }
+                }, REVEAL_TIMING[revealMode].postWheelMs);
 
             }
 
@@ -1271,7 +2148,7 @@ ${lines.join('\n')}
 
 
 
-    // Global history state tracking arrays
+    // --- GLOBAL STATE ---
 
     let winClipRemainingByCategory = {};
 
@@ -1294,6 +2171,8 @@ ${lines.join('\n')}
     let lastRevealedLabel = null;
 
 
+
+// --- METADATA AND LISTING HELPERS ---
 
 function getMovieMetadata(listing) {
     const listingAliases = {
@@ -1423,6 +2302,8 @@ function clearResultDetails() {
 
 
 
+// --- RESULT DISPLAY ---
+
 const POSTER_MAX_WIDTH = 356;
 const POSTER_MAX_HEIGHT = 375;
 const POSTER_DETAILS_WIDTH = 285;
@@ -1471,6 +2352,18 @@ function fitPosterFrameToImage(img) {
     frame.style.width = `${width}px`;
     frame.style.height = `${height}px`;
     centerPosterFrame(frame, width);
+}
+
+
+
+function preloadSpinPoster(listing) {
+    const metadata = getMovieMetadata(listing);
+    const posterUrl = metadata?.Poster && metadata.Poster !== 'N/A' ? metadata.Poster : null;
+    if (!posterUrl) return;
+    const url = getPosterLoadCandidates(posterUrl)[0];
+    if (!url) return;
+    const img = new Image();
+    img.src = url;
 }
 
 
@@ -1782,6 +2675,22 @@ function revealMovieResult(category, chosenMovie, categoryEmoji) {
 
 
 
+// --- SPIN SELECTION ---
+
+function completeSpinReveal(category, chosenMovie, categoryEmoji) {
+    const historyEntry = `${categoryEmoji} ${chosenMovie}`;
+    recentSelections.unshift(historyEntry);
+    if (recentSelections.length > 3) recentSelections.pop();
+
+    hasSelectedMovie = true;
+
+    updateRecentSelectionsUI();
+    revealMovieResult(category, chosenMovie, categoryEmoji);
+
+    isSpinning = false;
+    updateKeeperButtonState();
+}
+
 function executeMovieTierSelection(category) {
     const categoryParts = category.split(' ');
     const categoryEmoji = categoryParts[categoryParts.length - 1];
@@ -1807,19 +2716,8 @@ function executeMovieTierSelection(category) {
         }
 
         const chosenMovie = drawNextMovie(category, eligibleMovies);
-
-        const historyEntry = `${categoryEmoji} ${chosenMovie}`;
-        recentSelections.unshift(historyEntry);
-        if (recentSelections.length > 3) recentSelections.pop();
-
-        hasSelectedMovie = true;
-
-        updateRecentSelectionsUI();
-        revealMovieResult(category, chosenMovie, categoryEmoji);
-
-        isSpinning = false;
-        updateKeeperButtonState();
-    }, 1500);
+        completeSpinReveal(category, chosenMovie, categoryEmoji);
+    }, REVEAL_TIMING.classic.selectionMs);
 }
 
 function updateRecentSelectionsUI() {
@@ -1851,6 +2749,8 @@ function getInsertCoinMarkup() {
         </div>
     `;
 }
+
+// --- KEEPER DECK ---
 
 function applyKeeperPosterFromMetadata(keeperEntry) {
     const listing = getKeeperListingLabel(keeperEntry.label);
@@ -1993,7 +2893,242 @@ function buildWatchedFlicksPanelUI() {
         content.hidden = expanded;
     });
 
+    if (!document.getElementById('watched-choose-save-file')) {
+        const chooseSaveBtn = document.createElement('button');
+        chooseSaveBtn.type = 'button';
+        chooseSaveBtn.id = 'watched-choose-save-file';
+        chooseSaveBtn.textContent = 'Choose save file';
+        chooseSaveBtn.addEventListener('click', () => {
+            void linkWatchedMoviesSaveFile();
+        });
+        content.insertBefore(chooseSaveBtn, content.firstChild);
+    }
+
     updateWatchedFlicksListUI();
+}
+
+function buildKeeperLabelFromListing(listing) {
+    const category = findListingCategory(listing);
+    const emoji = category ? category.split(' ').pop() : '';
+    return emoji ? `${emoji} ${listing}` : listing;
+}
+
+function setManualKeeperStatus(message, isError = false) {
+    const status = document.getElementById('manual-keeper-status');
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle('manual-keeper-status-error', isError);
+    status.classList.toggle('manual-keeper-status-success', !isError && message.length > 0);
+}
+
+function resolveManualKeeperQuery(raw) {
+    const trimmed = raw.trim();
+    if (!trimmed) {
+        return { error: 'Enter a movie title.' };
+    }
+
+    const result = resolveWatchedImportLine(trimmed);
+    if (result.skip) {
+        return { error: 'Enter a movie title.' };
+    }
+    if (result.error) {
+        return { error: result.error };
+    }
+
+    const listing = result.listing;
+    const label = buildKeeperLabelFromListing(listing);
+
+    if (keeperPicks.some((pick) => getKeeperListingLabel(pick.label) === listing)) {
+        return { error: 'Already in keeper.' };
+    }
+
+    return { label, listing, warning: result.warning };
+}
+
+function handleManualKeeperSearch() {
+    if (isSpinning || isDiscardingKeeper || getOpenKeeperSlots() === 0) return;
+
+    const input = document.getElementById('manual-keeper-input');
+    const dropdown = document.getElementById('manual-keeper-dropdown');
+    if (!input || !dropdown) return;
+
+    const query = input.value.trim();
+    if (!query) {
+        dropdown.hidden = true;
+        dropdown.innerHTML = '';
+        return;
+    }
+
+    const { matches } = findMovieListingInDatabase(query);
+    dropdown.innerHTML = '';
+
+    if (!matches.length) {
+        const empty = document.createElement('div');
+        empty.className = 'coin-toss-dropdown-empty';
+        empty.textContent = 'No matches in database.';
+        dropdown.appendChild(empty);
+        dropdown.hidden = false;
+        return;
+    }
+
+    matches.forEach((entry) => {
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'coin-toss-dropdown-option';
+        option.textContent = getKeeperListingLabel(entry.label);
+        option.addEventListener('click', () => {
+            input.value = getKeeperListingLabel(entry.label);
+            dropdown.hidden = true;
+            dropdown.innerHTML = '';
+            setManualKeeperStatus('');
+        });
+        dropdown.appendChild(option);
+    });
+
+    dropdown.hidden = false;
+}
+
+function addManualKeeperMovie(raw) {
+    if (isSpinning || isDiscardingKeeper) return;
+    if (getOpenKeeperSlots() === 0) {
+        setManualKeeperStatus('Keeper full — discard a movie first.', true);
+        return;
+    }
+
+    const resolved = resolveManualKeeperQuery(raw);
+    if (resolved.error) {
+        setManualKeeperStatus(resolved.error, true);
+        return;
+    }
+
+    const { label, listing, warning } = resolved;
+    const recentIndex = recentSelections.indexOf(label);
+    if (recentIndex >= 0) {
+        recentSelections.splice(recentIndex, 1);
+    }
+
+    keeperUiGeneration += 1;
+    playKeeperSound(keeperPicks.length + 1);
+
+    const keeperEntry = {
+        label,
+        poster: null,
+        runtimeMinutes: getMovieRuntimeMinutes(listing)
+    };
+    keeperPicks.push(keeperEntry);
+    applyKeeperPosterFromMetadata(keeperEntry);
+
+    const input = document.getElementById('manual-keeper-input');
+    const dropdown = document.getElementById('manual-keeper-dropdown');
+    if (input) input.value = '';
+    if (dropdown) {
+        dropdown.hidden = true;
+        dropdown.innerHTML = '';
+    }
+
+    updateRecentSelectionsUI();
+    updateKeeperPicksUI(true);
+    updateKeeperButtonState();
+
+    let statusMsg = `Added "${listing}".`;
+    if (warning) {
+        statusMsg = `${warning} Added "${listing}".`;
+    }
+    setManualKeeperStatus(statusMsg, false);
+}
+
+function updateManualKeeperPanelState() {
+    const input = document.getElementById('manual-keeper-input');
+    const addBtn = document.getElementById('manual-keeper-add-btn');
+    const hint = document.getElementById('manual-keeper-hint');
+    if (!input || !addBtn || !hint) return;
+
+    const openSlots = getOpenKeeperSlots();
+    const blocked = isSpinning || isDiscardingKeeper || openSlots === 0;
+    input.disabled = blocked;
+    addBtn.disabled = blocked;
+
+    if (openSlots === 0) {
+        hint.textContent = 'Keeper full — discard a movie first.';
+    } else if (isSpinning) {
+        hint.textContent = `${openSlots} of 3 slots open — wait for spin to finish.`;
+    } else if (isDiscardingKeeper) {
+        hint.textContent = `${openSlots} of 3 slots open — wait for discard to finish.`;
+    } else {
+        const slotWord = openSlots === 1 ? 'slot' : 'slots';
+        hint.textContent = `${openSlots} of 3 ${slotWord} open`;
+    }
+}
+
+function buildManualKeeperPanelUI() {
+    const filtersPanel = document.getElementById('filters-panel');
+    const watchedPanel = document.getElementById('watched-flicks-panel');
+    if (!filtersPanel || !watchedPanel || document.getElementById('manual-keeper-panel')) return;
+
+    const section = document.createElement('div');
+    section.id = 'manual-keeper-panel';
+
+    const emblem = document.createElement('div');
+    emblem.className = 'manual-keeper-emblem';
+    emblem.setAttribute('aria-hidden', 'true');
+    emblem.textContent = '🔎';
+    section.appendChild(emblem);
+
+    const label = document.createElement('div');
+    label.id = 'manual-keeper-label';
+    label.textContent = 'ADD TO KEEPER';
+    section.appendChild(label);
+
+    const hint = document.createElement('div');
+    hint.id = 'manual-keeper-hint';
+    hint.textContent = '3 of 3 slots open';
+    section.appendChild(hint);
+
+    const formRow = document.createElement('div');
+    formRow.id = 'manual-keeper-form';
+
+    const searchWrap = document.createElement('div');
+    searchWrap.className = 'manual-keeper-search-wrap';
+
+    const input = document.createElement('input');
+    input.type = 'search';
+    input.id = 'manual-keeper-input';
+    input.className = 'coin-toss-search-input manual-keeper-input';
+    input.placeholder = 'Title (Year)';
+    input.autocomplete = 'off';
+    input.addEventListener('input', handleManualKeeperSearch);
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            addManualKeeperMovie(input.value);
+        }
+    });
+    searchWrap.appendChild(input);
+
+    const dropdown = document.createElement('div');
+    dropdown.id = 'manual-keeper-dropdown';
+    dropdown.className = 'coin-toss-dropdown';
+    dropdown.hidden = true;
+    searchWrap.appendChild(dropdown);
+
+    formRow.appendChild(searchWrap);
+
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.id = 'manual-keeper-add-btn';
+    addBtn.textContent = 'Add';
+    addBtn.addEventListener('click', () => addManualKeeperMovie(input.value));
+    formRow.appendChild(addBtn);
+
+    section.appendChild(formRow);
+
+    const status = document.createElement('div');
+    status.id = 'manual-keeper-status';
+    status.setAttribute('aria-live', 'polite');
+    section.appendChild(status);
+
+    filtersPanel.insertBefore(section, watchedPanel);
+    updateManualKeeperPanelState();
 }
 
 function updateResultMarkWatchedButton() {
@@ -2017,7 +3152,7 @@ function markCurrentResultAsWatched() {
 }
 
 async function markTicketStubsAsWatched() {
-    if (keeperPicks.length !== 3) return;
+    if (keeperPicks.length === 0) return;
 
     const listings = keeperPicks.map((pick) => getKeeperListingLabel(pick.label));
     markMoviesAsWatched(listings);
@@ -2197,6 +3332,8 @@ function isDuplicateListing(listing) {
     return { duplicate: false };
 }
 
+// --- ADD MOVIES UI ---
+
 function buildAddMoviesPrompt(entries) {
     const bullets = entries
         .map(({ listing, category }) => `- "${listing}" â†’ ${category}`)
@@ -2211,7 +3348,7 @@ For each title:
 2. Run npm run generate-metadata (or scripts/bootstrap-movie-metadata.ps1) to refresh movie-metadata.js.
 3. Don't change anything else.
 
-Only edit main.js (the live app). Don't update Pick-A-Flick - Cursor.html unless I ask.`;
+Only edit app/main.js (the live app). Don't update docs/archive/Pick-A-Flick-Cursor.html unless I ask.`;
 }
 
 function setAddMovieStatus(message, isError = false) {
@@ -2590,6 +3727,8 @@ function submitMarkWatchedBulkImport() {
     submitBtn.disabled = false;
 }
 
+// --- MARK WATCHED BULK IMPORT ---
+
 function buildWatchedBulkImportUI() {
     const filtersPanel = document.getElementById('filters-panel');
     if (!filtersPanel || document.getElementById('mark-watched-bulk')) return;
@@ -2792,7 +3931,7 @@ function buildAddMovieUI() {
 
     const label = document.createElement('div');
     label.id = 'add-a-flick-label';
-    label.textContent = 'ADD A FLICK';
+    label.textContent = 'ADD A NEW FLICK';
     section.appendChild(label);
 
     const hint = document.createElement('div');
@@ -2891,6 +4030,8 @@ function buildAddMovieUI() {
     filtersPanel.appendChild(section);
 }
 
+// --- TICKET SHUFFLE CONSTANTS ---
+
 const SHUFFLE_TICKET_COUNT = 4;
 const SHUFFLE_QUADRANT_SLOTS = [
     { left: 28, top: 28 },
@@ -2921,7 +4062,7 @@ const SHUFFLE_STACK_MS = 800;
 const SHUFFLE_STACK_REST_MS = 1000;
 const SHUFFLE_QUADRANT_DEPLOY_MS = 1000;
 const SHUFFLE_PRE_SHUFFLE_REST_MS = 1000;
-const SHUFFLE_ARC_OFFSET_PX = 32;
+const SHUFFLE_ARC_OFFSET_PX = 48;
 const SHUFFLE_ROW_SLOTS = [
     { left: 18, top: 50 },
     { left: 39, top: 50 },
@@ -2948,6 +4089,7 @@ const SHUFFLE_GOLDEN_TICKET_PATH = window.uiAudioPaths.shuffleGoldenTicket;
 const SHUFFLE_TROLL_PATH = window.uiAudioPaths.shuffleTroll;
 const SHUFFLE_LOCK_IN_DURATION_FALLBACK_MS = 800;
 const SHUFFLE_LOCK_IN_OVERLAY_DELAY_MS = 200;
+const SHUFFLE_LOCK_IN_DECK_LAYERS = 5;
 const SHUFFLE_GOLDEN_TICKET_MIN_PLAYBACK_RATE = 0.75;
 const SHUFFLE_GOLDEN_TICKET_MAX_PLAYBACK_RATE = 3.0;
 
@@ -2958,6 +4100,8 @@ let shuffleLockInOverlayAudio = null;
 let shuffleLockInOverlayTimer = null;
 let shuffleLockInDurationMs = null;
 let shuffleTrollAudio = null;
+
+// --- TICKET SHUFFLE AUDIO ---
 
 function stopShuffleIntroAudio() {
     shuffleIntroAudios.forEach((audio) => {
@@ -3138,14 +4282,17 @@ function playShuffleIntroClip(key) {
     };
 }
 
+// --- COIN TOSS AND MINIGAME STATE ---
+
 const COIN_FLIP_1_PATH = window.uiAudioPaths.coinFlip1;
 const COIN_FLIP_2_PATH = window.uiAudioPaths.coinFlip2;
 const COIN_FLIP_SPIN_SHORT_PATH = window.uiAudioPaths.coinFlipSpinShort;
+const COIN_TOSS_CONFIRM_PATH = window.uiAudioPaths.coinTossConfirm;
 const COIN_FLIP_SPIN_BED_CLIPS = window.uiAudioPaths.coinFlipSpinBedClips ?? [
-    'audio/win/neon_skyline/HKE3.2.mp3',
-    'audio/win/neon_skyline/HKE1.mp3',
-    'audio/win/neon_skyline/HKE2.mp3',
-    'audio/_staging/that-slow-motion-running-song-ii.mp3'
+    '..\audio/win/neon_skyline/HKE3.2.mp3',
+    '..\audio/win/neon_skyline/HKE1.mp3',
+    '..\audio/win/neon_skyline/HKE2.mp3',
+    '..\audio/_staging/that-slow-motion-running-song-ii.mp3'
 ];
 const COIN_FLIP_SPIN_BED_VOLUME_RATIO = 0.28;
 const COIN_FLIP_SPIN_BED_FADE_MS = 80;
@@ -3159,6 +4306,9 @@ const COIN_FLIP_FINAL_SEGMENT_MAX_FLIPS = 6;
 const COIN_FLIP_TAIL_ROTATION_DEG = 180;
 const COIN_ARM_SPIN_FLIP_COUNT = 8;
 const COIN_ARM_SPIN_BED_MIN_VOLUME_RATIO = 0.12;
+const COIN_LOCK_SHIMMER_MS = 600;
+const COIN_BRIEF_SPIN_MIN_FLIPS = 6;
+const COIN_BRIEF_SPIN_MAX_FLIPS = 10;
 
 let coinTossSpinAudio = null;
 let coinTossSpinAudioEnd = null;
@@ -3168,6 +4318,18 @@ let coinSpinDeg = 0;
 let coinTossSpinShortAudio = null;
 let coinTossFlipBedAudio = null;
 let coinTossFlipBedFadeRaf = null;
+let coinTossConfirmAudio = null;
+
+function preloadCoinTossConfirmAudio() {
+    if (!COIN_TOSS_CONFIRM_PATH || coinTossConfirmAudio) return;
+    coinTossConfirmAudio = new Audio(COIN_TOSS_CONFIRM_PATH);
+    coinTossConfirmAudio.preload = 'auto';
+    coinTossConfirmAudio.load();
+}
+
+function coinFlipTransform(deg) {
+    return `rotateX(${deg}deg)`;
+}
 
 let isShuffleActive = false;
 let isCoinTossing = false;
@@ -3178,6 +4340,8 @@ let shuffleMysteryA = null;
 let shuffleMysteryB = null;
 let coinTossSlotA = null;
 let coinTossSlotB = null;
+let coinTossSlotC = null;
+let coinTossSlotD = null;
 let coinTossGeneration = 0;
 let coinTossPendingWinner = null;
 let coinTossPendingLoser = null;
@@ -3189,6 +4353,71 @@ function shuffleSleep(ms) {
 
 function coinTossLabelsMatch(a, b) {
     return a && b && a === b;
+}
+
+const COIN_TOSS_SLOT_KEYS = ['a', 'b', 'c', 'd'];
+
+function getCoinTossSlotElByKey(slotKey) {
+    return document.getElementById(`coin-toss-slot-${slotKey}`);
+}
+
+function getCoinTossSlotByKey(slotKey) {
+    if (slotKey === 'a') return coinTossSlotA;
+    if (slotKey === 'b') return coinTossSlotB;
+    if (slotKey === 'c') return coinTossSlotC;
+    if (slotKey === 'd') return coinTossSlotD;
+    return null;
+}
+
+function setCoinTossSlotByKey(slotKey, entry) {
+    if (slotKey === 'a') coinTossSlotA = entry;
+    else if (slotKey === 'b') coinTossSlotB = entry;
+    else if (slotKey === 'c') coinTossSlotC = entry;
+    else if (slotKey === 'd') coinTossSlotD = entry;
+}
+
+function getCoinTossUserSlotEntries() {
+    return [coinTossSlotA, coinTossSlotB, coinTossSlotC, coinTossSlotD].filter(Boolean);
+}
+
+function getCoinTossExcludeLabels() {
+    return getCoinTossUserSlotEntries().map((entry) => entry.label);
+}
+
+function coinTossUserSlotsAreUnique() {
+    const labels = getCoinTossExcludeLabels();
+    return new Set(labels).size === labels.length;
+}
+
+function areAllCoinTossSlotsFull() {
+    return COIN_TOSS_SLOT_KEYS.every((key) => getCoinTossSlotByKey(key));
+}
+
+function isLabelInCoinTossSlot(label) {
+    return getCoinTossUserSlotEntries().some((entry) => coinTossLabelsMatch(entry.label, label));
+}
+
+function renderAllCoinTossSlots() {
+    COIN_TOSS_SLOT_KEYS.forEach((key) => {
+        renderCoinTossSlot(getCoinTossSlotElByKey(key), getCoinTossSlotByKey(key));
+    });
+}
+
+function clearAllCoinTossSlotDOM() {
+    COIN_TOSS_SLOT_KEYS.forEach((key) => {
+        const slotEl = getCoinTossSlotElByKey(key);
+        if (!slotEl) return;
+        slotEl.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser', 'filled');
+        slotEl.innerHTML = getInsertCoinMarkup();
+    });
+}
+
+function clearAllCoinTossSlots() {
+    coinTossSlotA = null;
+    coinTossSlotB = null;
+    coinTossSlotC = null;
+    coinTossSlotD = null;
+    clearAllCoinTossSlotDOM();
 }
 
 function buildCoinTossEntry(label, source, poster = null, runtimeMinutes = null) {
@@ -3332,8 +4561,7 @@ function pickRandomCoinTossEntry(pool) {
 }
 
 function getMysteryFlickCoinTossPool() {
-    const exclude = [coinTossSlotA?.label, coinTossSlotB?.label].filter(Boolean);
-    return buildFilteredCoinTossPool(exclude);
+    return buildFilteredCoinTossPool(getCoinTossExcludeLabels());
 }
 
 function pickMysteryFlickForCoinToss() {
@@ -3348,26 +4576,93 @@ function pickMysteryFlickForCoinToss() {
     assignCoinTossSlot(resolveCoinTossEntry(picked));
 }
 
-function drawMysteryShuffleEntries(slotA, slotB) {
-    const slotExclude = [slotA.label, slotB.label];
-    const fullPool = buildFilteredCoinTossPool(slotExclude);
-    if (fullPool.length < 2) return null;
+function getShuffleBlockedReason() {
+    if (!coinTossSlotA || !coinTossSlotB) return 'Pick two movies to shuffle.';
+    if (!coinTossUserSlotsAreUnique()) return 'Pick different movies in each slot.';
 
-    const sequelPool = buildFilteredCoinTossPool(slotExclude, [SHUFFLE_MYSTERY_SEQUEL_CATEGORY]);
-    let first = pickRandomCoinTossEntry(sequelPool);
-    if (!first) {
-        for (let i = fullPool.length - 1; i > 0; i -= 1) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [fullPool[i], fullPool[j]] = [fullPool[j], fullPool[i]];
+    const exclude = getCoinTossExcludeLabels();
+    const fullPool = buildFilteredCoinTossPool(exclude);
+
+    if (!coinTossSlotC && !coinTossSlotD) {
+        if (fullPool.length < 2) return 'Need at least 2 other filtered movies for mystery tickets.';
+    } else if (!coinTossSlotC) {
+        const sequelPool = buildFilteredCoinTossPool(exclude, [SHUFFLE_MYSTERY_SEQUEL_CATEGORY]);
+        if (sequelPool.length === 0 && fullPool.length < 1) {
+            return 'Need a Sequel Street mystery — pick slot C or adjust filters.';
         }
-        return [resolveCoinTossEntry(fullPool[0]), resolveCoinTossEntry(fullPool[1])];
+        if (!coinTossSlotD && fullPool.length < 1) {
+            return 'Need a true random mystery — pick slot D or adjust filters.';
+        }
+    } else if (!coinTossSlotD) {
+        if (fullPool.length < 1) return 'Need a true random mystery — pick slot D or adjust filters.';
     }
 
-    const secondPool = buildFilteredCoinTossPool([...slotExclude, first.label]);
-    const second = pickRandomCoinTossEntry(secondPool);
-    if (!second) return null;
+    const roundEntries = getCoinTossUserSlotEntries();
+    if (!coinTossSlotC || !coinTossSlotD) {
+        fullPool.slice(0, 2).forEach((entry) => roundEntries.push(resolveCoinTossEntry(entry)));
+    }
+    if (roundEntries.some((entry) => coinTossWouldNeedKeeperSlot(entry)) && getOpenKeeperSlots() === 0) {
+        return 'Keeper full — discard a movie first.';
+    }
 
-    return [resolveCoinTossEntry(first), resolveCoinTossEntry(second)];
+    return '';
+}
+
+function resolveShuffleRoundTickets() {
+    const exclude = getCoinTossExcludeLabels();
+    shuffleMysteryA = null;
+    shuffleMysteryB = null;
+
+    let ticket2;
+    let ticket2IsMystery;
+    if (coinTossSlotC) {
+        ticket2 = coinTossSlotC;
+        ticket2IsMystery = false;
+    } else {
+        const sequelPool = buildFilteredCoinTossPool(exclude, [SHUFFLE_MYSTERY_SEQUEL_CATEGORY]);
+        let first = pickRandomCoinTossEntry(sequelPool);
+        if (!first) {
+            const fullPool = buildFilteredCoinTossPool(exclude);
+            if (!coinTossSlotD) {
+                if (fullPool.length < 2) return null;
+                for (let i = fullPool.length - 1; i > 0; i -= 1) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [fullPool[i], fullPool[j]] = [fullPool[j], fullPool[i]];
+                }
+                shuffleMysteryA = resolveCoinTossEntry(fullPool[0]);
+                shuffleMysteryB = resolveCoinTossEntry(fullPool[1]);
+                return {
+                    ticket2: shuffleMysteryA,
+                    ticket2IsMystery: true,
+                    ticket3: shuffleMysteryB,
+                    ticket3IsMystery: true
+                };
+            }
+            if (fullPool.length < 1) return null;
+            first = fullPool[0];
+        }
+        shuffleMysteryA = resolveCoinTossEntry(first);
+        ticket2 = shuffleMysteryA;
+        ticket2IsMystery = true;
+    }
+
+    let ticket3;
+    let ticket3IsMystery;
+    if (coinTossSlotD) {
+        ticket3 = coinTossSlotD;
+        ticket3IsMystery = false;
+    } else {
+        const mysteryExclude = [...exclude];
+        if (ticket2IsMystery && ticket2?.label) mysteryExclude.push(ticket2.label);
+        const secondPool = buildFilteredCoinTossPool(mysteryExclude);
+        const second = pickRandomCoinTossEntry(secondPool);
+        if (!second) return null;
+        shuffleMysteryB = resolveCoinTossEntry(second);
+        ticket3 = shuffleMysteryB;
+        ticket3IsMystery = true;
+    }
+
+    return { ticket2, ticket2IsMystery, ticket3, ticket3IsMystery };
 }
 
 function findMovieListingInDatabase(query) {
@@ -3435,14 +4730,8 @@ function canRunCoinTossFlip() {
 function canStartTicketShuffle() {
     if (isSpinning || isDiscardingKeeper || isShuffleActive || isCoinTossing) return false;
     if (!coinTossSlotA || !coinTossSlotB) return false;
-    if (coinTossLabelsMatch(coinTossSlotA.label, coinTossSlotB.label)) return false;
-    if (buildFilteredCoinTossPool([coinTossSlotA.label, coinTossSlotB.label]).length < 2) return false;
-
-    const winnerNeedsSlot = coinTossWouldNeedKeeperSlot(coinTossSlotA)
-        || coinTossWouldNeedKeeperSlot(coinTossSlotB);
-    if (winnerNeedsSlot && getOpenKeeperSlots() === 0) return false;
-
-    return true;
+    if (!coinTossUserSlotsAreUnique()) return false;
+    return !getShuffleBlockedReason();
 }
 
 function setCoinTossStatus(message, isError = false) {
@@ -3585,8 +4874,7 @@ function cancelActiveTicketShuffle() {
     setCoinTossStageVisible(false);
     setMiddlePreviewMode(null);
 
-    renderCoinTossSlot(document.getElementById('coin-toss-slot-a'), coinTossSlotA);
-    renderCoinTossSlot(document.getElementById('coin-toss-slot-b'), coinTossSlotB);
+    renderAllCoinTossSlots();
 
     setCoinTossStatus('Shuffle cancelled.');
     updateCoinTossCoinFaces();
@@ -3601,6 +4889,8 @@ function resetTicketShuffleState() {
     clearCoinTossPendingState();
     coinTossSlotA = null;
     coinTossSlotB = null;
+    coinTossSlotC = null;
+    coinTossSlotD = null;
     shuffleTicketSlots = [0, 1, 2, 3];
     shuffleMysteryA = null;
     shuffleMysteryB = null;
@@ -3613,16 +4903,7 @@ function resetTicketShuffleState() {
     setCoinTossStatus('');
     setCoinTossSlotsBlind(false);
 
-    const slotA = document.getElementById('coin-toss-slot-a');
-    const slotB = document.getElementById('coin-toss-slot-b');
-    if (slotA) {
-        slotA.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser', 'filled');
-        slotA.innerHTML = getInsertCoinMarkup();
-    }
-    if (slotB) {
-        slotB.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser', 'filled');
-        slotB.innerHTML = getInsertCoinMarkup();
-    }
+    clearAllCoinTossSlotDOM();
 
     resetTicketShuffleArena();
     setShuffleJokerArmed(false);
@@ -3664,6 +4945,7 @@ function clearCoinTossLandedUI() {
             'coin-toss-settled',
             'coin-toss-awaiting',
             'coin-toss-armed',
+            'coin-toss-lock-shimmer',
             'coin-flip-lands-front',
             'coin-flip-lands-back',
             'coin-toss-spinning'
@@ -3811,8 +5093,9 @@ function setCoinTossStageVisible(visible) {
 
 function showCoinTossPreview() {
     if (!canPreviewCoinToss()) return;
+    preloadCoinTossConfirmAudio();
     setMiddlePreviewMode('coin');
-    updateCoinTossCoinFaces();
+    clearCoinTossFaceStyles();
     setCoinTossStageVisible(true);
 }
 
@@ -3987,6 +5270,13 @@ function updateCoinTossFlipButtonState() {
     const flipBtn = document.getElementById('coin-toss-flip-btn');
     if (!flipBtn) return;
 
+    if (coinTossPhase === 'armed') {
+        const coin = document.getElementById('coin-toss-coin');
+        flipBtn.disabled = Boolean(coin?.disabled);
+        flipBtn.title = coin?.disabled ? 'Arming coin…' : '';
+        return;
+    }
+
     let blockedReason = '';
     if (isShuffleActive) {
         blockedReason = 'Shuffle in progress.';
@@ -4100,31 +5390,48 @@ function buildArmSpinFlipDurations(totalMs, flipCount = COIN_ARM_SPIN_FLIP_COUNT
     return weights.map((w) => Math.max(20, Math.round((totalMs * w) / sum)));
 }
 
-async function playCoinTossArmSpin(coin, durationMs, generation) {
+function pickBriefSpinFlipCount(winnerIsFront) {
+    let flipCount = COIN_BRIEF_SPIN_MIN_FLIPS
+        + Math.floor(Math.random() * (COIN_BRIEF_SPIN_MAX_FLIPS - COIN_BRIEF_SPIN_MIN_FLIPS + 1));
+    const needOdd = !winnerIsFront;
+    if ((flipCount % 2 === 1) !== needOdd) flipCount += 1;
+    return flipCount;
+}
+
+async function playCoinTossLockShimmer(coin, durationMs, generation) {
     if (!coin || generation !== coinTossGeneration) return;
+    coin.classList.add('coin-toss-lock-shimmer');
+    await shuffleSleep(durationMs);
+    if (generation !== coinTossGeneration) return;
+    coin.classList.remove('coin-toss-lock-shimmer');
+}
+
+async function playCoinTossBriefSpin(coin, durationMs, generation, winnerIsFront) {
+    if (!coin || generation !== coinTossGeneration) return false;
     stopCoinTossVisualSpin(coin);
     coinSpinDeg = 0;
-    coin.style.transform = 'rotateY(0deg)';
+    coin.style.transform = coinFlipTransform(0);
     coin.classList.add('coin-toss-spinning');
 
-    const flipDurations = buildArmSpinFlipDurations(durationMs);
+    const flipCount = pickBriefSpinFlipCount(winnerIsFront);
+    const flipDurations = buildArmSpinFlipDurations(durationMs, flipCount);
     const fastestFlipMs = flipDurations[0];
     setCoinTossArmSpinBedVolume(fastestFlipMs, fastestFlipMs);
 
     for (let i = 0; i < flipDurations.length; i += 1) {
         const flipMs = flipDurations[i];
         const nextFlipMs = flipDurations[i + 1] ?? flipMs;
-        if (generation !== coinTossGeneration) return;
+        if (generation !== coinTossGeneration) return false;
         rampCoinTossArmSpinBedVolume(flipMs, nextFlipMs, fastestFlipMs, flipMs, generation);
         const ok = await animateCoinHalfFlip(coin, flipMs, generation);
-        if (!ok) return;
+        if (!ok) return false;
     }
 
-    if (generation !== coinTossGeneration) return;
+    if (generation !== coinTossGeneration) return false;
     coin.classList.remove('coin-toss-spinning');
     cancelCoinSpinAnimations(coin);
-    coinSpinDeg = 0;
-    coin.style.transform = 'rotateY(0deg)';
+    snapCoinToWinnerAngle(coin, winnerIsFront);
+    return true;
 }
 
 function loadCoinFlip1DurationMs() {
@@ -4317,6 +5624,19 @@ function playCoinFlip1Segment(playbackRate) {
     });
 }
 
+function playCoinTossArmConfirmSound() {
+    if (!COIN_TOSS_CONFIRM_PATH) return;
+
+    preloadCoinTossConfirmAudio();
+    const audio = coinTossConfirmAudio;
+    audio.volume = getNormalizedVolume(COIN_TOSS_CONFIRM_PATH, cabinetMixer.victoryClipVolume);
+    if (!audio.paused) audio.pause();
+    audio.currentTime = 0;
+    audio.play().catch((err) => {
+        console.log('Coin toss confirm audio blocked or file not found:', COIN_TOSS_CONFIRM_PATH, err);
+    });
+}
+
 function playCoinTossLandSound() {
     stopCoinTossSpinBed();
 
@@ -4389,7 +5709,7 @@ async function runCoinTossSpinSequence(generation, coin, winnerIsFront) {
     coinSpinDeg = 0;
     if (coin) {
         stopCoinTossVisualSpin(coin);
-        coin.style.transform = 'rotateY(0deg)';
+        coin.style.transform = coinFlipTransform(0);
         coin.classList.add('coin-toss-spinning');
     }
 
@@ -4430,7 +5750,7 @@ function snapCoinToWinnerAngle(coin, winnerIsFront) {
     coin.getAnimations().forEach((anim) => anim.cancel());
     const angle = winnerIsFront ? 0 : 180;
     coinSpinDeg = angle;
-    coin.style.transform = `rotateY(${angle}deg)`;
+    coin.style.transform = coinFlipTransform(angle);
 }
 
 async function animateCoinHalfFlip(coin, durationMs, generation) {
@@ -4440,8 +5760,8 @@ async function animateCoinHalfFlip(coin, durationMs, generation) {
     const toDeg = fromDeg + 180;
     const anim = coin.animate(
         [
-            { transform: `rotateY(${fromDeg}deg)` },
-            { transform: `rotateY(${toDeg}deg)` }
+            { transform: coinFlipTransform(fromDeg) },
+            { transform: coinFlipTransform(toDeg) }
         ],
         { duration: durationMs, easing: 'linear', fill: 'forwards' }
     );
@@ -4452,7 +5772,7 @@ async function animateCoinHalfFlip(coin, durationMs, generation) {
     }
     if (generation !== coinTossGeneration) return false;
     coinSpinDeg = toDeg;
-    coin.style.transform = `rotateY(${toDeg}deg)`;
+    coin.style.transform = coinFlipTransform(toDeg);
     return true;
 }
 
@@ -4464,8 +5784,8 @@ async function animateCoinSlowTailSpin(coin, tailMs, generation) {
     const toDeg = fromDeg + COIN_FLIP_TAIL_ROTATION_DEG;
     const anim = coin.animate(
         [
-            { transform: `rotateY(${fromDeg}deg)` },
-            { transform: `rotateY(${toDeg}deg)` }
+            { transform: coinFlipTransform(fromDeg) },
+            { transform: coinFlipTransform(toDeg) }
         ],
         { duration: tailMs, easing: 'linear', fill: 'forwards' }
     );
@@ -4476,7 +5796,7 @@ async function animateCoinSlowTailSpin(coin, tailMs, generation) {
     }
     if (generation !== coinTossGeneration) return false;
     coinSpinDeg = toDeg;
-    coin.style.transform = `rotateY(${toDeg}deg)`;
+    coin.style.transform = coinFlipTransform(toDeg);
     return true;
 }
 
@@ -4493,8 +5813,7 @@ function cancelActiveCoinToss() {
     const stage = document.getElementById('coin-toss-stage');
     if (stage) stage.classList.remove('coin-toss-stage-active');
 
-    renderCoinTossSlot(document.getElementById('coin-toss-slot-a'), coinTossSlotA);
-    renderCoinTossSlot(document.getElementById('coin-toss-slot-b'), coinTossSlotB);
+    renderAllCoinTossSlots();
     updateCoinTossCoinFaces();
     setCoinTossStageVisible(false);
     setCoinTossStatus('Coin toss cancelled.');
@@ -4543,7 +5862,9 @@ function confirmCoinToss() {
     updateDecisionButtonStates();
 }
 
-async function armCoinToss() {
+// --- COIN TOSS FLIP AND LAUNCH ---
+
+async function armCoinToss({ autoLaunch = false } = {}) {
     if (!canRunCoinTossFlip()) {
         updateDecisionButtonStates();
         return;
@@ -4556,26 +5877,29 @@ async function armCoinToss() {
     coinTossPendingWinner = null;
     coinTossPendingLoser = null;
 
-    const coin = document.getElementById('coin-toss-coin');
-    const flipBtn = document.getElementById('coin-toss-flip-btn');
+    playCoinTossArmConfirmSound();
+    if (!isSpeedRunMode()) {
+        startCoinTossFlipBed(generation);
+    }
+    if (generation !== coinTossGeneration) return;
 
-    if (flipBtn) flipBtn.disabled = true;
+    const coin = document.getElementById('coin-toss-coin');
+
     updateDecisionButtonStates();
 
     setMiddlePreviewMode('coin');
-    updateCoinTossCoinFaces();
     setCoinTossStageVisible(true);
 
-    startCoinTossSpinBed(generation);
-    if (generation !== coinTossGeneration) return;
+    const skipLockIn = autoLaunch || isInstantRevealMode();
 
-    const spinDurationMs = await loadCoinFlipSpinShortDurationMs();
-    if (generation !== coinTossGeneration) return;
-
-    await Promise.all([
-        playCoinTossArmSpin(coin, spinDurationMs, generation),
-        preloadCoinTossPosters()
-    ]);
+    if (skipLockIn) {
+        await preloadCoinTossPosters();
+    } else {
+        await Promise.all([
+            playCoinTossLockShimmer(coin, COIN_LOCK_SHIMMER_MS, generation),
+            preloadCoinTossPosters()
+        ]);
+    }
     if (generation !== coinTossGeneration) return;
 
     if (coin) {
@@ -4584,7 +5908,12 @@ async function armCoinToss() {
         coin.setAttribute('aria-label', 'Flip coin');
     }
 
-    setCoinTossStatus('Click the coin to flip — Esc to cancel');
+    updateCoinTossFlipButtonState();
+    setCoinTossStatus('Click the coin or FLIP COIN to flip — Esc to cancel');
+
+    if (autoLaunch && coinTossPhase === 'armed') {
+        void launchCoinToss();
+    }
 }
 
 async function launchCoinToss() {
@@ -4612,13 +5941,9 @@ async function launchCoinToss() {
     const winner = winnerIsFront ? coinTossSlotA : coinTossSlotB;
     const loser = winnerIsFront ? coinTossSlotB : coinTossSlotA;
 
-    setCoinTossLabelSpinFaces();
     setMiddlePreviewMode(null);
     setCoinTossStageVisible(true);
-    coinTossPhase = 'flipping';
     if (generation !== coinTossGeneration) return;
-
-    startCoinTossFlipBed(generation);
 
     if (stage) stage.classList.add('coin-toss-stage-active');
     if (coin) {
@@ -4630,7 +5955,51 @@ async function launchCoinToss() {
         flightWrap.style.transform = '';
     }
 
-    const spinOk = await runCoinTossSpinSequence(generation, coin, winnerIsFront);
+    if (coin && coinTossSlotA && coinTossSlotB) {
+        applyCoinTossFaceEntry(coinTossSlotA, coin.querySelector('.coin-face-front'), 'poster');
+        applyCoinTossFaceEntry(coinTossSlotB, coin.querySelector('.coin-face-back'), 'poster');
+    }
+
+    if (isSpeedRunMode()) {
+        if (generation !== coinTossGeneration) return;
+
+        stopCoinTossFlipBed();
+
+        coinTossPendingWinner = winner;
+        coinTossPendingLoser = loser;
+        coinTossPendingWinnerIsFront = winnerIsFront;
+
+        applyCoinTossWinnerReveal(winner, winnerIsFront);
+        snapCoinToWinnerAngle(coin, winnerIsFront);
+        if (coin) {
+            coin.classList.add(
+                'coin-toss-settled',
+                'coin-toss-awaiting',
+                winnerIsFront ? 'coin-flip-lands-front' : 'coin-flip-lands-back'
+            );
+            coin.disabled = false;
+        }
+        if (flightWrap) flightWrap.classList.add('coin-toss-landed');
+        if (stage) stage.classList.add('coin-toss-landed');
+
+        playCoinTossLandSound();
+        coinTossPhase = 'awaitingConfirm';
+        setCoinTossStatus('Click the coin to keep the winner — Esc to cancel');
+        updateDecisionButtonStates();
+        return;
+    }
+
+    coinTossPhase = 'flipping';
+    updateDecisionButtonStates();
+    if (generation !== coinTossGeneration) return;
+
+    startCoinTossSpinBed(generation);
+    if (generation !== coinTossGeneration) return;
+
+    const spinDurationMs = await loadCoinFlipSpinShortDurationMs();
+    if (generation !== coinTossGeneration) return;
+
+    const spinOk = await playCoinTossBriefSpin(coin, spinDurationMs, generation, winnerIsFront);
     if (generation !== coinTossGeneration || !spinOk) {
         stopCoinTossSpinBed();
         stopCoinTossFlipBed();
@@ -4697,43 +6066,44 @@ function assignCoinTossSlot(entry) {
     const resolved = resolveCoinTossEntry(entry);
     if (!resolved) return;
 
-    if (coinTossSlotA && coinTossLabelsMatch(coinTossSlotA.label, resolved.label)) {
-        coinTossSlotA = null;
-        renderCoinTossSlot(document.getElementById('coin-toss-slot-a'), null);
-    } else if (coinTossSlotB && coinTossLabelsMatch(coinTossSlotB.label, resolved.label)) {
-        coinTossSlotB = null;
-        renderCoinTossSlot(document.getElementById('coin-toss-slot-b'), null);
-    } else if (!coinTossSlotA) {
-        coinTossSlotA = resolved;
-        renderCoinTossSlot(document.getElementById('coin-toss-slot-a'), resolved);
-    } else if (!coinTossSlotB) {
-        if (coinTossLabelsMatch(coinTossSlotA.label, resolved.label)) {
-            setCoinTossStatus('Pick two different movies.', true);
+    for (const key of COIN_TOSS_SLOT_KEYS) {
+        const slot = getCoinTossSlotByKey(key);
+        if (slot && coinTossLabelsMatch(slot.label, resolved.label)) {
+            setCoinTossSlotByKey(key, null);
+            renderCoinTossSlot(getCoinTossSlotElByKey(key), null);
+            setCoinTossStatus('');
+            updateCoinTossCoinFaces();
+            refreshCoinTossPreviewIfHovering();
+            updateDecisionButtonStates();
+            refreshCoinTossCandidatesUI();
             return;
         }
-        coinTossSlotB = resolved;
-        renderCoinTossSlot(document.getElementById('coin-toss-slot-b'), resolved);
-    } else {
-        setCoinTossStatus('Both pick slots are full — click a slot to clear it.', true);
+    }
+
+    for (const key of COIN_TOSS_SLOT_KEYS) {
+        if (getCoinTossSlotByKey(key)) continue;
+        if (isLabelInCoinTossSlot(resolved.label)) {
+            setCoinTossStatus('Pick different movies in each slot.', true);
+            return;
+        }
+        setCoinTossSlotByKey(key, resolved);
+        renderCoinTossSlot(getCoinTossSlotElByKey(key), resolved);
+        setCoinTossStatus('');
+        updateCoinTossCoinFaces();
+        refreshCoinTossPreviewIfHovering();
+        updateDecisionButtonStates();
+        refreshCoinTossCandidatesUI();
         return;
     }
 
-    setCoinTossStatus('');
-    updateCoinTossCoinFaces();
-    refreshCoinTossPreviewIfHovering();
-    updateDecisionButtonStates();
-    refreshCoinTossCandidatesUI();
+    setCoinTossStatus('All pick slots are full — click a slot to clear it.', true);
 }
 
 function clearCoinTossSlot(slotKey) {
     if (isShuffleActive || isCoinTossing) return;
-    if (slotKey === 'a') {
-        coinTossSlotA = null;
-        renderCoinTossSlot(document.getElementById('coin-toss-slot-a'), null);
-    } else if (slotKey === 'b') {
-        coinTossSlotB = null;
-        renderCoinTossSlot(document.getElementById('coin-toss-slot-b'), null);
-    }
+    if (!COIN_TOSS_SLOT_KEYS.includes(slotKey)) return;
+    setCoinTossSlotByKey(slotKey, null);
+    renderCoinTossSlot(getCoinTossSlotElByKey(slotKey), null);
     setCoinTossStatus('');
     updateCoinTossCoinFaces();
     if (!canPreviewCoinToss()) {
@@ -4756,15 +6126,8 @@ function updateTicketShuffleButtonState() {
         blockedReason = 'Click the joker to shuffle.';
     } else if (isCoinTossing) {
         blockedReason = 'Coin flip in progress.';
-    } else if (!coinTossSlotA || !coinTossSlotB) {
-        blockedReason = 'Pick two movies to shuffle.';
-    } else if (coinTossLabelsMatch(coinTossSlotA.label, coinTossSlotB.label)) {
-        blockedReason = 'Pick two different movies.';
-    } else if (getOpenKeeperSlots() === 0
-        && (coinTossWouldNeedKeeperSlot(coinTossSlotA) || coinTossWouldNeedKeeperSlot(coinTossSlotB))) {
-        blockedReason = 'Keeper full — discard a movie first.';
-    } else if (buildFilteredCoinTossPool([coinTossSlotA.label, coinTossSlotB.label]).length < 2) {
-        blockedReason = 'Need at least 2 other filtered movies for mystery tickets.';
+    } else {
+        blockedReason = getShuffleBlockedReason();
     }
 
     shuffleBtn.disabled = !canStartTicketShuffle();
@@ -4779,17 +6142,17 @@ function refreshCoinTossCandidatesUI() {
     const candidates = getCoinTossCandidates();
     const mysteryPool = getMysteryFlickCoinTossPool();
     const duelLocked = isShuffleActive || isCoinTossing;
-    const bothSlotsFull = coinTossSlotA && coinTossSlotB;
+    const allSlotsFull = areAllCoinTossSlotsFull();
 
     const mysteryChip = document.createElement('button');
     mysteryChip.type = 'button';
     mysteryChip.className = 'coin-toss-chip coin-toss-chip-mystery';
-    mysteryChip.disabled = duelLocked || mysteryPool.length === 0 || bothSlotsFull;
+    mysteryChip.disabled = duelLocked || mysteryPool.length === 0 || allSlotsFull;
     if (mysteryChip.disabled) {
         if (mysteryPool.length === 0) {
             mysteryChip.title = 'No movies match your filters.';
-        } else if (bothSlotsFull) {
-            mysteryChip.title = 'Both pick slots are full — click a slot to clear it.';
+        } else if (allSlotsFull) {
+            mysteryChip.title = 'All pick slots are full — click a slot to clear it.';
         } else if (duelLocked) {
             mysteryChip.title = 'Coin flip or shuffle in progress.';
         }
@@ -4820,8 +6183,7 @@ function refreshCoinTossCandidatesUI() {
         const chip = document.createElement('button');
         chip.type = 'button';
         chip.className = 'coin-toss-chip';
-        const selected = (coinTossSlotA && coinTossSlotA.label === entry.label)
-            || (coinTossSlotB && coinTossSlotB.label === entry.label);
+        const selected = isLabelInCoinTossSlot(entry.label);
         if (selected) chip.classList.add('selected');
 
         const sourceTag = document.createElement('span');
@@ -4972,6 +6334,8 @@ function setArenaIntroLayout(arena, mode) {
     else if (mode === 'quadrant') arena.classList.add('shuffle-intro-quadrant');
 }
 
+// --- TICKET SHUFFLE SEQUENCES ---
+
 async function runStackTicketsAtCenter(tickets, generation) {
     playShuffleIntroClip('stack');
     const center = { left: 50, top: 50 };
@@ -5065,13 +6429,15 @@ async function runDeployFromStack(tickets, arena, slotsRow, generation) {
     return true;
 }
 
-async function runShuffleCinematicIntro(tickets, arena, slotAEl, slotBEl, generation) {
+async function runShuffleCinematicIntro(tickets, arena, slotAEl, slotBEl, slotCEl, slotDEl, generation) {
     const slotsRow = document.getElementById('coin-toss-slots-row');
     const posContainer = arena;
     const ticket0 = tickets[0];
     const ticket1 = tickets[1];
     const ticket2 = tickets[2];
     const ticket3 = tickets[3];
+    const ticket2IsMystery = ticket2._isMystery;
+    const ticket3IsMystery = ticket3._isMystery;
 
     await new Promise((resolve) => {
         window.requestAnimationFrame(() => window.requestAnimationFrame(resolve));
@@ -5082,29 +6448,37 @@ async function runShuffleCinematicIntro(tickets, arena, slotAEl, slotBEl, genera
     let centerA = posterCenterInIntro(slotAEl, posContainer);
     let centerB = posterCenterInIntro(slotBEl, posContainer);
 
-    setTicketPosition(ticket2, centerA, { opacity: 0, zIndex: 1 });
-    setTicketPosition(ticket3, centerB, { opacity: 0, zIndex: 1 });
-    ticket2.classList.add('shuffle-ticket-intro-hidden');
-    ticket3.classList.add('shuffle-ticket-intro-hidden');
+    if (ticket2IsMystery) {
+        setTicketPosition(ticket2, centerA, { opacity: 0, zIndex: 1 });
+        ticket2.classList.add('shuffle-ticket-intro-hidden');
+    }
+    if (ticket3IsMystery) {
+        setTicketPosition(ticket3, centerB, { opacity: 0, zIndex: 1 });
+        ticket3.classList.add('shuffle-ticket-intro-hidden');
+    }
 
-    // Stage A — emerge from poster center, settle inward toward row center
-    const spawn0 = primeKnownTicketAtPoster(ticket0, slotAEl, posContainer);
-    const spawn1 = primeKnownTicketAtPoster(ticket1, slotBEl, posContainer);
-    const settle0 = getKnownSettlePoint(0, slotAEl, posContainer);
-    const settle1 = getKnownSettlePoint(1, slotBEl, posContainer);
-
-    playShuffleIntroClip('emerge');
-
-    const emergeAnims = [
-        ticket0.animate(
-            buildKnownEmergeKeyframesFromPoints(spawn0, settle0),
-            { duration: SHUFFLE_EMERGE_MS, fill: 'forwards', easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
-        ),
-        ticket1.animate(
-            buildKnownEmergeKeyframesFromPoints(spawn1, settle1),
-            { duration: SHUFFLE_EMERGE_MS, fill: 'forwards', easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
-        )
+    // Stage A — emerge known picks from their slot posters
+    const emergeAnims = [];
+    const emergeTargets = [
+        { ticketEl: ticket0, slotEl: slotAEl, ticketIndex: 0 },
+        { ticketEl: ticket1, slotEl: slotBEl, ticketIndex: 1 },
+        { ticketEl: ticket2, slotEl: slotCEl, ticketIndex: 2, skip: ticket2IsMystery },
+        { ticketEl: ticket3, slotEl: slotDEl, ticketIndex: 3, skip: ticket3IsMystery }
     ];
+    const emergeSettles = [];
+
+    emergeTargets.forEach(({ ticketEl, slotEl, ticketIndex, skip }) => {
+        if (skip || !slotEl) return;
+        const spawn = primeKnownTicketAtPoster(ticketEl, slotEl, posContainer);
+        const settle = getKnownSettlePoint(ticketIndex, slotEl, posContainer);
+        emergeSettles.push({ ticketEl, settle });
+        emergeAnims.push(ticketEl.animate(
+            buildKnownEmergeKeyframesFromPoints(spawn, settle),
+            { duration: SHUFFLE_EMERGE_MS, fill: 'forwards', easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
+        ));
+    });
+
+    if (emergeAnims.length) playShuffleIntroClip('emerge');
 
     await shuffleSleep(SHUFFLE_EMERGE_MS);
     if (generation !== coinTossGeneration) {
@@ -5112,10 +6486,10 @@ async function runShuffleCinematicIntro(tickets, arena, slotAEl, slotBEl, genera
         clearShuffleIntroUI();
         return false;
     }
-    finalizeTicketAnimation(emergeAnims[0], ticket0, settle0, { zIndex: 4 });
-    finalizeTicketAnimation(emergeAnims[1], ticket1, settle1, { zIndex: 4 });
-    ticket0.style.transition = '';
-    ticket1.style.transition = '';
+    emergeSettles.forEach(({ ticketEl, settle }, settleIndex) => {
+        finalizeTicketAnimation(emergeAnims[settleIndex], ticketEl, settle, { zIndex: 4 });
+        ticketEl.style.transition = '';
+    });
     arena.classList.remove('shuffle-intro-emerge');
 
     // Stage B — rest with posters + known tickets
@@ -5126,35 +6500,43 @@ async function runShuffleCinematicIntro(tickets, arena, slotAEl, slotBEl, genera
     }
 
     // Stage C — slow poster fade, mysteries fade in at poster spots
-    centerA = posterCenterInIntro(slotAEl, posContainer);
-    centerB = posterCenterInIntro(slotBEl, posContainer);
-    slotsRow?.classList.add('coin-toss-slots-poster-fade');
-    setCoinTossSlotsBlind(true);
-    ticket2.classList.remove('shuffle-ticket-intro-hidden');
-    ticket3.classList.remove('shuffle-ticket-intro-hidden');
+    if (ticket2IsMystery || ticket3IsMystery) {
+        centerA = posterCenterInIntro(slotAEl, posContainer);
+        centerB = posterCenterInIntro(slotBEl, posContainer);
+        slotsRow?.classList.add('coin-toss-slots-poster-fade');
+        setCoinTossSlotsBlind(true);
 
-    playShuffleIntroClip('mystery');
+        playShuffleIntroClip('mystery');
 
-    const mysteryFadeAnims = [
-        ticket2.animate([
-            { opacity: 0, transform: 'translate(-50%, -50%) scale(0.95)' },
-            { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' }
-        ], { duration: SHUFFLE_POSTER_FADE_MS, fill: 'forwards', easing: 'ease-out' }),
-        ticket3.animate([
-            { opacity: 0, transform: 'translate(-50%, -50%) scale(0.95)' },
-            { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' }
-        ], { duration: SHUFFLE_POSTER_FADE_MS, fill: 'forwards', easing: 'ease-out' })
-    ];
+        const mysteryFadeAnims = [];
+        if (ticket2IsMystery) {
+            ticket2.classList.remove('shuffle-ticket-intro-hidden');
+            mysteryFadeAnims.push(ticket2.animate([
+                { opacity: 0, transform: 'translate(-50%, -50%) scale(0.95)' },
+                { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' }
+            ], { duration: SHUFFLE_POSTER_FADE_MS, fill: 'forwards', easing: 'ease-out' }));
+        }
+        if (ticket3IsMystery) {
+            ticket3.classList.remove('shuffle-ticket-intro-hidden');
+            mysteryFadeAnims.push(ticket3.animate([
+                { opacity: 0, transform: 'translate(-50%, -50%) scale(0.95)' },
+                { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' }
+            ], { duration: SHUFFLE_POSTER_FADE_MS, fill: 'forwards', easing: 'ease-out' }));
+        }
 
-    await shuffleSleep(SHUFFLE_POSTER_FADE_MS);
-    if (generation !== coinTossGeneration) {
+        await shuffleSleep(SHUFFLE_POSTER_FADE_MS);
+        if (generation !== coinTossGeneration) {
+            mysteryFadeAnims.forEach((anim) => anim.cancel());
+            clearShuffleIntroUI();
+            return false;
+        }
         mysteryFadeAnims.forEach((anim) => anim.cancel());
-        clearShuffleIntroUI();
-        return false;
+        if (ticket2IsMystery) setTicketPosition(ticket2, centerA, { zIndex: 2, opacity: 1 });
+        if (ticket3IsMystery) setTicketPosition(ticket3, centerB, { zIndex: 2, opacity: 1 });
+    } else {
+        slotsRow?.classList.add('coin-toss-slots-poster-fade');
+        setCoinTossSlotsBlind(true);
     }
-    mysteryFadeAnims.forEach((anim) => anim.cancel());
-    setTicketPosition(ticket2, centerA, { zIndex: 2, opacity: 1 });
-    setTicketPosition(ticket3, centerB, { zIndex: 2, opacity: 1 });
 
     // Stage D — crossfade rest
     await shuffleSleep(SHUFFLE_CROSSFADE_REST_MS);
@@ -5785,19 +7167,7 @@ function buildShuffleTicket(entry, index, options = {}) {
 }
 
 function finishTicketShuffleRound(winner) {
-    coinTossSlotA = null;
-    coinTossSlotB = null;
-
-    const slotAEl = document.getElementById('coin-toss-slot-a');
-    const slotBEl = document.getElementById('coin-toss-slot-b');
-    if (slotAEl) {
-        slotAEl.classList.remove('filled');
-        slotAEl.innerHTML = getInsertCoinMarkup();
-    }
-    if (slotBEl) {
-        slotBEl.classList.remove('filled');
-        slotBEl.innerHTML = getInsertCoinMarkup();
-    }
+    clearAllCoinTossSlots();
 
     resetTicketShuffleArena();
     setShuffleJokerArmed(false);
@@ -5838,10 +7208,20 @@ async function confirmShuffleTicketPick(ticketEl) {
     if (!winner) return;
 
     let loser;
-    if (index === 0 || index === 1) {
-        loser = index === 0 ? coinTossSlotB : coinTossSlotA;
-    } else {
+    if (index === 0) {
+        loser = coinTossSlotB;
+    } else if (index === 1) {
+        loser = coinTossSlotA;
+    } else if (ticketEl._isMystery) {
         loser = Math.random() < 0.5 ? coinTossSlotA : coinTossSlotB;
+    } else {
+        const slotEntries = [coinTossSlotA, coinTossSlotB, coinTossSlotC, coinTossSlotD];
+        const others = slotEntries.filter(
+            (entry, slotIndex) => entry && slotIndex !== index && !coinTossLabelsMatch(entry.label, winner.label)
+        );
+        loser = others.length
+            ? others[Math.floor(Math.random() * others.length)]
+            : (Math.random() < 0.5 ? coinTossSlotA : coinTossSlotB);
     }
     if (!loser) return;
 
@@ -5878,17 +7258,21 @@ async function confirmShuffleTicketPick(ticketEl) {
 
     playShuffleRevealSound();
 
-    const slotAEl = document.getElementById('coin-toss-slot-a');
-    const slotBEl = document.getElementById('coin-toss-slot-b');
-    if (slotAEl && slotBEl) {
-        if (index === 0 || index === 1) {
-            const winnerIsA = index === 0;
-            (winnerIsA ? slotAEl : slotBEl).classList.add('coin-toss-slot-winner');
-            (winnerIsA ? slotBEl : slotAEl).classList.add('coin-toss-slot-loser');
-        } else {
-            slotAEl.classList.add('coin-toss-slot-loser');
-            slotBEl.classList.add('coin-toss-slot-loser');
-        }
+    const slotEls = COIN_TOSS_SLOT_KEYS.map((key) => getCoinTossSlotElByKey(key));
+    const slotEntries = [coinTossSlotA, coinTossSlotB, coinTossSlotC, coinTossSlotD];
+    const winnerEl = slotEls[index];
+    winnerEl?.classList.add('coin-toss-slot-winner');
+
+    if (index === 0 || index === 1) {
+        slotEls[index === 0 ? 1 : 0]?.classList.add('coin-toss-slot-loser');
+    } else if (ticketEl._isMystery) {
+        slotEls[0]?.classList.add('coin-toss-slot-loser');
+        slotEls[1]?.classList.add('coin-toss-slot-loser');
+    } else {
+        const loserIndex = slotEntries.findIndex(
+            (entry) => entry && coinTossLabelsMatch(entry.label, loser.label)
+        );
+        if (loserIndex >= 0) slotEls[loserIndex]?.classList.add('coin-toss-slot-loser');
     }
 
     applyCoinTossResult(winner, loser);
@@ -5897,23 +7281,27 @@ async function confirmShuffleTicketPick(ticketEl) {
     window.setTimeout(() => finishTicketShuffleRound(winner), 800);
 }
 
+// --- TICKET SHUFFLE LAUNCH ---
+
 async function armTicketShuffle() {
     if (!canStartTicketShuffle()) {
         updateDecisionButtonStates();
         return;
     }
 
-    const mysteries = drawMysteryShuffleEntries(coinTossSlotA, coinTossSlotB);
-    if (!mysteries) {
-        setCoinTossStatus('Need at least 2 other filtered movies for mystery tickets.', true);
+    const resolved = resolveShuffleRoundTickets();
+    if (!resolved) {
+        setCoinTossStatus(getShuffleBlockedReason() || 'Need more filtered movies for mystery tickets.', true);
         updateDecisionButtonStates();
         return;
     }
 
-    shuffleMysteryA = mysteries[0];
-    shuffleMysteryB = mysteries[1];
-
-    const roundEntries = [coinTossSlotA, coinTossSlotB, shuffleMysteryA, shuffleMysteryB];
+    const roundEntries = [
+        coinTossSlotA,
+        coinTossSlotB,
+        resolved.ticket2,
+        resolved.ticket3
+    ];
     if (roundEntries.some((entry) => coinTossWouldNeedKeeperSlot(entry)) && getOpenKeeperSlots() === 0) {
         setCoinTossStatus('Keeper full — discard a movie first.', true);
         shuffleMysteryA = null;
@@ -5967,11 +7355,19 @@ async function launchTicketShuffle() {
 
     const slotAEl = document.getElementById('coin-toss-slot-a');
     const slotBEl = document.getElementById('coin-toss-slot-b');
-    if (slotAEl) slotAEl.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser');
-    if (slotBEl) slotBEl.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser');
+    const slotCEl = document.getElementById('coin-toss-slot-c');
+    const slotDEl = document.getElementById('coin-toss-slot-d');
+    [slotAEl, slotBEl, slotCEl, slotDEl].forEach((slotEl) => {
+        slotEl?.classList.remove('coin-toss-slot-winner', 'coin-toss-slot-loser');
+    });
 
     const arena = document.getElementById('ticket-shuffle-arena');
     if (!arena) return;
+
+    const entry2 = coinTossSlotC ?? shuffleMysteryA;
+    const entry3 = coinTossSlotD ?? shuffleMysteryB;
+    const isMystery2 = !coinTossSlotC;
+    const isMystery3 = !coinTossSlotD;
 
     const slotsRow = document.getElementById('coin-toss-slots-row');
     slotsRow?.classList.add('coin-toss-shuffle-active');
@@ -5979,8 +7375,8 @@ async function launchTicketShuffle() {
     arena.innerHTML = '';
     const ticket0 = buildShuffleTicket(coinTossSlotA, 0);
     const ticket1 = buildShuffleTicket(coinTossSlotB, 1);
-    const ticket2 = buildShuffleTicket(shuffleMysteryA, 2, { isMystery: true });
-    const ticket3 = buildShuffleTicket(shuffleMysteryB, 3, { isMystery: true });
+    const ticket2 = buildShuffleTicket(entry2, 2, { isMystery: isMystery2 });
+    const ticket3 = buildShuffleTicket(entry3, 3, { isMystery: isMystery3 });
     arena.appendChild(ticket0);
     arena.appendChild(ticket1);
     arena.appendChild(ticket2);
@@ -5999,7 +7395,15 @@ async function launchTicketShuffle() {
         window.requestAnimationFrame(() => window.requestAnimationFrame(resolve));
     });
 
-    const introOk = await runShuffleCinematicIntro(tickets, arena, slotAEl, slotBEl, generation);
+    const introOk = await runShuffleCinematicIntro(
+        tickets,
+        arena,
+        slotAEl,
+        slotBEl,
+        slotCEl,
+        slotDEl,
+        generation
+    );
     if (!introOk) return;
 
     clearShuffleArenaEntering();
@@ -6049,8 +7453,9 @@ async function launchTicketShuffle() {
 
 function handleCoinTossManualSearch(slotKey) {
     if (isShuffleActive || isCoinTossing) return;
-    const input = document.getElementById(slotKey === 'a' ? 'coin-toss-search-a' : 'coin-toss-search-b');
-    const dropdown = document.getElementById(slotKey === 'a' ? 'coin-toss-dropdown-a' : 'coin-toss-dropdown-b');
+    if (!COIN_TOSS_SLOT_KEYS.includes(slotKey)) return;
+    const input = document.getElementById(`coin-toss-search-${slotKey}`);
+    const dropdown = document.getElementById(`coin-toss-dropdown-${slotKey}`);
     if (!input || !dropdown) return;
 
     const query = input.value.trim();
@@ -6081,13 +7486,17 @@ function handleCoinTossManualSearch(slotKey) {
             input.value = getKeeperListingLabel(entry.label);
             dropdown.hidden = true;
             dropdown.innerHTML = '';
-            if (slotKey === 'a') {
-                coinTossSlotA = resolveCoinTossEntry(entry);
-                renderCoinTossSlot(document.getElementById('coin-toss-slot-a'), coinTossSlotA);
-            } else {
-                coinTossSlotB = resolveCoinTossEntry(entry);
-                renderCoinTossSlot(document.getElementById('coin-toss-slot-b'), coinTossSlotB);
+            const resolved = resolveCoinTossEntry(entry);
+            const duplicateKey = COIN_TOSS_SLOT_KEYS.find((key) => {
+                const slot = getCoinTossSlotByKey(key);
+                return slot && coinTossLabelsMatch(slot.label, resolved.label) && key !== slotKey;
+            });
+            if (duplicateKey) {
+                setCoinTossStatus('Pick different movies in each slot.', true);
+                return;
             }
+            setCoinTossSlotByKey(slotKey, resolved);
+            renderCoinTossSlot(getCoinTossSlotElByKey(slotKey), resolved);
             setCoinTossStatus('');
             updateCoinTossCoinFaces();
             refreshCoinTossPreviewIfHovering();
@@ -6098,6 +7507,15 @@ function handleCoinTossManualSearch(slotKey) {
     });
 
     dropdown.hidden = false;
+}
+
+// --- DUELING FLICKS UI ---
+
+function getShuffleJokerPreviewMarkup() {
+    const layers = Array.from({ length: SHUFFLE_LOCK_IN_DECK_LAYERS }, () =>
+        '<span class="shuffle-joker-card-layer" aria-hidden="true">🃏</span>'
+    ).join('');
+    return `<span class="shuffle-joker-face"><span class="shuffle-joker-card-shell"><span class="shuffle-joker-deck" aria-hidden="true">${layers}</span></span></span>`;
 }
 
 function buildCoinTossUI() {
@@ -6114,7 +7532,7 @@ function buildCoinTossUI() {
 
     const hint = document.createElement('div');
     hint.id = 'coin-toss-hint';
-    hint.textContent = 'Pick two movies — flip a coin for a random winner, or shuffle four tickets (two mystery) and pick one to keep.';
+    hint.textContent = 'Pick two movies to flip or shuffle — optional picks C and D replace the Sequel Street and true random mystery tickets.';
     section.appendChild(hint);
 
     const slotsRow = document.createElement('div');
@@ -6167,7 +7585,7 @@ function buildCoinTossUI() {
     shufflePreview.disabled = true;
     shufflePreview.setAttribute('aria-hidden', 'true');
     shufflePreview.setAttribute('aria-label', 'Shuffle preview');
-    shufflePreview.innerHTML = '<span class="shuffle-joker-face"><span class="shuffle-joker-card-shell"><span class="shuffle-joker-glyph" aria-hidden="true">🃏</span></span></span>';
+    shufflePreview.innerHTML = getShuffleJokerPreviewMarkup();
     shufflePreview.addEventListener('click', () => { void launchTicketShuffle(); });
     flightWrap.appendChild(shufflePreview);
 
@@ -6181,6 +7599,10 @@ function buildCoinTossUI() {
 
     slotsRow.appendChild(middle);
 
+    const slotsColumnB = document.createElement('div');
+    slotsColumnB.id = 'coin-toss-slots-column-b';
+    slotsColumnB.className = 'coin-toss-slots-column-b';
+
     const slotB = document.createElement('button');
     slotB.type = 'button';
     slotB.id = 'coin-toss-slot-b';
@@ -6191,7 +7613,33 @@ function buildCoinTossUI() {
         if (isShuffleActive || isCoinTossing) return;
         if (coinTossSlotB) clearCoinTossSlot('b');
     });
-    slotsRow.appendChild(slotB);
+    slotsColumnB.appendChild(slotB);
+
+    const slotC = document.createElement('button');
+    slotC.type = 'button';
+    slotC.id = 'coin-toss-slot-c';
+    slotC.className = 'coin-toss-slot coin-toss-slot-shuffle-extra';
+    slotC.setAttribute('aria-label', 'Shuffle pick slot C');
+    slotC.innerHTML = getInsertCoinMarkup();
+    slotC.addEventListener('click', () => {
+        if (isShuffleActive || isCoinTossing) return;
+        if (coinTossSlotC) clearCoinTossSlot('c');
+    });
+    slotsColumnB.appendChild(slotC);
+
+    const slotD = document.createElement('button');
+    slotD.type = 'button';
+    slotD.id = 'coin-toss-slot-d';
+    slotD.className = 'coin-toss-slot coin-toss-slot-shuffle-extra';
+    slotD.setAttribute('aria-label', 'Shuffle pick slot D');
+    slotD.innerHTML = getInsertCoinMarkup();
+    slotD.addEventListener('click', () => {
+        if (isShuffleActive || isCoinTossing) return;
+        if (coinTossSlotD) clearCoinTossSlot('d');
+    });
+    slotsColumnB.appendChild(slotD);
+
+    slotsRow.appendChild(slotsColumnB);
 
     section.appendChild(slotsRow);
 
@@ -6207,13 +7655,14 @@ function buildCoinTossUI() {
     const searchRow = document.createElement('div');
     searchRow.id = 'coin-toss-search-row';
 
-    ['a', 'b'].forEach((slotKey) => {
+    ['a', 'b', 'c', 'd'].forEach((slotKey) => {
         const wrap = document.createElement('div');
         wrap.className = 'coin-toss-search-wrap';
 
         const searchLabel = document.createElement('label');
         searchLabel.className = 'coin-toss-search-label';
-        searchLabel.textContent = slotKey === 'a' ? 'Search A' : 'Search B';
+        const searchLabels = { a: 'Search A', b: 'Search B', c: 'Search C', d: 'Search D' };
+        searchLabel.textContent = searchLabels[slotKey];
         searchLabel.setAttribute('for', `coin-toss-search-${slotKey}`);
         wrap.appendChild(searchLabel);
 
@@ -6248,7 +7697,13 @@ function buildCoinTossUI() {
     flipBtn.disabled = true;
     flipBtn.addEventListener('mouseenter', showCoinTossPreview);
     flipBtn.addEventListener('mouseleave', hideCoinTossPreviewIfUnpinned);
-    flipBtn.addEventListener('click', () => { void armCoinToss(); });
+    flipBtn.addEventListener('click', () => {
+        if (coinTossPhase === 'armed') {
+            void launchCoinToss();
+            return;
+        }
+        void armCoinToss({ autoLaunch: isInstantRevealMode() });
+    });
     actionRow.appendChild(flipBtn);
 
     const shuffleBtn = document.createElement('button');
@@ -6271,8 +7726,11 @@ function buildCoinTossUI() {
 
     filtersPanel.appendChild(section);
     refreshCoinTossCandidatesUI();
+    preloadCoinTossConfirmAudio();
     updateDecisionButtonStates();
 }
+
+// --- TICKET STUBS ---
 
 const ticketStubsPrintClipPath = window.uiAudioPaths.ticketStubsPrint;
 const ticketStubsShredClipPath = window.uiAudioPaths.ticketStubsShred;
@@ -6458,8 +7916,8 @@ function shredTicketStubsPanel(panel, generation, shredDurationMs) {
     if (!paper) return;
 
     const paperRect = paper.getBoundingClientRect();
-    const stubs = [...paper.querySelectorAll('.ticket-stub')];
-    if (paperRect.width <= 0 || paperRect.height <= 0 || stubs.length !== 3) return;
+    const stubs = [...paper.querySelectorAll('.ticket-stub:not([hidden])')];
+    if (paperRect.width <= 0 || paperRect.height <= 0 || stubs.length === 0) return;
 
     const stage = document.createElement('div');
     stage.id = 'ticket-stubs-shred-stage';
@@ -6555,8 +8013,31 @@ async function closeTicketStubsPanel() {
     window.setTimeout(finishClose, shredDurationMs + 50);
 }
 
+function resetTicketStubVisibility() {
+    document.querySelectorAll('#ticket-stubs-panel .ticket-stub').forEach((stub) => {
+        stub.hidden = false;
+    });
+}
+
+function syncTicketStubVisibility() {
+    const stubs = document.querySelectorAll('#ticket-stubs-panel .ticket-stub');
+    const count = keeperPicks.length;
+    stubs.forEach((stub, index) => {
+        const isActive = index < count;
+        stub.hidden = !isActive;
+        if (!isActive) {
+            const titleText = stub.querySelector('.ticket-stub-title-text');
+            if (titleText) titleText.textContent = '';
+            stub.querySelectorAll('.ticket-stub-icon').forEach((icon) => {
+                icon.hidden = true;
+                icon.textContent = '';
+            });
+        }
+    });
+}
+
 function populateTicketStubTitles() {
-    const stubs = document.querySelectorAll('.ticket-stub');
+    const stubs = document.querySelectorAll('#ticket-stubs-panel .ticket-stub');
     keeperPicks.forEach((pick, index) => {
         const stub = stubs[index];
         if (!stub) return;
@@ -6585,7 +8066,7 @@ async function openTicketStubsPanel() {
     const panel = document.getElementById('ticket-stubs-panel');
     const button = document.getElementById('ticket-stubs-button');
     const copyStatus = document.getElementById('ticket-stubs-copy-status');
-    if (!panel || keeperPicks.length !== 3) return;
+    if (!panel || keeperPicks.length === 0) return;
 
     const printDurationMs = await loadTicketStubsPrintMetadata();
     const animationDurationMs = Math.max(300, printDurationMs - ticketStubsAnimationDelayMs);
@@ -6593,7 +8074,9 @@ async function openTicketStubsPanel() {
     ticketStubsPanelGeneration += 1;
     const generation = ticketStubsPanelGeneration;
 
+    syncTicketStubVisibility();
     populateTicketStubTitles();
+    void panel.offsetHeight;
     resetTicketStubsPanelState(panel);
     applyTicketStubsPanelDurations(panel, button, animationDurationMs);
     panel.hidden = false;
@@ -6639,12 +8122,13 @@ function syncTicketStubsUI(showFull) {
         if (panel) {
             panel.hidden = true;
             resetTicketStubsPanelState(panel);
+            resetTicketStubVisibility();
         }
     }
 }
 
 function showTicketStubsMessage() {
-    if (keeperPicks.length !== 3) return;
+    if (keeperPicks.length === 0) return;
 
     if (isTicketStubsPanelOpen()) {
         closeTicketStubsPanel();
@@ -6693,9 +8177,13 @@ function syncKeeperDeckTier(activeCount) {
         && !isKeeperDeckMinimized
         && keeperPicks.length === activeCount;
     const showFullFeatures = activeCount === 3 && isKeeperDeckFull() && !isKeeperDeckMinimized;
+    const showTicketStubs = activeCount >= 1
+        && keeperPicks.length === activeCount
+        && !isDiscardingKeeper
+        && !isKeeperDeckMinimized;
     keeperStage.classList.toggle('visible', activeCount > 0);
     keeperStage.classList.toggle('full', showExpandedLayout);
-    syncTicketStubsUI(showFullFeatures);
+    syncTicketStubsUI(showTicketStubs);
 
     const hitbox = document.getElementById('keeper-header-hitbox');
     if (hitbox) {
@@ -6783,6 +8271,8 @@ function updateKeeperPicksUI(animateOrOptions = false) {
             }
         }, 400);
     }
+
+    updateManualKeeperPanelState();
 }
 
 function updateKeeperButtonState() {
@@ -6793,6 +8283,8 @@ function updateKeeperButtonState() {
     keeperButton.disabled = !canKeep;
     keeperButton.classList.toggle('keeper-btn-disabled', !canKeep);
     keeperButton.classList.toggle('keeper-btn-hidden', !hasSelectedMovie);
+
+    updateManualKeeperPanelState();
 }
 
 function discardKeeperPick(slotIndex) {
@@ -6873,7 +8365,6 @@ function makeItAKeeper() {
     keeperUiGeneration += 1;
     const keepGeneration = keeperUiGeneration;
 
-    playSpinButtonSounds();
     playKeeperSound(keeperPicks.length + 1);
 
     const keeperButton = document.getElementById('keeper-button');
@@ -6905,6 +8396,8 @@ function makeItAKeeper() {
         updateKeeperButtonState();
     }, 380);
 }
+
+// --- KEEPER UI ---
 
 function buildKeeperUI() {
     const arcadeContainer = document.getElementById('arcade-container');
@@ -6966,7 +8459,7 @@ function buildKeeperUI() {
     ticketStubsButton.title = 'Get Ticket Stubs';
 
     const ticketStubsImage = document.createElement('img');
-    ticketStubsImage.src = 'ticket_dispenser.png';
+    ticketStubsImage.src = '../graphics/ui/ticket-dispenser.png';
     ticketStubsImage.alt = '';
     ticketStubsImage.setAttribute('aria-hidden', 'true');
     ticketStubsImage.draggable = false;
@@ -7037,6 +8530,8 @@ function buildKeeperUI() {
     arcadeContainer.appendChild(keeperStage);
 }
 
+// --- INIT ---
+
 function buildCategoryFilterUI() {
     const container = document.getElementById('category-filter-options');
     Object.keys(movieDatabase).forEach((categoryName) => {
@@ -7057,11 +8552,19 @@ buildCategoryFilterUI();
 
 initWatchedMovies();
 
+void loadWatchedMoviesFileHandle();
+
 buildRuntimeFilterUI();
 
 buildDecadeFilterUI();
 
 buildWatchedFilterUI();
+
+buildWheelArtToggleUI();
+
+buildFilterPanelToggles();
+
+buildManualKeeperPanelUI();
 
 buildWatchedFlicksPanelUI();
 
@@ -7084,10 +8587,23 @@ updateKeeperPicksUI();
 
 updateAudioControlButtons();
 
+updateRevealModeUI();
+
 updateKeeperButtonState();
 
-ensureSpinButtonFallbackAudio();
-void loadSpinButtonBuffer();
+preloadSpinButtonClipAudio();
+initSnappyPowerGaugeSegments();
+
+const spinButtonEl = document.getElementById('spin-button');
+if (spinButtonEl) {
+    spinButtonEl.addEventListener('pointerdown', onSpinButtonPointerDown);
+    spinButtonEl.addEventListener('pointerup', onSpinButtonPointerUp);
+    spinButtonEl.addEventListener('pointercancel', onSpinButtonPointerCancel);
+    spinButtonEl.addEventListener('keydown', onSpinButtonKeyDown);
+    spinButtonEl.addEventListener('keyup', onSpinButtonKeyUp);
+}
+
+// --- KEYBOARD SHORTCUTS ---
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {

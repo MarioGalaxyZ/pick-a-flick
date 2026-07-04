@@ -23,7 +23,7 @@ function scanCategoryFolder(folderPath) {
 }
 
 function formatManifestEntry(category, folder, files) {
-    const folderWithSlash = `${folder.replace(/\\/g, '/')}/`;
+    const folderWithSlash = `../${folder.replace(/\\/g, '/')}/`;
     const fileLines = files.map((file) => `    ${JSON.stringify(file)}`).join(',\n');
     return `  ${JSON.stringify(category)}: {\n    folder: ${JSON.stringify(folderWithSlash)},\n    files: [\n${fileLines}\n    ]\n  }`;
 }
@@ -59,7 +59,7 @@ ${entries.join(',\n')}
 };
 `;
 
-    const outputPath = path.join(projectRoot, 'win-clips-manifest.js');
+    const outputPath = path.join(projectRoot, 'app', 'generated', 'win-clips-manifest.js');
     fs.writeFileSync(outputPath, output, 'utf8');
 
     const totalClips = Object.values(manifest).reduce((sum, entry) => sum + entry.files.length, 0);

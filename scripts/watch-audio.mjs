@@ -15,7 +15,7 @@ const watchDirs = [
 const ignoredBasenames = new Set([
     'win-clips-manifest.js',
     'audio-gain-map.js',
-    '.audio-gain-cache.json'
+    'audio-gain-cache.json'
 ]);
 
 let debounceTimer = null;

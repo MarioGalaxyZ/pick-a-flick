@@ -1,6 +1,9 @@
+# Tix Mix themes
+
 Since you're building a collection of Mario Party-inspired minigame title cards (without copying any specific assets), you can get a lot of mileage out of themes that have a strong visual identity. Here are some ideas:
 
-Nature
+## Nature
+
 🌋 Volcano (lava, obsidian, magma cracks)
 🌲 Enchanted Forest (glowing mushrooms, vines)
 ❄️ Arctic (ice crystals, snowflakes)
@@ -9,7 +12,9 @@ Nature
 🌺 Jungle Temple (overgrown stone, waterfalls)
 🌸 Cherry Blossom Garden (petals, pagodas)
 🌊 Underwater (coral, bubbles, seashells)
-Fantasy
+
+## Fantasy
+
 🏰 Medieval Castle
 🐉 Dragon's Lair
 🧙 Wizard's Laboratory
@@ -18,7 +23,9 @@ Fantasy
 🌈 Candy Kingdom
 ☁️ Floating Islands
 👑 Royal Treasure Room
-Time & History
+
+## Time & History
+
 🦕 Dinosaur
 ⚙️ Steampunk
 🏛️ Ancient Greece
@@ -27,7 +34,9 @@ Time & History
 🤠 Wild West
 🥷 Feudal Japan
 🚂 Victorian
-Sci-Fi
+
+## Sci-Fi
+
 🤖 Robot Factory
 🚀 Space Station
 🌌 Cosmic Nebula
@@ -36,7 +45,9 @@ Sci-Fi
 🛸 UFO Hangar
 🧬 Bio Lab
 💿 Synthwave
-Entertainment
+
+## Entertainment
+
 🎪 Circus
 🎭 Theater
 🎸 Rock Concert
@@ -45,7 +56,9 @@ Entertainment
 🎰 Casino
 🎬 Movie Studio
 🎤 Talent Show
-Sports
+
+## Sports
+
 🏁 Race Track
 🏟 Stadium
 🏒 Hockey Arena
@@ -54,14 +67,18 @@ Sports
 ⛳ Mini Golf
 🎳 Bowling Alley
 🛹 Skate Park
-Seasonal
+
+## Seasonal
+
 🎄 Christmas
 🎃 Halloween
 🎆 New Year's
 🍂 Autumn Harvest
 🌼 Spring Festival
 ☀️ Summer Camp
-Quirky
+
+## Quirky
+
 🧀 Cheese Factory
 🍕 Pizza Parlor
 🍭 Toy Box
@@ -70,7 +87,9 @@ Quirky
 📚 Library
 🎨 Art Studio
 🎈 Birthday Party
-High-Energy Arcade
+
+## High-Energy Arcade
+
 💎 Crystal Cavern
 ⚡ Pinball Machine
 🎮 Retro Arcade
@@ -79,7 +98,8 @@ High-Energy Arcade
 🎯 Target Range
 🎁 Prize Machine
 🎟 Ticket Booth
-My favorite ideas for your project
+
+## Favorites for this project
 
 These would likely produce especially distinctive, colorful title cards while keeping the playful arcade aesthetic you've established:
 
@@ -94,4 +114,4 @@ These would likely produce especially distinctive, colorful title cards while ke
 🧪 Mad Scientist Lab
 🎲 Board Game World
 
-I also think there's an opportunity to tie the themes into the mechanics of Tix-Mix. For example, the sign border, icons, and embellishments could hint at the current theme while the central "Tix-Mix" lettering remains consistent across every version. That would make the collection feel cohesive while giving each title card its own personality.
+There's also an opportunity to tie the themes into the mechanics of Tix-Mix. For example, the sign border, icons, and embellishments could hint at the current theme while the central "Tix-Mix" lettering remains consistent across every version. That would make the collection feel cohesive while giving each title card its own personality.

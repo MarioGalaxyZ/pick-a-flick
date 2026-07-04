@@ -2,7 +2,7 @@
 
 description: Re-scan audio gain map when win or intro clips are added or changed
 
-globs: main.js,audio/**,audio-gain-map.js,win-clips-manifest.js,audio-paths.js
+globs: app/main.js,audio/**,app/generated/audio-gain-map.js,app/generated/win-clips-manifest.js,app/generated/audio-paths.js
 
 alwaysApply: false
 
@@ -14,7 +14,7 @@ alwaysApply: false
 
 
 
-Victory and intro clips use per-file gains in `audio-gain-map.js` (target -16 LUFS). Unmapped clips play at default volume and sound jarring.
+Victory and intro clips use per-file gains in `app/generated/audio-gain-map.js` (target -16 LUFS). Unmapped clips play at default volume and sound jarring.
 
 
 
@@ -26,7 +26,7 @@ UI clip paths live in `scripts/audio-paths.mjs` and are emitted to `audio-paths.
 
 
 
-Gain analysis is incremental: only new or changed files are re-analyzed (cached in `.audio-gain-cache.json`). Use `--full` for a complete rescan.
+Gain analysis is incremental: only new or changed files are re-analyzed (cached in `.cache/audio-gain-cache.json`). Use `--full` for a complete rescan.
 
 
 
@@ -48,11 +48,11 @@ After any change that adds, removes, or renames clips:
 
 
 
-1. Run `npm run refresh-audio`, double-click `Refresh Audio.bat`, or use `Watch Audio.bat` during an editing session
+1. Run `npm run refresh-audio`, double-click `scripts/shortcuts/Refresh Audio.bat`, or use `scripts/shortcuts/Watch Audio.bat` during an editing session
 
 2. Confirm `win-clips-manifest.js` lists the new clip under the correct category
 
-3. Confirm `audio-gain-map.js` was regenerated and includes the new paths
+3. Confirm `app/generated/audio-gain-map.js` was regenerated and includes the new paths
 
 4. Mention in your summary that gains were re-scanned
 
@@ -82,9 +82,9 @@ Drafts can also live in `audio/_staging/` (excluded from gain analysis and the v
 
 
 
-- **Watch mode (best for sporadic adds):** double-click `Watch Audio.bat` or run `npm run watch-audio`, then reload the browser after updates
+- **Watch mode (best for sporadic adds):** double-click `scripts/shortcuts/Watch Audio.bat` or run `npm run watch-audio`, then reload the browser after updates
 
-- **One-shot refresh:** double-click `Refresh Audio.bat` or run `npm run refresh-audio`
+- **One-shot refresh:** double-click `scripts/shortcuts/Refresh Audio.bat` or run `npm run refresh-audio`
 
 - **Full rescan (rare):** `npm run analyze-audio-gains -- --full`
 
@@ -94,4 +94,4 @@ Drafts can also live in `audio/_staging/` (excluded from gain analysis and the v
 
 
 
-`getNormalizedVolume()` in `main.js` resolves paths and looks up `window.audioGainMap`.
+`getNormalizedVolume()` in `app/main.js` resolves paths and looks up `window.audioGainMap`.

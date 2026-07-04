@@ -1,0 +1,69 @@
+---
+
+description: Watched movies list — runtime filter and persistence via watched-movies.js
+
+globs: app/watched-movies.js,app/main.js
+
+alwaysApply: false
+
+---
+
+
+
+# Watched movies
+
+
+
+Watched state is separate from removing movies from `movieDatabase`.
+
+
+
+## Source file
+
+
+
+`app/watched-movies.js` exports:
+
+
+
+```javascript
+
+window.watchedMovieListings = [ /* "Title (Year)" strings */ ];
+
+```
+
+
+
+Edit this file to persist watched listings across sessions.
+
+
+
+## Runtime behavior
+
+
+
+- `initWatchedMovies()` (~line 368) loads listings into `watchedMovieSet` on startup
+
+- "Mark watched" on the result card adds to the in-memory set without auto-saving the file
+
+- The Watched Flicks panel lets the user export an updated `watched-movies.js` download
+
+- "Include watched" checkbox controls whether watched movies appear in spin/shuffle/coin pools
+
+
+
+## Adding vs removing from catalog
+
+
+
+| Action | Where |
+
+|--------|-------|
+
+| Mark as watched (still in wheel if included) | `watched-movies.js` or Mark Watched UI |
+
+| Remove from wheel entirely | Delete from `movieDatabase` in `main.js` (Ticket Stubs prompt) |
+
+
+
+Do not confuse the two — watched is a filter flag, not a database deletion.

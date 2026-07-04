@@ -7,7 +7,7 @@ import zlib from 'zlib';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
-const CACHE_PATH = path.join(projectRoot, '.audio-gain-cache.json');
+const CACHE_PATH = path.join(projectRoot, '.cache', 'audio-gain-cache.json');
 const LOCAL_FFMPEG_PATH = path.join(projectRoot, 'node_modules', 'ffmpeg-static', 'ffmpeg.exe');
 const forceFullRescan = process.argv.includes('--full');
 const FFMPEG_DOWNLOAD_URL = 'https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-win32-x64.gz';
@@ -286,7 +286,7 @@ ${mapLines}
 };
 `;
 
-    const outputPath = path.join(projectRoot, 'audio-gain-map.js');
+    const outputPath = path.join(projectRoot, 'app', 'generated', 'audio-gain-map.js');
     fs.writeFileSync(outputPath, output, 'utf8');
     saveCache(nextCache);
 
