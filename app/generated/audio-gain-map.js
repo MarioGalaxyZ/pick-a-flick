@@ -2,6 +2,7 @@
 // Target loudness: -16 LUFS. Re-run after adding new clips.
 window.audioGainMap = {
   "audio/_staging/coin toss confirm.wav": 1,
+  "audio/_staging/short scribble.wav": 1,
   "audio/_staging/that-slow-motion-running-song-ii.mp3": 0.45,
   "audio/ui/coin-flip/coin-flip-1.mp3": 1.0641,
   "audio/ui/coin-flip/coin-flip-2.mp3": 1.4223,

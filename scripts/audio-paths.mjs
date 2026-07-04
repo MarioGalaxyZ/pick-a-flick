@@ -33,6 +33,7 @@ export const UI_AUDIO = {
         "../audio/_staging/that-slow-motion-running-song-ii.mp3"
     ],
     coinTossConfirm: "../audio/_staging/coin toss confirm.wav",
+    markWatchedScribble: "../audio/_staging/short scribble.wav",
     shuffleClips: [
         "../audio/ui/shuffle/ticket-shuffle-crumple.mp3",
         "../audio/ui/shuffle/ticket-shuffle-flap-loop.mp3",
