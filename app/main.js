@@ -980,6 +980,7 @@ ${lines.join('\n')}
     let victoryEnabled = true;
 
     let revealMode = 'classic';
+    let modeDialRotationDeg = 0;
 
     let pendingSpinReveal = null;
 
@@ -987,7 +988,7 @@ ${lines.join('\n')}
         classic: { postWheelMs: 800, selectionMs: 1500, spinDurationMs: 4000, victoryLeadMs: 1000 },
         snappy: { postWheelMs: 0, selectionMs: 0, spinDurationMs: 4000, victoryLeadMs: 1000 },
         speedRun: { postWheelMs: 0, selectionMs: 0, spinDurationMs: 1000, victoryAtSpinStart: true },
-        sensitive: { postWheelMs: 0, selectionMs: 0, spinDurationMs: 4500, victoryLeadMs: 1000 }
+        pinball: { postWheelMs: 0, selectionMs: 0, spinDurationMs: 4500, victoryLeadMs: 1000 }
     };
 
     const SNAPPY_HOLD_INSTANT_MS = 100;
@@ -1038,17 +1039,17 @@ ${lines.join('\n')}
     }
 
     const WHEEL_TUNING_OFFSET = 15;
-    const SENSITIVE_HOLD_MIN_MS = 100;
-    const SENSITIVE_HOLD_MAX_MS = 2500;
-    const SENSITIVE_MIN_POWER_RATIO = 0.08;
-    const SENSITIVE_MAX_OMEGA_DEG_S = 900;
-    const SENSITIVE_DECEL_DEG_S2 = 200;
-    const SENSITIVE_CREEP_OMEGA_DEG_S = 25;
-    const SENSITIVE_CREEP_MIN_MS = 400;
-    const SENSITIVE_CREEP_MAX_MS = 1800;
-    const SENSITIVE_CREEP_DURATION_MULT = 1.6;
-    const SENSITIVE_SETTLE_MIN_MS = 150;
-    const SENSITIVE_SETTLE_MAX_MS = 350;
+    const PINBALL_HOLD_MIN_MS = 100;
+    const PINBALL_HOLD_MAX_MS = 2500;
+    const PINBALL_MIN_POWER_RATIO = 0.08;
+    const PINBALL_MAX_OMEGA_DEG_S = 900;
+    const PINBALL_DECEL_DEG_S2 = 200;
+    const PINBALL_CREEP_OMEGA_DEG_S = 25;
+    const PINBALL_CREEP_MIN_MS = 400;
+    const PINBALL_CREEP_MAX_MS = 1800;
+    const PINBALL_CREEP_DURATION_MULT = 1.6;
+    const PINBALL_SETTLE_MIN_MS = 150;
+    const PINBALL_SETTLE_MAX_MS = 350;
 
     function normalizeRotationDeg(rotationDeg) {
         return ((rotationDeg % 360) + 360) % 360;
@@ -1109,10 +1110,10 @@ ${lines.join('\n')}
         return delta === 0 ? 0 : delta;
     }
 
-    function verifySensitiveLanding(plan) {
+    function verifyPinballLanding(plan) {
         const landedIndex = getCategoryIndexAtPointer(currentRotation);
         if (landedIndex !== plan.targetIndex) {
-            console.warn('[Sensitive] pointer/category mismatch', {
+            console.warn('[Pinball] pointer/category mismatch', {
                 landedIndex,
                 targetIndex: plan.targetIndex,
                 currentRotation
@@ -1120,11 +1121,11 @@ ${lines.join('\n')}
         }
     }
 
-    function computeSensitiveSpinPlan(holdMs, releaseRatio) {
+    function computePinballSpinPlan(holdMs, releaseRatio) {
         const powerRatio = Math.max(0, Math.min(1, releaseRatio));
         const baseRotation = currentRotation;
-        const omega0 = powerRatio * SENSITIVE_MAX_OMEGA_DEG_S;
-        const decel = SENSITIVE_DECEL_DEG_S2;
+        const omega0 = powerRatio * PINBALL_MAX_OMEGA_DEG_S;
+        const decel = PINBALL_DECEL_DEG_S2;
         const naturalDelta = (omega0 * omega0) / (2 * decel);
         const mainDurationMs = omega0 > 0 ? (omega0 / decel) * 1000 : 0;
         const naturalEnd = baseRotation + naturalDelta;
@@ -1146,10 +1147,10 @@ ${lines.join('\n')}
             }
             needsCreep = true;
             creepDurationMs = Math.min(
-                SENSITIVE_CREEP_MAX_MS,
+                PINBALL_CREEP_MAX_MS,
                 Math.max(
-                    SENSITIVE_CREEP_MIN_MS,
-                    (creepDelta / SENSITIVE_CREEP_OMEGA_DEG_S) * 1000 * SENSITIVE_CREEP_DURATION_MULT
+                    PINBALL_CREEP_MIN_MS,
+                    (creepDelta / PINBALL_CREEP_OMEGA_DEG_S) * 1000 * PINBALL_CREEP_DURATION_MULT
                 )
             );
         }
@@ -1158,8 +1159,8 @@ ${lines.join('\n')}
         const settledDegrees = getAbsoluteRotationForSliceCenter(targetIndex, settleFrom);
         const settleDelta = settledDegrees - settleFrom;
         const settleDurationMs = settleDelta === 0 ? 0 : Math.min(
-            SENSITIVE_SETTLE_MAX_MS,
-            Math.max(SENSITIVE_SETTLE_MIN_MS, Math.abs(settleDelta) * 18)
+            PINBALL_SETTLE_MAX_MS,
+            Math.max(PINBALL_SETTLE_MIN_MS, Math.abs(settleDelta) * 18)
         );
         const selectedCategory = categories[targetIndex];
 
@@ -1184,7 +1185,7 @@ ${lines.join('\n')}
     }
 
     function isInstantRevealMode() {
-        return revealMode === 'snappy' || revealMode === 'speedRun' || revealMode === 'sensitive';
+        return revealMode === 'snappy' || revealMode === 'speedRun' || revealMode === 'pinball';
     }
 
     function isSpeedRunMode() {
@@ -1487,42 +1488,79 @@ ${lines.join('\n')}
         updateAudioControlButtons();
     }
 
-    function updateRevealModeUI() {
-        const btn = document.getElementById('reveal-mode-btn');
-        const container = document.getElementById('arcade-container');
-        const labels = {
-            classic: 'Classic Reveal',
-            snappy: 'Snappy Reveal',
-            speedRun: 'Speed Run',
-            sensitive: 'Sensitive Reveal'
-        };
+    const MODE_SELECTOR_LABELS = {
+        classic: 'Classic Mode',
+        snappy: 'Snappy Mode',
+        speedRun: 'Speed Run',
+        pinball: 'Pinball Mode'
+    };
 
-        if (btn) {
-            btn.textContent = labels[revealMode] || labels.classic;
-            btn.classList.toggle('audio-enabled', true);
-            btn.classList.toggle('audio-disabled', false);
-        }
+    const MODE_DIAL_ANGLES = {
+        classic: 315,
+        snappy: 45,
+        pinball: 135,
+        speedRun: 225
+    };
+
+    function getNextRevealMode(currentMode) {
+        if (currentMode === 'classic') return 'snappy';
+        if (currentMode === 'snappy') return 'pinball';
+        if (currentMode === 'pinball') return 'speedRun';
+        return 'classic';
+    }
+
+    function getModeDialClockwiseStepDeg(fromMode, toMode) {
+        const fromDeg = MODE_DIAL_ANGLES[fromMode] ?? 0;
+        const toDeg = MODE_DIAL_ANGLES[toMode] ?? 0;
+        const delta = ((toDeg - fromDeg) % 360 + 360) % 360;
+        return delta || 360;
+    }
+
+    const MODE_SELECTOR_LCD = {
+        classic: 'CLASSIC',
+        snappy: 'SNAPPY',
+        speedRun: 'SPEED',
+        pinball: 'PINBALL'
+    };
+
+    function updateRevealModeUI() {
+        const container = document.getElementById('arcade-container');
+        const modeSelector = document.getElementById('mode-selector');
+        const dial = document.getElementById('mode-selector-dial');
+        const display = document.getElementById('mode-selector-display');
 
         if (container) {
             container.classList.toggle('snappy-reveal', revealMode === 'snappy' || revealMode === 'speedRun');
-            container.classList.toggle('sensitive-reveal', revealMode === 'sensitive');
+            container.classList.toggle('pinball-reveal', revealMode === 'pinball');
             container.classList.toggle('snappy-mode', revealMode === 'snappy');
-            container.classList.toggle('sensitive-mode', revealMode === 'sensitive');
+            container.classList.toggle('pinball-mode', revealMode === 'pinball');
         }
+
+        if (modeSelector) {
+            modeSelector.style.setProperty('--mode-dial-angle', `${modeDialRotationDeg}deg`);
+            modeSelector.dataset.mode = revealMode;
+        }
+
+        if (dial) {
+            const label = MODE_SELECTOR_LABELS[revealMode] || MODE_SELECTOR_LABELS.classic;
+            dial.setAttribute('aria-label', `Reveal mode: ${label}. Click to change.`);
+        }
+
+        if (display) {
+            display.textContent = MODE_SELECTOR_LCD[revealMode] || MODE_SELECTOR_LCD.classic;
+        }
+
+        document.querySelectorAll('.mode-led').forEach((led) => led.classList.remove('is-active'));
+        const activeLed = document.querySelector(`.mode-led-${revealMode}`);
+        if (activeLed) activeLed.classList.add('is-active');
 
         resetSnappyPowerGauge();
     }
 
     function toggleRevealMode() {
-        if (revealMode === 'classic') {
-            revealMode = 'snappy';
-        } else if (revealMode === 'snappy') {
-            revealMode = 'speedRun';
-        } else if (revealMode === 'speedRun') {
-            revealMode = 'sensitive';
-        } else {
-            revealMode = 'classic';
-        }
+        const nextMode = getNextRevealMode(revealMode);
+        modeDialRotationDeg += getModeDialClockwiseStepDeg(revealMode, nextMode);
+        revealMode = nextMode;
         updateRevealModeUI();
     }
 
@@ -1642,15 +1680,15 @@ ${lines.join('\n')}
         return pingPongRate * (1 - Math.exp(-SNAPPY_GAUGE_RISE_EXP_K * t)) / denom;
     }
 
-    function getSensitivePlungerRatio(holdMs) {
+    function getPinballPlungerRatio(holdMs) {
         if (holdMs <= 0) return 0;
-        if (holdMs < SENSITIVE_HOLD_MIN_MS) {
-            return (holdMs / SENSITIVE_HOLD_MIN_MS) * SENSITIVE_MIN_POWER_RATIO;
+        if (holdMs < PINBALL_HOLD_MIN_MS) {
+            return (holdMs / PINBALL_HOLD_MIN_MS) * PINBALL_MIN_POWER_RATIO;
         }
-        const elapsed = holdMs - SENSITIVE_HOLD_MIN_MS;
-        const range = Math.max(1, SENSITIVE_HOLD_MAX_MS - SENSITIVE_HOLD_MIN_MS);
+        const elapsed = holdMs - PINBALL_HOLD_MIN_MS;
+        const range = Math.max(1, PINBALL_HOLD_MAX_MS - PINBALL_HOLD_MIN_MS);
         const t = Math.min(elapsed / range, 1);
-        return SENSITIVE_MIN_POWER_RATIO + (1 - SENSITIVE_MIN_POWER_RATIO) * getSnappyGaugeRiseFillShape(t);
+        return PINBALL_MIN_POWER_RATIO + (1 - PINBALL_MIN_POWER_RATIO) * getSnappyGaugeRiseFillShape(t);
     }
 
     const SNAPPY_GAUGE_DRAIN_MIN_MS = 300;
@@ -1665,7 +1703,7 @@ ${lines.join('\n')}
     let snappyGaugeDrainStartMs = null;
     let snappyGaugeDrainDurationMs = 0;
     let snappyGaugeDrainStartRatio = 0;
-    let sensitiveGaugeReleaseRatio = 0;
+    let pinballGaugeReleaseRatio = 0;
 
     function initSnappyPowerGaugeSegments() {
         const container = document.getElementById('spin-power-gauge-segments');
@@ -1696,7 +1734,7 @@ ${lines.join('\n')}
         }
     }
 
-    function applySensitiveGaugeSegmentColor(fillEl, index) {
+    function applyPinballGaugeSegmentColor(fillEl, index) {
         const t = index / (SNAPPY_POWER_GAUGE_SEGMENT_COUNT - 1);
         const r = Math.round(255 + (255 - 255) * t);
         const g = Math.round(180 + (68 - 180) * t);
@@ -1707,8 +1745,8 @@ ${lines.join('\n')}
     }
 
     function applyGaugeSegmentColor(fillEl, index) {
-        if (revealMode === 'sensitive') {
-            applySensitiveGaugeSegmentColor(fillEl, index);
+        if (revealMode === 'pinball') {
+            applyPinballGaugeSegmentColor(fillEl, index);
         } else {
             applySnappyGaugeSegmentColor(fillEl, index);
         }
@@ -1808,20 +1846,20 @@ ${lines.join('\n')}
         snappyGaugeMaxReachedAtMs = null;
         snappyGaugeDisplayRatio = 0;
         snappyGaugeReleaseRatio = 0;
-        sensitiveGaugeReleaseRatio = 0;
+        pinballGaugeReleaseRatio = 0;
         snappyGaugeLastTickMs = null;
         setSnappyPowerGaugeFill(0);
     }
 
-    function tickSensitivePlungerGauge() {
-        if (revealMode !== 'sensitive' || spinButtonPressStartMs == null) {
+    function tickPinballPlungerGauge() {
+        if (revealMode !== 'pinball' || spinButtonPressStartMs == null) {
             snappyPowerGaugeRaf = null;
             return;
         }
         const holdMs = performance.now() - spinButtonPressStartMs;
-        snappyGaugeDisplayRatio = getSensitivePlungerRatio(holdMs);
+        snappyGaugeDisplayRatio = getPinballPlungerRatio(holdMs);
         setSnappyPowerGaugeFill(snappyGaugeDisplayRatio);
-        snappyPowerGaugeRaf = requestAnimationFrame(tickSensitivePlungerGauge);
+        snappyPowerGaugeRaf = requestAnimationFrame(tickPinballPlungerGauge);
     }
 
     function tickSnappyPowerGauge() {
@@ -1879,20 +1917,20 @@ ${lines.join('\n')}
         tickSnappyPowerGauge();
     }
 
-    function startSensitivePlungerGaugeLoop() {
-        if (revealMode !== 'sensitive') return;
+    function startPinballPlungerGaugeLoop() {
+        if (revealMode !== 'pinball') return;
         stopSnappyPowerGaugeLoop();
         stopSnappyPowerGaugeDrain();
         snappyGaugeDisplayRatio = 0;
-        sensitiveGaugeReleaseRatio = 0;
-        tickSensitivePlungerGauge();
+        pinballGaugeReleaseRatio = 0;
+        tickPinballPlungerGauge();
     }
 
     function startPowerGaugeLoop() {
         if (revealMode === 'snappy') {
             startSnappyPowerGaugeLoop();
-        } else if (revealMode === 'sensitive') {
-            startSensitivePlungerGaugeLoop();
+        } else if (revealMode === 'pinball') {
+            startPinballPlungerGaugeLoop();
         }
     }
 
@@ -1904,9 +1942,9 @@ ${lines.join('\n')}
         if (revealMode === 'snappy') {
             snappyGaugeReleaseRatio = snappyGaugeDisplayRatio;
             setSnappyPowerGaugeFill(snappyGaugeReleaseRatio);
-        } else if (revealMode === 'sensitive') {
-            sensitiveGaugeReleaseRatio = snappyGaugeDisplayRatio;
-            setSnappyPowerGaugeFill(sensitiveGaugeReleaseRatio);
+        } else if (revealMode === 'pinball') {
+            pinballGaugeReleaseRatio = snappyGaugeDisplayRatio;
+            setSnappyPowerGaugeFill(pinballGaugeReleaseRatio);
         }
         spinButtonPressStartMs = null;
     }
@@ -2130,14 +2168,14 @@ ${lines.join('\n')}
             return;
         }
 
-        if (revealMode === 'sensitive') {
+        if (revealMode === 'pinball') {
             const holdMs = pendingSpinHoldMs;
-            const releaseRatio = sensitiveGaugeReleaseRatio > 0
-                ? sensitiveGaugeReleaseRatio
-                : getSensitivePlungerRatio(holdMs);
-            const plan = computeSensitiveSpinPlan(holdMs, releaseRatio);
+            const releaseRatio = pinballGaugeReleaseRatio > 0
+                ? pinballGaugeReleaseRatio
+                : getPinballPlungerRatio(holdMs);
+            const plan = computePinballSpinPlan(holdMs, releaseRatio);
             const selectedCategory = plan.selectedCategory;
-            const timing = REVEAL_TIMING.sensitive;
+            const timing = REVEAL_TIMING.pinball;
 
             pendingSpinReveal = null;
             const eligibleMovies = getEligibleMovies(selectedCategory);
@@ -2159,14 +2197,14 @@ ${lines.join('\n')}
             setMarqueeText('LAUNCHING WHEEL...');
 
             const drainMs = plan.totalDurationMs > 0 ? plan.totalDurationMs : SNAPPY_GAUGE_DRAIN_MIN_MS;
-            startSnappyPowerGaugeDrain(sensitiveGaugeReleaseRatio, drainMs);
-            sensitiveGaugeReleaseRatio = 0;
+            startSnappyPowerGaugeDrain(pinballGaugeReleaseRatio, drainMs);
+            pinballGaugeReleaseRatio = 0;
             pendingSpinHoldMs = 0;
 
             if (plan.totalDurationMs <= 0) {
                 currentRotation = plan.finalDegrees;
                 disc.style.transform = `rotate(${currentRotation}deg)`;
-                verifySensitiveLanding(plan);
+                verifyPinballLanding(plan);
                 playCategoryVictorySound(selectedCategory);
                 if (pendingSpinReveal) {
                     const reveal = pendingSpinReveal;
@@ -2187,7 +2225,7 @@ ${lines.join('\n')}
             const victoryLeadMs = Math.min(timing.victoryLeadMs ?? 1000, totalDuration * 0.35);
             let start = null;
 
-            function animateSensitive(timestamp) {
+            function animatePinball(timestamp) {
                 if (!start) start = timestamp;
                 const progress = timestamp - start;
                 const creepEndMs = plan.mainDurationMs + plan.creepDurationMs;
@@ -2229,11 +2267,11 @@ ${lines.join('\n')}
                 }
 
                 if (progress < totalDuration) {
-                    requestAnimationFrame(animateSensitive);
+                    requestAnimationFrame(animatePinball);
                 } else {
                     currentRotation = plan.finalDegrees;
                     disc.style.transform = `rotate(${currentRotation}deg)`;
-                    verifySensitiveLanding(plan);
+                    verifyPinballLanding(plan);
                     setTimeout(() => {
                         if (pendingSpinReveal) {
                             completeSpinReveal(
@@ -2249,7 +2287,7 @@ ${lines.join('\n')}
                 }
             }
 
-            requestAnimationFrame(animateSensitive);
+            requestAnimationFrame(animatePinball);
             return;
         }
 
@@ -8975,6 +9013,17 @@ if (spinButtonEl) {
     spinButtonEl.addEventListener('pointercancel', onSpinButtonPointerCancel);
     spinButtonEl.addEventListener('keydown', onSpinButtonKeyDown);
     spinButtonEl.addEventListener('keyup', onSpinButtonKeyUp);
+}
+
+const modeSelectorDialEl = document.getElementById('mode-selector-dial');
+if (modeSelectorDialEl) {
+    modeSelectorDialEl.addEventListener('click', toggleRevealMode);
+    modeSelectorDialEl.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleRevealMode();
+        }
+    });
 }
 
 // --- KEYBOARD SHORTCUTS ---

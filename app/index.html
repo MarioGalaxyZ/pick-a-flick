@@ -40,10 +40,24 @@
             </div>
         </div>
 
+        <div id="mode-selector" class="mode-selector" role="group" aria-label="Mode selector">
+            <div class="mode-selector-panel" aria-hidden="true"></div>
+            <button type="button" id="mode-selector-dial" class="mode-selector-dial"
+                    aria-label="Reveal mode: Classic Mode. Click to change.">
+                <span class="mode-selector-knob" aria-hidden="true"></span>
+            </button>
+            <div class="mode-selector-leds" aria-hidden="true">
+                <span class="mode-led mode-led-classic"></span>
+                <span class="mode-led mode-led-snappy"></span>
+                <span class="mode-led mode-led-speedRun"></span>
+                <span class="mode-led mode-led-pinball"></span>
+            </div>
+            <div id="mode-selector-display" class="mode-selector-display" aria-live="polite">CLASSIC</div>
+        </div>
+
         <div id="audio-controls">
             <button type="button" id="intro-audio-btn" class="audio-toggle-btn audio-disabled" onclick="toggleIntroAudio()">Intro Audio</button>
             <button type="button" id="victory-audio-btn" class="audio-toggle-btn audio-enabled" onclick="toggleVictoryAudio()">Victory Audio</button>
-            <button type="button" id="reveal-mode-btn" class="audio-toggle-btn audio-enabled" onclick="toggleRevealMode()">Classic Reveal</button>
             <button type="button" id="killswitch-btn" class="killswitch-btn" onclick="killswitch()">KILLSWITCH</button>
         </div>
 
