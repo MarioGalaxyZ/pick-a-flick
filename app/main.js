@@ -986,7 +986,8 @@ ${lines.join('\n')}
     const REVEAL_TIMING = {
         classic: { postWheelMs: 800, selectionMs: 1500, spinDurationMs: 4000, victoryLeadMs: 1000 },
         snappy: { postWheelMs: 0, selectionMs: 0, spinDurationMs: 4000, victoryLeadMs: 1000 },
-        speedRun: { postWheelMs: 0, selectionMs: 0, spinDurationMs: 1000, victoryAtSpinStart: true }
+        speedRun: { postWheelMs: 0, selectionMs: 0, spinDurationMs: 1000, victoryAtSpinStart: true },
+        sensitive: { postWheelMs: 0, selectionMs: 0, spinDurationMs: 4500, victoryLeadMs: 1000 }
     };
 
     const SNAPPY_HOLD_INSTANT_MS = 100;
@@ -1036,8 +1037,154 @@ ${lines.join('\n')}
         return Math.abs(phase * 2 - 1);
     }
 
+    const WHEEL_TUNING_OFFSET = 15;
+    const SENSITIVE_HOLD_MIN_MS = 100;
+    const SENSITIVE_HOLD_MAX_MS = 2500;
+    const SENSITIVE_MIN_POWER_RATIO = 0.08;
+    const SENSITIVE_MAX_OMEGA_DEG_S = 900;
+    const SENSITIVE_DECEL_DEG_S2 = 200;
+    const SENSITIVE_CREEP_OMEGA_DEG_S = 25;
+    const SENSITIVE_CREEP_MIN_MS = 400;
+    const SENSITIVE_CREEP_MAX_MS = 1800;
+    const SENSITIVE_CREEP_DURATION_MULT = 1.6;
+    const SENSITIVE_SETTLE_MIN_MS = 150;
+    const SENSITIVE_SETTLE_MAX_MS = 350;
+
+    function normalizeRotationDeg(rotationDeg) {
+        return ((rotationDeg % 360) + 360) % 360;
+    }
+
+    function shortestDeltaDeg(fromMod, toMod) {
+        const from = normalizeRotationDeg(fromMod);
+        const to = normalizeRotationDeg(toMod);
+        let delta = (to - from + 360) % 360;
+        if (delta > 180) delta -= 360;
+        return delta;
+    }
+
+    function getSliceCenterDegrees(categoryIndex) {
+        return (360 - (categoryIndex * degreesPerSlice) - (degreesPerSlice / 2) + WHEEL_TUNING_OFFSET + 360) % 360;
+    }
+
+    function getCategoryIndexAtPointer(rotationMod360) {
+        const r = normalizeRotationDeg(rotationMod360);
+        let bestIndex = 0;
+        let bestDist = Infinity;
+        for (let i = 0; i < totalSlices; i++) {
+            const center = getSliceCenterDegrees(i);
+            const dist = Math.abs(shortestDeltaDeg(center, r));
+            if (dist < bestDist) {
+                bestDist = dist;
+                bestIndex = i;
+            }
+        }
+        return bestIndex;
+    }
+
+    function getAbsoluteRotationForSliceCenter(categoryIndex, absoluteRotation) {
+        const targetMod = getSliceCenterDegrees(categoryIndex);
+        const baseMod = normalizeRotationDeg(absoluteRotation);
+        const delta = shortestDeltaDeg(baseMod, targetMod);
+        return absoluteRotation + delta;
+    }
+
+    function isCategorySpinEligible(categoryName) {
+        return activeCategories.includes(categoryName) && getEligibleMovies(categoryName).length > 0;
+    }
+
+    function findNextEligibleCategoryClockwise(fromIndex) {
+        for (let step = 1; step <= totalSlices; step++) {
+            const idx = (fromIndex + step) % totalSlices;
+            if (isCategorySpinEligible(categories[idx])) {
+                return idx;
+            }
+        }
+        return fromIndex;
+    }
+
+    function clockwiseDeltaDegrees(fromMod, toMod) {
+        const from = ((fromMod % 360) + 360) % 360;
+        const to = ((toMod % 360) + 360) % 360;
+        const delta = (to - from + 360) % 360;
+        return delta === 0 ? 0 : delta;
+    }
+
+    function verifySensitiveLanding(plan) {
+        const landedIndex = getCategoryIndexAtPointer(currentRotation);
+        if (landedIndex !== plan.targetIndex) {
+            console.warn('[Sensitive] pointer/category mismatch', {
+                landedIndex,
+                targetIndex: plan.targetIndex,
+                currentRotation
+            });
+        }
+    }
+
+    function computeSensitiveSpinPlan(holdMs, releaseRatio) {
+        const powerRatio = Math.max(0, Math.min(1, releaseRatio));
+        const baseRotation = currentRotation;
+        const omega0 = powerRatio * SENSITIVE_MAX_OMEGA_DEG_S;
+        const decel = SENSITIVE_DECEL_DEG_S2;
+        const naturalDelta = (omega0 * omega0) / (2 * decel);
+        const mainDurationMs = omega0 > 0 ? (omega0 / decel) * 1000 : 0;
+        const naturalEnd = baseRotation + naturalDelta;
+
+        const naturalIndex = getCategoryIndexAtPointer(naturalEnd);
+        const naturalCategory = categories[naturalIndex];
+        let targetIndex = naturalIndex;
+        let creepDelta = 0;
+        let creepDurationMs = 0;
+        let needsCreep = false;
+
+        if (!isCategorySpinEligible(naturalCategory)) {
+            targetIndex = findNextEligibleCategoryClockwise(naturalIndex);
+            const targetCenterMod = getSliceCenterDegrees(targetIndex);
+            const naturalMod = normalizeRotationDeg(naturalEnd);
+            creepDelta = clockwiseDeltaDegrees(naturalMod, targetCenterMod);
+            if (creepDelta === 0) {
+                creepDelta = degreesPerSlice;
+            }
+            needsCreep = true;
+            creepDurationMs = Math.min(
+                SENSITIVE_CREEP_MAX_MS,
+                Math.max(
+                    SENSITIVE_CREEP_MIN_MS,
+                    (creepDelta / SENSITIVE_CREEP_OMEGA_DEG_S) * 1000 * SENSITIVE_CREEP_DURATION_MULT
+                )
+            );
+        }
+
+        const settleFrom = needsCreep ? naturalEnd + creepDelta : naturalEnd;
+        const settledDegrees = getAbsoluteRotationForSliceCenter(targetIndex, settleFrom);
+        const settleDelta = settledDegrees - settleFrom;
+        const settleDurationMs = settleDelta === 0 ? 0 : Math.min(
+            SENSITIVE_SETTLE_MAX_MS,
+            Math.max(SENSITIVE_SETTLE_MIN_MS, Math.abs(settleDelta) * 18)
+        );
+        const selectedCategory = categories[targetIndex];
+
+        return {
+            baseRotation,
+            omega0,
+            decel,
+            naturalDelta,
+            naturalEnd,
+            mainDurationMs,
+            creepDelta,
+            creepDurationMs,
+            needsCreep,
+            settleFrom,
+            settleDelta,
+            settleDurationMs,
+            finalDegrees: settledDegrees,
+            selectedCategory,
+            targetIndex,
+            totalDurationMs: mainDurationMs + creepDurationMs + settleDurationMs
+        };
+    }
+
     function isInstantRevealMode() {
-        return revealMode === 'snappy' || revealMode === 'speedRun';
+        return revealMode === 'snappy' || revealMode === 'speedRun' || revealMode === 'sensitive';
     }
 
     function isSpeedRunMode() {
@@ -1346,7 +1493,8 @@ ${lines.join('\n')}
         const labels = {
             classic: 'Classic Reveal',
             snappy: 'Snappy Reveal',
-            speedRun: 'Speed Run'
+            speedRun: 'Speed Run',
+            sensitive: 'Sensitive Reveal'
         };
 
         if (btn) {
@@ -1356,8 +1504,10 @@ ${lines.join('\n')}
         }
 
         if (container) {
-            container.classList.toggle('snappy-reveal', isInstantRevealMode());
+            container.classList.toggle('snappy-reveal', revealMode === 'snappy' || revealMode === 'speedRun');
+            container.classList.toggle('sensitive-reveal', revealMode === 'sensitive');
             container.classList.toggle('snappy-mode', revealMode === 'snappy');
+            container.classList.toggle('sensitive-mode', revealMode === 'sensitive');
         }
 
         resetSnappyPowerGauge();
@@ -1368,6 +1518,8 @@ ${lines.join('\n')}
             revealMode = 'snappy';
         } else if (revealMode === 'snappy') {
             revealMode = 'speedRun';
+        } else if (revealMode === 'speedRun') {
+            revealMode = 'sensitive';
         } else {
             revealMode = 'classic';
         }
@@ -1489,6 +1641,18 @@ ${lines.join('\n')}
         if (denom <= 0) return pingPongRate * t;
         return pingPongRate * (1 - Math.exp(-SNAPPY_GAUGE_RISE_EXP_K * t)) / denom;
     }
+
+    function getSensitivePlungerRatio(holdMs) {
+        if (holdMs <= 0) return 0;
+        if (holdMs < SENSITIVE_HOLD_MIN_MS) {
+            return (holdMs / SENSITIVE_HOLD_MIN_MS) * SENSITIVE_MIN_POWER_RATIO;
+        }
+        const elapsed = holdMs - SENSITIVE_HOLD_MIN_MS;
+        const range = Math.max(1, SENSITIVE_HOLD_MAX_MS - SENSITIVE_HOLD_MIN_MS);
+        const t = Math.min(elapsed / range, 1);
+        return SENSITIVE_MIN_POWER_RATIO + (1 - SENSITIVE_MIN_POWER_RATIO) * getSnappyGaugeRiseFillShape(t);
+    }
+
     const SNAPPY_GAUGE_DRAIN_MIN_MS = 300;
     const SNAPPY_GAUGE_DRAIN_EASE_POWER = 2;
     let snappyPowerGaugeSegments = null;
@@ -1501,6 +1665,7 @@ ${lines.join('\n')}
     let snappyGaugeDrainStartMs = null;
     let snappyGaugeDrainDurationMs = 0;
     let snappyGaugeDrainStartRatio = 0;
+    let sensitiveGaugeReleaseRatio = 0;
 
     function initSnappyPowerGaugeSegments() {
         const container = document.getElementById('spin-power-gauge-segments');
@@ -1528,6 +1693,24 @@ ${lines.join('\n')}
                     segment.appendChild(fillEl);
                 }
             });
+        }
+    }
+
+    function applySensitiveGaugeSegmentColor(fillEl, index) {
+        const t = index / (SNAPPY_POWER_GAUGE_SEGMENT_COUNT - 1);
+        const r = Math.round(255 + (255 - 255) * t);
+        const g = Math.round(180 + (68 - 180) * t);
+        const b = Math.round(60 + (255 - 60) * t);
+        fillEl.style.background = `rgb(${r}, ${g}, ${b})`;
+        fillEl.style.boxShadow =
+            `inset 0 0 2px rgba(255, 255, 255, 0.45), 0 0 5px rgba(${r}, ${g}, ${b}, 0.9), 0 0 10px rgba(${r}, ${g}, ${b}, 0.45)`;
+    }
+
+    function applyGaugeSegmentColor(fillEl, index) {
+        if (revealMode === 'sensitive') {
+            applySensitiveGaugeSegmentColor(fillEl, index);
+        } else {
+            applySnappyGaugeSegmentColor(fillEl, index);
         }
     }
 
@@ -1563,7 +1746,7 @@ ${lines.join('\n')}
             }
             segment.classList.add('is-lit');
             fillEl.style.height = `${segmentFill * 100}%`;
-            applySnappyGaugeSegmentColor(fillEl, index);
+            applyGaugeSegmentColor(fillEl, index);
         });
     }
 
@@ -1625,8 +1808,20 @@ ${lines.join('\n')}
         snappyGaugeMaxReachedAtMs = null;
         snappyGaugeDisplayRatio = 0;
         snappyGaugeReleaseRatio = 0;
+        sensitiveGaugeReleaseRatio = 0;
         snappyGaugeLastTickMs = null;
         setSnappyPowerGaugeFill(0);
+    }
+
+    function tickSensitivePlungerGauge() {
+        if (revealMode !== 'sensitive' || spinButtonPressStartMs == null) {
+            snappyPowerGaugeRaf = null;
+            return;
+        }
+        const holdMs = performance.now() - spinButtonPressStartMs;
+        snappyGaugeDisplayRatio = getSensitivePlungerRatio(holdMs);
+        setSnappyPowerGaugeFill(snappyGaugeDisplayRatio);
+        snappyPowerGaugeRaf = requestAnimationFrame(tickSensitivePlungerGauge);
     }
 
     function tickSnappyPowerGauge() {
@@ -1684,6 +1879,23 @@ ${lines.join('\n')}
         tickSnappyPowerGauge();
     }
 
+    function startSensitivePlungerGaugeLoop() {
+        if (revealMode !== 'sensitive') return;
+        stopSnappyPowerGaugeLoop();
+        stopSnappyPowerGaugeDrain();
+        snappyGaugeDisplayRatio = 0;
+        sensitiveGaugeReleaseRatio = 0;
+        tickSensitivePlungerGauge();
+    }
+
+    function startPowerGaugeLoop() {
+        if (revealMode === 'snappy') {
+            startSnappyPowerGaugeLoop();
+        } else if (revealMode === 'sensitive') {
+            startSensitivePlungerGaugeLoop();
+        }
+    }
+
     function captureSpinButtonHoldMs() {
         stopSnappyPowerGaugeLoop();
         pendingSpinHoldMs = spinButtonPressStartMs != null
@@ -1692,6 +1904,9 @@ ${lines.join('\n')}
         if (revealMode === 'snappy') {
             snappyGaugeReleaseRatio = snappyGaugeDisplayRatio;
             setSnappyPowerGaugeFill(snappyGaugeReleaseRatio);
+        } else if (revealMode === 'sensitive') {
+            sensitiveGaugeReleaseRatio = snappyGaugeDisplayRatio;
+            setSnappyPowerGaugeFill(sensitiveGaugeReleaseRatio);
         }
         spinButtonPressStartMs = null;
     }
@@ -1703,6 +1918,8 @@ ${lines.join('\n')}
     }
 
     function canInteractWithSpinButton() {
+        const spinButton = document.getElementById('spin-button');
+        if (spinButton?.disabled) return false;
         return !isSpinning;
     }
 
@@ -1713,7 +1930,7 @@ ${lines.join('\n')}
     }
 
     function isSpinButtonActivationKey(key) {
-        return key === ' ' || key === 'Enter';
+        return key === 'Enter';
     }
 
     function onSpinButtonPointerDown(event) {
@@ -1725,7 +1942,7 @@ ${lines.join('\n')}
         event.currentTarget.setPointerCapture(event.pointerId);
         clearClassicSpinButtonReleaseAnimation();
         setSpinButtonPressed(true);
-        startSnappyPowerGaugeLoop();
+        startPowerGaugeLoop();
         playSpinButtonPress();
     }
 
@@ -1756,8 +1973,7 @@ ${lines.join('\n')}
         clearSpinButtonHoldState();
     }
 
-    function onSpinButtonKeyDown(event) {
-        if (!isSpinButtonActivationKey(event.key)) return;
+    function handleSpinButtonKeyDown(event) {
         if (event.repeat) return;
         if (!canInteractWithSpinButton()) return;
         event.preventDefault();
@@ -1765,12 +1981,11 @@ ${lines.join('\n')}
         spinButtonPressStartMs = performance.now();
         clearClassicSpinButtonReleaseAnimation();
         setSpinButtonPressed(true);
-        startSnappyPowerGaugeLoop();
+        startPowerGaugeLoop();
         playSpinButtonPress();
     }
 
-    function onSpinButtonKeyUp(event) {
-        if (!isSpinButtonActivationKey(event.key)) return;
+    function handleSpinButtonKeyUp(event) {
         if (!spinButtonKeyArmed) return;
         spinButtonKeyArmed = false;
         if (revealMode !== 'classic') {
@@ -1779,6 +1994,16 @@ ${lines.join('\n')}
         playSpinButtonRelease();
         captureSpinButtonHoldMs();
         initiateSpin(event);
+    }
+
+    function onSpinButtonKeyDown(event) {
+        if (!isSpinButtonActivationKey(event.key)) return;
+        handleSpinButtonKeyDown(event);
+    }
+
+    function onSpinButtonKeyUp(event) {
+        if (!isSpinButtonActivationKey(event.key)) return;
+        handleSpinButtonKeyUp(event);
     }
 
     function initiateSpin(event) {
@@ -1868,10 +2093,6 @@ ${lines.join('\n')}
 
     function triggerPhysicalSpin() {
 
-        let tuningOffset = 15; 
-
-
-
         const disc = document.getElementById('wheel-disc');
 
         setMarqueeText('LOCKING CATEGORY...');
@@ -1909,6 +2130,129 @@ ${lines.join('\n')}
             return;
         }
 
+        if (revealMode === 'sensitive') {
+            const holdMs = pendingSpinHoldMs;
+            const releaseRatio = sensitiveGaugeReleaseRatio > 0
+                ? sensitiveGaugeReleaseRatio
+                : getSensitivePlungerRatio(holdMs);
+            const plan = computeSensitiveSpinPlan(holdMs, releaseRatio);
+            const selectedCategory = plan.selectedCategory;
+            const timing = REVEAL_TIMING.sensitive;
+
+            pendingSpinReveal = null;
+            const eligibleMovies = getEligibleMovies(selectedCategory);
+            if (eligibleMovies.length === 0) {
+                updateSpinBlockerUI();
+                isSpinning = false;
+                resetSnappyPowerGauge();
+                return;
+            }
+            const chosenMovie = drawNextMovie(selectedCategory, eligibleMovies);
+            const parts = selectedCategory.split(' ');
+            pendingSpinReveal = {
+                category: selectedCategory,
+                chosenMovie,
+                categoryEmoji: parts[parts.length - 1]
+            };
+            preloadSpinPoster(chosenMovie);
+
+            setMarqueeText('LAUNCHING WHEEL...');
+
+            const drainMs = plan.totalDurationMs > 0 ? plan.totalDurationMs : SNAPPY_GAUGE_DRAIN_MIN_MS;
+            startSnappyPowerGaugeDrain(sensitiveGaugeReleaseRatio, drainMs);
+            sensitiveGaugeReleaseRatio = 0;
+            pendingSpinHoldMs = 0;
+
+            if (plan.totalDurationMs <= 0) {
+                currentRotation = plan.finalDegrees;
+                disc.style.transform = `rotate(${currentRotation}deg)`;
+                verifySensitiveLanding(plan);
+                playCategoryVictorySound(selectedCategory);
+                if (pendingSpinReveal) {
+                    const reveal = pendingSpinReveal;
+                    pendingSpinReveal = null;
+                    setTimeout(() => {
+                        completeSpinReveal(reveal.category, reveal.chosenMovie, reveal.categoryEmoji);
+                    }, timing.postWheelMs);
+                } else {
+                    isSpinning = false;
+                }
+                return;
+            }
+
+            let lastClickDegree = plan.baseRotation;
+            let hasFiredVictorySound = false;
+            let creepMarqueeSet = false;
+            const totalDuration = plan.totalDurationMs;
+            const victoryLeadMs = Math.min(timing.victoryLeadMs ?? 1000, totalDuration * 0.35);
+            let start = null;
+
+            function animateSensitive(timestamp) {
+                if (!start) start = timestamp;
+                const progress = timestamp - start;
+                const creepEndMs = plan.mainDurationMs + plan.creepDurationMs;
+
+                let frameRotation;
+                if (progress <= plan.mainDurationMs) {
+                    const tSec = progress / 1000;
+                    frameRotation = plan.baseRotation + plan.omega0 * tSec - 0.5 * plan.decel * tSec * tSec;
+                } else if (progress <= creepEndMs) {
+                    const creepProgress = plan.creepDurationMs > 0
+                        ? Math.min((progress - plan.mainDurationMs) / plan.creepDurationMs, 1)
+                        : 1;
+                    const creepEase = 1 - Math.pow(1 - creepProgress, 3);
+                    frameRotation = plan.naturalEnd + plan.creepDelta * creepEase;
+                    if (plan.needsCreep && !creepMarqueeSet && creepProgress > 0) {
+                        creepMarqueeSet = true;
+                        setMarqueeText('SEEKING SLOT...');
+                    }
+                } else {
+                    const settleProgress = plan.settleDurationMs > 0
+                        ? Math.min((progress - creepEndMs) / plan.settleDurationMs, 1)
+                        : 1;
+                    const settleEase = 1 - Math.pow(1 - settleProgress, 3);
+                    frameRotation = plan.settleFrom + plan.settleDelta * settleEase;
+                }
+
+                disc.style.transform = `rotate(${frameRotation}deg)`;
+
+                const sliceStep = progress > plan.mainDurationMs ? degreesPerSlice * 0.65 : degreesPerSlice;
+                if (Math.abs(frameRotation - lastClickDegree) >= sliceStep) {
+                    playTickerClick();
+                    lastClickDegree = frameRotation;
+                }
+
+                const victoryFireMs = totalDuration - victoryLeadMs;
+                if (progress >= victoryFireMs && !hasFiredVictorySound) {
+                    hasFiredVictorySound = true;
+                    playCategoryVictorySound(selectedCategory);
+                }
+
+                if (progress < totalDuration) {
+                    requestAnimationFrame(animateSensitive);
+                } else {
+                    currentRotation = plan.finalDegrees;
+                    disc.style.transform = `rotate(${currentRotation}deg)`;
+                    verifySensitiveLanding(plan);
+                    setTimeout(() => {
+                        if (pendingSpinReveal) {
+                            completeSpinReveal(
+                                pendingSpinReveal.category,
+                                pendingSpinReveal.chosenMovie,
+                                pendingSpinReveal.categoryEmoji
+                            );
+                            pendingSpinReveal = null;
+                        } else {
+                            isSpinning = false;
+                        }
+                    }, timing.postWheelMs);
+                }
+            }
+
+            requestAnimationFrame(animateSensitive);
+            return;
+        }
+
         let selectedCategory = eligibleCategories[Math.floor(Math.random() * eligibleCategories.length)];
         let randomCategoryIndex = categories.indexOf(selectedCategory);
 
@@ -1935,7 +2279,7 @@ ${lines.join('\n')}
 
         
 
-        let targetDegrees = (360 - (randomCategoryIndex * degreesPerSlice) - (degreesPerSlice / 2) + tuningOffset) % 360;
+        let targetDegrees = getSliceCenterDegrees(randomCategoryIndex);
 
         
 
@@ -3131,6 +3475,29 @@ function buildManualKeeperPanelUI() {
     updateManualKeeperPanelState();
 }
 
+const MARK_WATCHED_SCRIBBLE_PATH = window.uiAudioPaths.markWatchedScribble;
+let markWatchedScribbleAudio = null;
+
+function preloadMarkWatchedScribbleAudio() {
+    if (!MARK_WATCHED_SCRIBBLE_PATH || markWatchedScribbleAudio) return;
+    markWatchedScribbleAudio = new Audio(MARK_WATCHED_SCRIBBLE_PATH);
+    markWatchedScribbleAudio.preload = 'auto';
+    markWatchedScribbleAudio.load();
+}
+
+function playMarkWatchedScribbleSound() {
+    if (!MARK_WATCHED_SCRIBBLE_PATH) return;
+
+    preloadMarkWatchedScribbleAudio();
+    const audio = markWatchedScribbleAudio;
+    audio.volume = getNormalizedVolume(MARK_WATCHED_SCRIBBLE_PATH, cabinetMixer.victoryClipVolume);
+    if (!audio.paused) audio.pause();
+    audio.currentTime = 0;
+    audio.play().catch((err) => {
+        console.log('Mark watched scribble audio blocked or file not found:', MARK_WATCHED_SCRIBBLE_PATH, err);
+    });
+}
+
 function updateResultMarkWatchedButton() {
     const btn = document.getElementById('mark-watched-btn');
     if (!btn) return;
@@ -3142,13 +3509,19 @@ function updateResultMarkWatchedButton() {
 
     btn.hidden = false;
     const watched = isMovieWatched(lastRevealedListing);
-    btn.textContent = watched ? 'Already watched' : 'Mark watched';
-    btn.disabled = watched;
+    btn.classList.toggle('is-watched', watched);
+    btn.setAttribute('aria-label', watched ? 'Return to rotation' : 'Mark as watched');
+    btn.disabled = false;
 }
 
-function markCurrentResultAsWatched() {
-    if (!lastRevealedListing || isMovieWatched(lastRevealedListing)) return;
-    markMoviesAsWatched([lastRevealedListing]);
+function toggleCurrentResultWatched() {
+    if (!lastRevealedListing) return;
+    playMarkWatchedScribbleSound();
+    if (isMovieWatched(lastRevealedListing)) {
+        unmarkMovieAsWatched(lastRevealedListing);
+    } else {
+        markMoviesAsWatched([lastRevealedListing]);
+    }
 }
 
 async function markTicketStubsAsWatched() {
@@ -8570,7 +8943,7 @@ buildWatchedFlicksPanelUI();
 
 const markWatchedBtn = document.getElementById('mark-watched-btn');
 if (markWatchedBtn) {
-    markWatchedBtn.addEventListener('click', markCurrentResultAsWatched);
+    markWatchedBtn.addEventListener('click', toggleCurrentResultWatched);
 }
 
 updateSpinBlockerUI();
@@ -8592,6 +8965,7 @@ updateRevealModeUI();
 updateKeeperButtonState();
 
 preloadSpinButtonClipAudio();
+preloadMarkWatchedScribbleAudio();
 initSnappyPowerGaugeSegments();
 
 const spinButtonEl = document.getElementById('spin-button');
@@ -8604,6 +8978,15 @@ if (spinButtonEl) {
 }
 
 // --- KEYBOARD SHORTCUTS ---
+
+function isKeyboardTypingTarget(target) {
+    if (!(target instanceof HTMLElement)) return false;
+    const tag = target.tagName;
+    if (tag === 'INPUT' || tag === 'SELECT') return true;
+    if (tag === 'TEXTAREA' && !target.readOnly) return true;
+    if (target.isContentEditable) return true;
+    return false;
+}
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
@@ -8632,16 +9015,24 @@ document.addEventListener('keydown', (event) => {
         return;
     }
 
+    if (event.key === ' ') {
+        if (isKeyboardTypingTarget(event.target)) return;
+        event.preventDefault();
+        handleSpinButtonKeyDown(event);
+        return;
+    }
+
     if (event.repeat || !event.shiftKey || (event.key !== 'p' && event.key !== 'P')) return;
 
-    const target = event.target;
-    if (target instanceof HTMLElement) {
-        const tag = target.tagName;
-        if (tag === 'INPUT' || tag === 'SELECT') return;
-        if (tag === 'TEXTAREA' && !target.readOnly) return;
-        if (target.isContentEditable) return;
-    }
+    if (isKeyboardTypingTarget(event.target)) return;
 
     event.preventDefault();
     populateKeeperPicksDevShortcut();
+});
+
+document.addEventListener('keyup', (event) => {
+    if (event.key !== ' ') return;
+    if (!spinButtonKeyArmed) return;
+    event.preventDefault();
+    handleSpinButtonKeyUp(event);
 });

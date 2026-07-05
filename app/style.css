@@ -363,6 +363,39 @@
 
 
 
+        #arcade-container.sensitive-mode #spin-power-gauge {
+
+            display: block;
+
+            border-color: rgba(255, 140, 60, 0.6);
+
+            box-shadow:
+                inset 0 0 10px rgba(0, 0, 0, 0.95),
+                0 0 6px rgba(255, 140, 60, 0.55),
+                0 0 14px rgba(255, 68, 180, 0.35);
+
+        }
+
+
+
+        #arcade-container.sensitive-mode #spin-button-wrap.is-pressed::before {
+
+            transform: scale(0.94) translateY(3px);
+
+            transition: transform 0.08s ease-out;
+
+        }
+
+
+
+        #arcade-container.sensitive-mode #spin-button-wrap::before {
+
+            transition: transform 0.12s ease-out;
+
+        }
+
+
+
         .spin-power-gauge-segments {
 
             display: flex;
@@ -2144,7 +2177,8 @@
 
 
 
-        #arcade-container.snappy-reveal #result-panel {
+        #arcade-container.snappy-reveal #result-panel,
+        #arcade-container.sensitive-reveal #result-panel {
 
             transition: none;
 
@@ -2152,7 +2186,8 @@
 
 
 
-        #arcade-container.snappy-reveal #result-details .result-line {
+        #arcade-container.snappy-reveal #result-details .result-line,
+        #arcade-container.sensitive-reveal #result-details .result-line {
 
             transition: none;
 
@@ -2164,7 +2199,8 @@
 
 
 
-        #arcade-container.snappy-reveal #result-ratings {
+        #arcade-container.snappy-reveal #result-ratings,
+        #arcade-container.sensitive-reveal #result-ratings {
 
             transition: none;
 
@@ -2212,6 +2248,8 @@
 
         #result-details {
 
+            position: relative;
+
             flex: 1 1 auto;
 
             width: 285px;
@@ -2226,7 +2264,7 @@
 
             box-shadow: 0 0 20px rgba(57, 255, 20, 0.25);
 
-            padding: 14px 16px 16px;
+            padding: 14px 34px 16px 16px;
 
             min-height: 0;
 
@@ -2498,49 +2536,61 @@
 
         #result-details.result-revealed #result-plot { transition-delay: 0.35s; }
 
-        .mark-watched-btn {
+        .mark-watched-emblem {
 
-            margin-top: 10px;
+            position: absolute;
 
-            font-family: 'Courier New', Courier, monospace;
+            top: 8px;
 
-            font-size: 10px;
+            right: 10px;
 
-            font-weight: bold;
+            z-index: 2;
 
-            color: #39FF14;
+            font-size: 18px;
 
-            background: rgba(0, 0, 0, 0.5);
+            line-height: 1;
 
-            border: 1px solid rgba(57, 255, 20, 0.5);
+            opacity: 0.2;
 
-            border-radius: 4px;
+            padding: 0;
 
-            padding: 6px 10px;
+            border: none;
+
+            background: transparent;
 
             cursor: pointer;
 
-            text-transform: uppercase;
-
-            letter-spacing: 1px;
+            user-select: none;
 
         }
 
 
 
-        .mark-watched-btn:hover:not(:disabled) {
+        .mark-watched-emblem:hover,
+        .mark-watched-emblem:focus-visible {
 
-            background: rgba(57, 255, 20, 0.15);
+            opacity: 0.45;
+
+            outline: 1px solid rgba(57, 255, 20, 0.45);
+
+            outline-offset: 2px;
 
         }
 
 
 
-        .mark-watched-btn:disabled {
+        .mark-watched-emblem.is-watched {
 
-            opacity: 0.55;
+            opacity: 1;
 
-            cursor: default;
+        }
+
+
+
+        .mark-watched-emblem.is-watched:hover,
+        .mark-watched-emblem.is-watched:focus-visible {
+
+            opacity: 1;
 
         }
 
