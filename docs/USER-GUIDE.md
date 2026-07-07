@@ -76,6 +76,8 @@ Check **Available Flicks** in the filters panel — if the count is 0, loosen yo
 
 Filters affect the main spin **and** the movie pools for Dueling Flicks.
 
+**Category rotation:** Within each category, the app shuffles all currently eligible movies and serves them one at a time — no title repeats until every eligible movie in that category has appeared once, then the deck reshuffles in a new random order. This applies to wheel spins, Dueling Flicks mystery picks, and manual slot or keeper placements (those placements advance that category's rotation too). Changing any filter or category selection resets the rotation decks.
+
 | Control | What it does |
 |---------|----------------|
 | **Category Filter** | Checkboxes for each genre wheel (e.g. CAGE STAGE, NEON & NINETIES). Select All / Deselect All at the top. For what each category means, see [Wheel categories](CATEGORIES.md). |
@@ -101,7 +103,7 @@ Four buttons below the wheel:
 |--------|---------|----------------|
 | **Intro Audio** | Off | Plays a category intro stinger when the spin starts |
 | **Victory Audio** | On | Plays a category win clip shortly before the wheel stops |
-| **Reveal Mode** | Classic | Cycles with each click: **Classic Reveal** (pause after landing), **Snappy** (instant reveal; tap for instant land, hold longer for a longer spin — smooth exponential ramp from ×1.3 to ×3.6, up to 10s), **Speed Run** (instant reveal, 1s spin, skips intro, win clip on button release) |
+| **Mode Selector** | Classic | Dial on the cabinet (L-shaped panel between wheel and spin button). Click to cycle: **Classic Mode** (pause after landing), **Snappy Mode** (instant reveal; tap for instant land, hold longer for a longer spin — smooth exponential ramp from ×1.3 to ×3.6, up to 10s), **Speed Run** (instant reveal, 1s spin, skips intro, win clip on button release), **Pinball Mode** (physics spin with plunger gauge, creep on ineligible slices, settle snap) |
 | **KILLSWITCH** | — | Stops all audio, cancels spin/keeper/shuffle state, and resets the result panel to ready |
 
 ---
@@ -181,7 +183,7 @@ Hint shown in the UI: *"Pick two movies to flip or shuffle — optional picks C 
 
 Press **Escape** to cancel an in-progress coin toss or shuffle.
 
-All category, runtime, decade, and watched filters apply to candidate and mystery pools.
+All category, runtime, decade, and watched filters apply to candidate and mystery pools. Mystery picks and default shuffle tickets (Sequel Street / true random) use the same per-category rotation as the wheel — no repeats within a category until the full eligible set has been shown.
 
 ---
 

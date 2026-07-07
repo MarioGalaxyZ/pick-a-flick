@@ -949,6 +949,7 @@ ${lines.join('\n')}
             activeCategories.splice(index, 1);
         }
         updateCategoryLabelVisual(categoryName);
+        resetMovieSelectionPools();
         updateSpinBlockerUI();
     }
 
@@ -962,6 +963,7 @@ ${lines.join('\n')}
         Object.keys(movieDatabase).forEach((categoryName) => {
             updateCategoryLabelVisual(categoryName);
         });
+        resetMovieSelectionPools();
         updateSpinBlockerUI();
     }
 
@@ -2485,11 +2487,109 @@ ${lines.join('\n')}
         movieRemainingByCategory = {};
     }
 
-    function drawNextMovie(catKey, eligibleMovies) {
+    function getEligibleMoviesForDraw(catKey, excludeListings = []) {
+        const exclude = new Set(excludeListings);
+        return getEligibleMovies(catKey).filter((listing) => !exclude.has(listing));
+    }
+
+    function reconcileMoviePool(catKey, eligibleMovies) {
+        const eligible = new Set(eligibleMovies);
+        const pool = movieRemainingByCategory[catKey];
+        if (!pool) return;
+        movieRemainingByCategory[catKey] = pool.filter((listing) => eligible.has(listing));
+    }
+
+    function ensureMoviePool(catKey, eligibleMovies) {
+        if (movieRemainingByCategory[catKey]?.length) return;
+        movieRemainingByCategory[catKey] = shuffleArray(eligibleMovies);
+    }
+
+    function markMovieServed(catKey, listing) {
+        const eligible = getEligibleMovies(catKey);
+        if (!eligible.includes(listing)) return;
+
+        reconcileMoviePool(catKey, eligible);
         if (!movieRemainingByCategory[catKey]?.length) {
-            movieRemainingByCategory[catKey] = shuffleArray(eligibleMovies);
+            movieRemainingByCategory[catKey] = shuffleArray(eligible);
         }
-        return movieRemainingByCategory[catKey].pop();
+        const pool = movieRemainingByCategory[catKey];
+        const idx = pool.indexOf(listing);
+        if (idx >= 0) pool.splice(idx, 1);
+    }
+
+    function normalizeDrawNextMovieOptions(second) {
+        if (Array.isArray(second)) return { eligibleMovies: second };
+        return second ?? {};
+    }
+
+    function drawNextMovie(catKey, second) {
+        const options = normalizeDrawNextMovieOptions(second);
+        const excludeListings = options.excludeListings ?? [];
+        let eligibleMovies = options.eligibleMovies
+            ?? getEligibleMoviesForDraw(catKey, excludeListings);
+        if (excludeListings.length) {
+            const exclude = new Set(excludeListings);
+            eligibleMovies = eligibleMovies.filter((listing) => !exclude.has(listing));
+        }
+        if (!eligibleMovies.length) return null;
+
+        reconcileMoviePool(catKey, eligibleMovies);
+        ensureMoviePool(catKey, eligibleMovies);
+        return movieRemainingByCategory[catKey].pop() ?? null;
+    }
+
+    function drawNextMovieLabel(catKey, options = {}) {
+        const listing = drawNextMovie(catKey, options);
+        if (!listing) return null;
+        const parts = catKey.split(' ');
+        const emoji = parts[parts.length - 1];
+        return buildCoinTossEntry(`${emoji} ${listing}`, 'mystery');
+    }
+
+    function listingsFromExcludeLabels(excludeLabels) {
+        return excludeLabels.map((label) => getKeeperListingLabel(label));
+    }
+
+    function getMoviePoolRemainingCount(catKey, excludeListings = []) {
+        const eligibleMovies = getEligibleMoviesForDraw(catKey, excludeListings);
+        if (!eligibleMovies.length) return 0;
+        reconcileMoviePool(catKey, eligibleMovies);
+        const pool = movieRemainingByCategory[catKey];
+        if (pool?.length) {
+            const exclude = new Set(excludeListings);
+            return pool.filter((listing) => !exclude.has(listing)).length;
+        }
+        return eligibleMovies.length;
+    }
+
+    function drawNextMysteryFromCategories(categories, excludeLabels = []) {
+        const excludeListings = listingsFromExcludeLabels(excludeLabels);
+        const categoryList = (categories ?? activeCategories).filter(
+            (cat) => getMoviePoolRemainingCount(cat, excludeListings) > 0
+        );
+        if (!categoryList.length) return null;
+
+        const weights = categoryList.map((cat) => getMoviePoolRemainingCount(cat, excludeListings));
+        const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+        if (totalWeight <= 0) return null;
+
+        let roll = Math.floor(Math.random() * totalWeight);
+        let chosenCat = categoryList[categoryList.length - 1];
+        for (let i = 0; i < categoryList.length; i += 1) {
+            roll -= weights[i];
+            if (roll < 0) {
+                chosenCat = categoryList[i];
+                break;
+            }
+        }
+
+        return drawNextMovieLabel(chosenCat, { excludeListings });
+    }
+
+    function consumeListingAppearance(listing) {
+        const category = findListingCategory(listing);
+        if (!category) return;
+        markMovieServed(category, listing);
     }
 
     function playCategoryVictorySound(catKey) {
@@ -3399,6 +3499,7 @@ function addManualKeeperMovie(raw) {
     };
     keeperPicks.push(keeperEntry);
     applyKeeperPosterFromMetadata(keeperEntry);
+    consumeListingAppearance(listing);
 
     const input = document.getElementById('manual-keeper-input');
     const dropdown = document.getElementById('manual-keeper-dropdown');
@@ -4901,61 +5002,18 @@ function getCoinTossCandidates() {
     return candidates;
 }
 
-function shuffleGetMovieDecade(listing) {
-    const { year } = parseMovieListing(listing);
-    if (!year) return null;
-    return Math.floor(parseInt(year, 10) / 10) * 10;
-}
-
-function shuffleMoviePassesRuntimeFilter(listing) {
-    const minSelect = document.getElementById('min-runtime-select');
-    const maxSelect = document.getElementById('max-runtime-select');
-    const minVal = minSelect?.value ? parseInt(minSelect.value, 10) : null;
-    const maxVal = maxSelect?.value ? parseInt(maxSelect.value, 10) : null;
-    if (minVal == null && maxVal == null) return true;
-
-    const minutes = getMovieRuntimeMinutes(listing);
-    if (minutes == null) return false;
-    if (minVal != null && minutes < minVal) return false;
-    if (maxVal != null && minutes > maxVal) return false;
-    return true;
-}
-
-function shuffleMoviePassesDecadeFilter(listing) {
-    const decadeInputs = document.querySelectorAll('#decade-filter-options input[type=checkbox]');
-    const checked = [...decadeInputs].filter((input) => input.checked);
-    if (checked.length === 0) return false;
-    if (checked.length === decadeInputs.length) return true;
-
-    const decade = shuffleGetMovieDecade(listing);
-    if (decade == null) return false;
-    return checked.some((input) => parseInt(input.dataset.decade, 10) === decade);
-}
-
-function shuffleMoviePassesWatchedFilter(listing) {
-    const checkbox = document.getElementById('include-watched-checkbox');
-    if (checkbox?.checked) return true;
-    return !isMovieWatched(listing);
-}
-
 function buildFilteredCoinTossPool(excludeLabels = [], categories = null) {
     const exclude = new Set(excludeLabels);
     const seen = new Set();
     const pool = [];
-    const categoryList = categories ?? [...document.querySelectorAll('#category-filter-options input[type=checkbox]:checked')]
-        .map((input) => input.dataset.category);
+    const categoryList = categories ?? activeCategories;
 
     categoryList.forEach((category) => {
-        const movies = movieDatabase[category] || [];
+        const movies = getEligibleMovies(category);
         if (!movies.length) return;
         const parts = category.split(' ');
         const emoji = parts[parts.length - 1];
         movies.forEach((listing) => {
-            if (
-                !shuffleMoviePassesRuntimeFilter(listing) ||
-                !shuffleMoviePassesDecadeFilter(listing) ||
-                !shuffleMoviePassesWatchedFilter(listing)
-            ) return;
             const label = `${emoji} ${listing}`;
             if (exclude.has(label) || seen.has(label)) return;
             seen.add(label);
@@ -4966,20 +5024,10 @@ function buildFilteredCoinTossPool(excludeLabels = [], categories = null) {
     return pool;
 }
 
-function pickRandomCoinTossEntry(pool) {
-    if (!pool.length) return null;
-    return pool[Math.floor(Math.random() * pool.length)];
-}
-
-function getMysteryFlickCoinTossPool() {
-    return buildFilteredCoinTossPool(getCoinTossExcludeLabels());
-}
-
 function pickMysteryFlickForCoinToss() {
     if (isShuffleActive || isCoinTossing) return;
 
-    const pool = getMysteryFlickCoinTossPool();
-    const picked = pickRandomCoinTossEntry(pool);
+    const picked = drawNextMysteryFromCategories(activeCategories, getCoinTossExcludeLabels());
     if (!picked) {
         setCoinTossStatus('No movies match your filters.', true);
         return;
@@ -5021,6 +5069,7 @@ function getShuffleBlockedReason() {
 
 function resolveShuffleRoundTickets() {
     const exclude = getCoinTossExcludeLabels();
+    const excludeListings = listingsFromExcludeLabels(exclude);
     shuffleMysteryA = null;
     shuffleMysteryB = null;
 
@@ -5030,29 +5079,27 @@ function resolveShuffleRoundTickets() {
         ticket2 = coinTossSlotC;
         ticket2IsMystery = false;
     } else {
-        const sequelPool = buildFilteredCoinTossPool(exclude, [SHUFFLE_MYSTERY_SEQUEL_CATEGORY]);
-        let first = pickRandomCoinTossEntry(sequelPool);
-        if (!first) {
-            const fullPool = buildFilteredCoinTossPool(exclude);
-            if (!coinTossSlotD) {
-                if (fullPool.length < 2) return null;
-                for (let i = fullPool.length - 1; i > 0; i -= 1) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [fullPool[i], fullPool[j]] = [fullPool[j], fullPool[i]];
-                }
-                shuffleMysteryA = resolveCoinTossEntry(fullPool[0]);
-                shuffleMysteryB = resolveCoinTossEntry(fullPool[1]);
-                return {
-                    ticket2: shuffleMysteryA,
-                    ticket2IsMystery: true,
-                    ticket3: shuffleMysteryB,
-                    ticket3IsMystery: true
-                };
-            }
-            if (fullPool.length < 1) return null;
-            first = fullPool[0];
+        let firstEntry = drawNextMovieLabel(SHUFFLE_MYSTERY_SEQUEL_CATEGORY, { excludeListings });
+        if (!firstEntry && !coinTossSlotD) {
+            firstEntry = drawNextMysteryFromCategories(null, exclude);
+            if (!firstEntry) return null;
+            const secondExclude = [...exclude, firstEntry.label];
+            const secondEntry = drawNextMysteryFromCategories(null, secondExclude);
+            if (!secondEntry) return null;
+            shuffleMysteryA = resolveCoinTossEntry(firstEntry);
+            shuffleMysteryB = resolveCoinTossEntry(secondEntry);
+            return {
+                ticket2: shuffleMysteryA,
+                ticket2IsMystery: true,
+                ticket3: shuffleMysteryB,
+                ticket3IsMystery: true
+            };
         }
-        shuffleMysteryA = resolveCoinTossEntry(first);
+        if (!firstEntry) {
+            firstEntry = drawNextMysteryFromCategories(null, exclude);
+        }
+        if (!firstEntry) return null;
+        shuffleMysteryA = resolveCoinTossEntry(firstEntry);
         ticket2 = shuffleMysteryA;
         ticket2IsMystery = true;
     }
@@ -5065,10 +5112,9 @@ function resolveShuffleRoundTickets() {
     } else {
         const mysteryExclude = [...exclude];
         if (ticket2IsMystery && ticket2?.label) mysteryExclude.push(ticket2.label);
-        const secondPool = buildFilteredCoinTossPool(mysteryExclude);
-        const second = pickRandomCoinTossEntry(secondPool);
-        if (!second) return null;
-        shuffleMysteryB = resolveCoinTossEntry(second);
+        const secondEntry = drawNextMysteryFromCategories(null, mysteryExclude);
+        if (!secondEntry) return null;
+        shuffleMysteryB = resolveCoinTossEntry(secondEntry);
         ticket3 = shuffleMysteryB;
         ticket3IsMystery = true;
     }
@@ -6499,6 +6545,7 @@ function assignCoinTossSlot(entry) {
         }
         setCoinTossSlotByKey(key, resolved);
         renderCoinTossSlot(getCoinTossSlotElByKey(key), resolved);
+        consumeListingAppearance(resolved.listing);
         setCoinTossStatus('');
         updateCoinTossCoinFaces();
         refreshCoinTossPreviewIfHovering();
@@ -6551,7 +6598,7 @@ function refreshCoinTossCandidatesUI() {
 
     list.innerHTML = '';
     const candidates = getCoinTossCandidates();
-    const mysteryPool = getMysteryFlickCoinTossPool();
+    const mysteryPool = buildFilteredCoinTossPool(getCoinTossExcludeLabels());
     const duelLocked = isShuffleActive || isCoinTossing;
     const allSlotsFull = areAllCoinTossSlotsFull();
 
