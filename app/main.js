@@ -48,6 +48,8 @@
             "Rango (2011)",
             "Robots (2005)",
             "Shrek (2001)",
+            "The Simpsons Movie (2007)",
+            "Gnomeo & Juliet (2011)",
             "Sonic the Hedgehog (2020)",
             "The Iron Giant (1999)",
             "The SpongeBob SquarePants Movie (2004)",
@@ -211,6 +213,52 @@
             "Son of the Mask (2005)",
             "Sonic the Hedgehog 2 (2022)",
             "Shrek 2 (2004)",
+            "Shrek the Third (2007)",
+            "Shrek Forever After (2010)",
+            "Puss in Boots (2011)",
+            "Puss in Boots: The Last Wish (2022)",
+            "Army of Darkness (1992)",
+            "The Great Muppet Caper (1981)",
+            "George of the Jungle 2 (2003)",
+            "Atlantis: Milos' Return (2003)",
+            "Wayne's World 2 (1993)",
+            "Ghost Rider: Spirit of Vengeance (2011)",
+            "National Treasure: Book of Secrets (2007)",
+            "Death Race 2050 (2017)",
+            "The Fox and the Hound 2 (2006)",
+            "Clerks II (2006)",
+            "Muppet Treasure Island (1996)",
+            "Muppets From Space (1999)",
+            "The Muppets Take Manhatten (1984)",
+            "The Muppets (2011)",
+            "Muppets Most Wanted (2014)",
+            "The Gods Must Be Crazy II (1989)",
+            "Bartok the Magnificent (1999)",
+            "Blues Brothers 2000 (1998)",
+            "Sicario: Day of the Soldado (2018)",
+            "Scooby-Doo 2: Monsters Unleashed (2004)",
+            "The Flintstones in Viva Rock Vegas (2000)",
+            "Balto II: Wolf Quest (2002)",
+            "The Croods: A New Age (2020)",
+            "The Jewel of the Nile (1985)",
+            "The Secret of the NIMH 2: Timmy to the Rescue (1998)",
+            "Predator 2 (1990)",
+            "Predators (2010)",
+            "Prey (2022)",
+            "The Predator (2018)",
+            "Predator Badlands (2025)",
+            "Predator: Killer of Killers (2025)",
+            "Alien vs. Predator (2004)",
+            "Alien vs. Predator: Requiem (2007)",
+            "Clerks III (2022)",
+            "Balto III: Wings of Change (2004)",
+            "One Cut of the Dead in Hollywood (2019)",
+            "Spirit Untamed (2021)",
+            "Return of the Killer Tomatoes! (1988)",
+            "Repo Chick (2009)",
+            "Zathura: A Space Adventure (2005)",
+            "Mr. Beans Holiday (2007)",
+            "Alienoid: The Return to the Future (2024)",
             "The Super Mario Galaxy Movie (2026)"
         ],
         
@@ -283,7 +331,8 @@
             "The Adventures of Buckaroo Banzai Across the 8th Dimension (1984)",
             "The Country Bears (2002)",
             "The Velocipastor (2018)",
-            "Zombeavers (2014)"
+            "Zombeavers (2014)",
+            "Send Help (2026)"
         ],
         
         "ZEMECKIS ZONE 🐇": [
@@ -326,7 +375,16 @@
             "Kung Fu Yoga (2017)",
             "Ip Man (2008)",
             "The Way of the Dragon (1972)",
-            "Train to Busan (2016)"
+            "Train to Busan (2016)",
+            "Colony (2026)",
+            "Peninsula (2020)",
+            "Seoul Station (2016)",
+            "Cargo (2018)",
+            "I Am a Hero (2015)",
+            "The Night Eats the World (2018)",
+            "Alive (2020)",
+            "One Cut of the Dead (2017)",
+            "Versus (2000)"
         ],
         
         "TUMBLEWEED TURNPIKE 🏜️": [
@@ -3321,6 +3379,27 @@ function getKeeperCategoryEmoji(label) {
     return match ? match[1].trim() : '';
 }
 
+function revealKeeperPickInResultCard(keeperEntry) {
+    const listing = getKeeperListingLabel(keeperEntry.label);
+    const categoryEmoji = getKeeperCategoryEmoji(keeperEntry.label);
+    const category = findListingCategory(listing) || '';
+
+    hasSelectedMovie = true;
+
+    const resultPanel = document.getElementById('result-panel');
+    const alreadyShowing = lastRevealedLabel === keeperEntry.label
+        && resultPanel?.classList.contains('visible');
+
+    if (!alreadyShowing) {
+        revealMovieResult(category, listing, categoryEmoji);
+    } else {
+        updateResultMarkWatchedButton();
+        refreshCoinTossCandidatesUI();
+    }
+
+    updateKeeperButtonState();
+}
+
 function updateWatchedFilterUI() {
     const countEl = document.getElementById('watched-filter-count');
     if (countEl) {
@@ -3499,6 +3578,7 @@ function addManualKeeperMovie(raw) {
     };
     keeperPicks.push(keeperEntry);
     applyKeeperPosterFromMetadata(keeperEntry);
+    revealKeeperPickInResultCard(keeperEntry);
     consumeListingAppearance(listing);
 
     const input = document.getElementById('manual-keeper-input');
@@ -7225,6 +7305,7 @@ function applyCoinTossResult(winner, loser) {
         winnerAdded = true;
         keeperUiGeneration += 1;
         playKeeperSound(keeperPicks.length);
+        revealKeeperPickInResultCard(keeperEntry);
     }
 
     let keeperUiUpdate = false;
@@ -8848,10 +8929,10 @@ function makeItAKeeper() {
         keeperPicks.push(keeperEntry);
 
         applyKeeperPosterFromMetadata(keeperEntry);
+        revealKeeperPickInResultCard(keeperEntry);
 
         updateRecentSelectionsUI();
         updateKeeperPicksUI(true);
-        updateKeeperButtonState();
     }, 380);
 }
 

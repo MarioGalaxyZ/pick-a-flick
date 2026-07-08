@@ -38,6 +38,32 @@
 
 
 
+        :root {
+
+            --arcade-design-width: 1200px;
+
+            --arcade-design-height: 700px;
+
+        }
+
+
+
+        #arcade-scale-wrap {
+
+            width: min(100%, var(--arcade-design-width));
+
+            aspect-ratio: 1200 / 700;
+
+            overflow: hidden;
+
+            flex-shrink: 0;
+
+            container-type: inline-size;
+
+        }
+
+
+
         /* The Arcade Cabinet Workspace Container */
 
         #arcade-container {
@@ -47,6 +73,10 @@
             width: 1200px;
 
             height: 700px;
+
+            transform: scale(calc(100cqw / var(--arcade-design-width)));
+
+            transform-origin: top left;
 
             background-image: url('../graphics/ui/arcade-background.png');
 
@@ -3987,6 +4017,58 @@
             gap: 12px;
 
             align-self: start;
+
+        }
+
+
+
+        @media (max-width: 1239px) {
+
+            body {
+
+                justify-content: flex-start;
+
+                padding: 12px 8px 20px;
+
+            }
+
+
+
+            #filters-panel {
+
+                width: min(100%, var(--arcade-design-width));
+
+            }
+
+
+
+            #movie-filters {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+
+            #filter-sidebar,
+
+            #runtime-filter,
+
+            #decade-filter,
+
+            #watched-filter-column {
+
+                grid-column: 1;
+
+            }
+
+
+
+            #coin-toss {
+
+                --coin-stage-box: min(400px, calc(100vw - 48px));
+
+            }
 
         }
 

@@ -4,7 +4,7 @@ Update this when priorities shift so agents know what matters now.
 
 ## Active
 
-_(none — see Recently completed)_
+- [ ] Bulk import of new movies — improve/add batch flow for adding titles to `movieDatabase` (filters panel **ADD A NEW FLICK**)
 
 ## Recently completed (July 2026)
 
@@ -35,6 +35,12 @@ _(none — see Recently completed)_
 
 ## Notes
 
+- Bulk import of new movies (active):
+  - **JS:** `// --- ADD MOVIES UI ---` in `app/main.js` — `parseBatchMovieInput`, `buildAddMoviesPrompt`, `submitAddMovieClaim`, `buildAddMovieUI` (~3745–4540)
+  - **Parallel pattern:** `// --- MARK WATCHED BULK IMPORT ---` (~4242+) — same textarea/highlight UX for watched list
+  - **CSS:** `#add-a-flick*` in `app/style.css` (~4173+)
+  - **Workflow:** UI copies a Cursor prompt → agent edits `movieDatabase` in `main.js` → `npm run generate-metadata:ps`
+  - **Category intent:** `docs/CATEGORIES.md`
 - Category movie rotation (completed):
   - **API:** `drawNextMovie`, `drawNextMovieLabel`, `drawNextMysteryFromCategories`, `markMovieServed`, `consumeListingAppearance`, `resetMovieSelectionPools` in `app/main.js` (~2484–2590)
   - **Spin:** all reveal modes call `drawNextMovie`; **Dueling Flicks:** mystery chip + shuffle C/D defaults use pool API; manual slot/keeper calls `consumeListingAppearance`
