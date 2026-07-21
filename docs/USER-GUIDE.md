@@ -84,6 +84,7 @@ Filters affect the main spin **and** the movie pools for Dueling Flicks.
 | **Runtime Filter** | Min and/or max runtime in minutes (from OMDb metadata). Clear resets both. |
 | **Decade Filter** | Which release decades are eligible. Deselecting all decades blocks the spin. |
 | **Include watched** | When unchecked, watched movies are excluded from spin and Dueling Flicks pools. |
+| **On hold count** | Shows how many catalog titles are paused from rotation (always excluded from pools). |
 | **Reset All Filters** | Restores categories, runtime, decades, and watched filter to defaults. |
 | **Available Flicks** | Live count of movies that match every active filter. |
 
@@ -126,6 +127,26 @@ Open **WATCHED FLICKS** to see your watched list.
 - **Choose save file** — link a `watched-movies.js` file for direct save in supported browsers; otherwise changes download as a file to replace manually
 
 Watched listings load from `app/watched-movies.js` when the app starts.
+
+---
+
+## On-Hold movies
+
+On-hold movies are **unwatched** titles you have paused from rotation. They are **always excluded** from spin, coin toss mystery picks, and ticket shuffle pools — there is no "include on-hold" toggle. On-hold and watched are **mutually exclusive** (marking one clears the other).
+
+### Ways to put a movie on hold
+
+1. **Put on hold** — ⏸️ button on the result card after a spin (next to Mark Watched)
+2. **PUT ON HOLD** — bulk import in the filters panel (one title per line, Ctrl+Enter)
+
+### On-Hold Flicks panel
+
+Open **ON-HOLD FLICKS** to see your on-hold list.
+
+- **Return to rotation** — removes a title from the on-hold list so it can appear in spins again
+- **Choose save file** — link an `on-hold-movies.js` file for direct save in supported browsers; otherwise changes download as a file to replace manually
+
+On-hold listings load from `app/on-hold-movies.js` when the app starts.
 
 ---
 

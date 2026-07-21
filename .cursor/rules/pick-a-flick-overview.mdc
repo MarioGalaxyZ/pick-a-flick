@@ -27,6 +27,7 @@ Static HTML/JS/CSS under `app/` — no app build step. Use `scripts/serve-static
 |-----------|-------------------------------|
 | `app/main.js` → `movieDatabase` | `app/generated/movie-metadata.js` |
 | `app/watched-movies.js` | — |
+| `app/on-hold-movies.js` | — |
 | `scripts/audio-paths.mjs` | `app/generated/audio-paths.js` |
 | `scripts/win-clip-categories.mjs` + clip folders | `app/generated/win-clips-manifest.js` |
 | (after clip changes) run refresh | `app/generated/audio-gain-map.js`, `coin-flip-blip-map.js`, `shuffle-golden-ticket-map.js` |
@@ -45,7 +46,7 @@ Static HTML/JS/CSS under `app/` — no app build step. Use `scripts/serve-static
 ## npm scripts (common)
 
 - `npm run refresh-audio` — sync paths, manifests, gain maps
-- `npm run generate-metadata:ps` — regenerate `app/generated/movie-metadata.js` (needs `.env` / `OMDB_API_KEY`)
+- `npm run generate-metadata:ps` — regenerate `app/generated/movie-metadata.js` (OMDb premium default + free fallback; optional `.env` overrides)
 - `npm run watch-audio` — auto-refresh on clip changes
 
 ## Architecture detail

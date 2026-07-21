@@ -22,13 +22,18 @@ npm install
 
 ### Movie metadata (OMDb)
 
-Some scripts fetch movie details from [OMDb](https://www.omdbapi.com/). Copy the example env file and add your free API key:
+Some scripts fetch movie details from [OMDb](https://www.omdbapi.com/). They default to the premium key and stickily fall back to the free key only on auth/quota/canceled-key errors.
+
+Optional overrides (copy `.env.example` → `.env`):
 
 ```powershell
 copy .env.example .env
 ```
 
-Edit `.env` and set `OMDB_API_KEY`. Then generate metadata:
+- `OMDB_API_KEY` — primary (default: premium / Patreon tier)
+- `OMDB_API_KEY_FREE` — fallback (default: free tier, 1,000/day)
+
+See [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx) and [patreon.com/omdb](https://www.patreon.com/omdb). Then generate metadata:
 
 ```powershell
 npm run generate-metadata:ps

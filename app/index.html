@@ -70,6 +70,7 @@
             </div>
             <div id="result-details" class="result-hidden" aria-live="polite">
                 <button type="button" id="mark-watched-btn" class="mark-watched-emblem" hidden aria-label="Mark as watched">📜</button>
+                <button type="button" id="mark-on-hold-btn" class="mark-on-hold-emblem" hidden aria-label="Put on hold">⏸️</button>
                 <div id="result-title" class="result-line"></div>
                 <div id="result-meta" class="result-line"></div>
                 <div id="result-genre" class="result-line"></div>
@@ -153,6 +154,7 @@
                         </label>
                     </div>
                     <div id="watched-filter-count" aria-live="polite">0 watched</div>
+                    <div id="on-hold-filter-count" aria-live="polite">0 on hold</div>
                 </div>
             </div>
             <div id="wheel-art-toggle">
@@ -163,6 +165,19 @@
                         <label class="wheel-art-toggle-option">
                             <input type="checkbox" id="undead-wheel-checkbox">
                             Undead wheel
+                        </label>
+                        <label class="wheel-art-toggle-option wheel-art-toggle-option--select" for="cabinet-background-select">
+                            Cabinet
+                            <select id="cabinet-background-select" aria-label="Cabinet background">
+                                <option value="arcade" selected>Arcade</option>
+                                <option value="tn">TN edition</option>
+                                <option value="tn-gpt">TN edition (GPT)</option>
+                                <option value="mario">Mario</option>
+                                <option value="star-wars">Star Wars</option>
+                                <option value="lego-star-wars">Lego Star Wars</option>
+                                <option value="lego-arcade-v1">Lego Arcade v1</option>
+                                <option value="lego-arcade-v2">Lego Arcade v2</option>
+                            </select>
                         </label>
                     </div>
                 </div>
@@ -179,10 +194,21 @@
             <p id="watched-save-status" aria-live="polite"></p>
         </div>
     </div>
+
+    <div id="on-hold-flicks-panel">
+        <div class="on-hold-flicks-emblem" aria-hidden="true">⏸️</div>
+        <button type="button" id="on-hold-flicks-toggle" aria-expanded="false">ON-HOLD FLICKS</button>
+        <div id="on-hold-flicks-content" hidden>
+            <ul id="on-hold-flicks-list"></ul>
+            <p id="on-hold-flicks-empty">No on-hold flicks yet.</p>
+            <p id="on-hold-save-status" aria-live="polite"></p>
+        </div>
+    </div>
     </div>
 
     <script src="generated/movie-metadata.js"></script>
     <script src="watched-movies.js"></script>
+    <script src="on-hold-movies.js"></script>
     <script src="generated/audio-paths.js"></script>
     <script src="generated/win-clips-manifest.js"></script>
     <script src="generated/audio-gain-map.js"></script>

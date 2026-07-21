@@ -2,15 +2,18 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import {
+    buildOmdbImdbUrl,
     buildOmdbUrl,
     extractListingsFromMainJs,
     extractRuntimeMinutesFromMainJs,
     getDefaultMainJsPath,
+    getOmdbImdbId,
     getOmdbSearchTitle,
     normalizePartNumbersForOmdb,
     parseMovieListing,
     sanitizeOmdbPosterUrl
 } from './lib/movie-listings.mjs';
+import { createOmdbKeySession, isOmdbKeyFailure } from './lib/omdb-api-key.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -35,7 +38,8 @@ function loadDotEnv() {
 }
 
 loadDotEnv();
-const OMDB_API_KEY = process.env.OMDB_API_KEY || '14e2f0ac';
+const omdbKeys = createOmdbKeySession();
+console.log(`OMDb API key: ${omdbKeys.describe()} (length ${omdbKeys.key.length})`);
 
 const METADATA_FIELDS = [
     'Response',
@@ -81,12 +85,50 @@ function pickMetadataRecord(data) {
     return record;
 }
 
-async function fetchOmdbJson(title, year) {
-    const response = await fetch(buildOmdbUrl(title, year, OMDB_API_KEY));
+async function fetchOmdbOnce(url) {
+    const response = await fetch(url);
+    if (response.status === 401) {
+        const body = await response.json().catch(() => ({}));
+        const err = body.Error || `HTTP ${response.status}`;
+        if (omdbKeys.maybeFallback(err)) {
+            return null; // signal retry with new key
+        }
+        return { Response: 'False', Error: err };
+    }
     return response.json();
 }
 
-async function fetchOmdbListing(title, year) {
+async function fetchOmdbWithKeyFallback(buildUrl) {
+    let data = await fetchOmdbOnce(buildUrl(omdbKeys.key));
+    if (data == null) {
+        data = await fetchOmdbOnce(buildUrl(omdbKeys.key));
+    }
+    if (
+        data?.Response === 'False' &&
+        isOmdbKeyFailure(data.Error) &&
+        omdbKeys.maybeFallback(data)
+    ) {
+        data = await fetchOmdbOnce(buildUrl(omdbKeys.key));
+    }
+    return data;
+}
+
+async function fetchOmdbJson(title, year) {
+    return fetchOmdbWithKeyFallback((apiKey) => buildOmdbUrl(title, year, apiKey));
+}
+
+async function fetchOmdbByImdbId(imdbId) {
+    return fetchOmdbWithKeyFallback((apiKey) => buildOmdbImdbUrl(imdbId, apiKey));
+}
+
+async function fetchOmdbListing(title, year, imdbId = null) {
+    if (imdbId) {
+        const data = await fetchOmdbByImdbId(imdbId);
+        if (data.Response === 'True') {
+            return data;
+        }
+    }
+
     let data = await fetchOmdbJson(title, year);
     if (!year || omdbHasPoster(data)) {
         return data;
@@ -225,6 +267,7 @@ async function main() {
         const listing = listings[i];
         const { year } = parseMovieListing(listing);
         const searchTitle = getOmdbSearchTitle(listing);
+        const mappedImdbId = getOmdbImdbId(listing);
         const listingPosterOverride = overrides.byListing[listing] || null;
 
         process.stdout.write(`[${i + 1}/${listings.length}] ${listing} ... `);
@@ -239,8 +282,11 @@ async function main() {
         const hasFullRecord = existingRecord?.Response === 'True'
             && existingRecord?.Poster
             && existingRecord?.Plot;
+        const needsImdbRefresh = mappedImdbId
+            && existingRecord?.imdbID
+            && existingRecord.imdbID !== mappedImdbId;
 
-        if (hasFullRecord) {
+        if (hasFullRecord && !needsImdbRefresh) {
             console.log('SKIP (cached)');
             continue;
         }
@@ -249,7 +295,7 @@ async function main() {
         let omdbError = null;
 
         try {
-            data = await fetchOmdbListing(searchTitle, year);
+            data = await fetchOmdbListing(searchTitle, year, mappedImdbId);
             if (data.Response === 'True') {
                 omdbFetched++;
             } else {

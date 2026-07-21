@@ -382,7 +382,7 @@
             "Cargo (2018)",
             "I Am a Hero (2015)",
             "The Night Eats the World (2018)",
-            "Alive (2020)",
+            "#ALIVE (2020)",
             "One Cut of the Dead (2017)",
             "Versus (2000)"
         ],
@@ -402,7 +402,7 @@
             "Tenacious D in The Pick of Destiny (2006)", "School of Rock (2003)", "High Fidelity (2000)", "Kung Fu Panda (2008)",
             "Anaconda (2025)", "Dear Santa (2024)", "Free LSD (2023)", "Be Kind Rewind (2008)",
             "Bernie (2011)", "Nacho Libre (2006)", "Orange County (2002)", "Saving Silverman (2001)",
-            "The Polka King (2017)", "The School of Rock (2003)", "Tropic Thunder (2008)",
+            "The Polka King (2017)", "Tropic Thunder (2008)",
             "Walk Hard: The Dewey Cox Story (2007)", "Year One (2009)"
         ],
         
@@ -510,6 +510,18 @@
 
     let includeWatchedMovies = false;
     let useUndeadWheelDisc = false;
+    const CABINET_BACKGROUND_CLASS_BY_MODE = {
+        arcade: null,
+        tn: 'tn-edition',
+        'tn-gpt': 'tn-edition-gpt',
+        mario: 'bg-mario',
+        'star-wars': 'bg-star-wars',
+        'lego-star-wars': 'bg-lego-star-wars',
+        'lego-arcade-v1': 'bg-lego-arcade-v1',
+        'lego-arcade-v2': 'bg-lego-arcade-v2',
+    };
+    const CABINET_BACKGROUND_CLASSES = Object.values(CABINET_BACKGROUND_CLASS_BY_MODE).filter(Boolean);
+    let arcadeBackgroundMode = 'arcade';
     let watchedMovieSet = new Set();
     let watchedMoviesFileHandle = null;
 
@@ -734,22 +746,31 @@ ${lines.join('\n')}
 
     function markMoviesAsWatched(listings) {
         let changed = false;
+        let holdChanged = false;
         listings.forEach((listing) => {
-            if (!listing || watchedMovieSet.has(listing)) return;
+            if (!listing) return;
+            if (onHoldMovieSet.has(listing)) {
+                onHoldMovieSet.delete(listing);
+                holdChanged = true;
+            }
+            if (watchedMovieSet.has(listing)) return;
             watchedMovieSet.add(listing);
             changed = true;
         });
-        if (!changed) return;
+        if (!changed && !holdChanged) return;
         updateWatchedFilterUI();
+        if (holdChanged) updateOnHoldFilterUI();
         resetMovieSelectionPools();
         updateSpinBlockerUI();
-        persistWatchedMovies();
+        if (changed) persistWatchedMovies();
+        if (holdChanged) persistOnHoldMovies();
     }
 
     function unmarkMovieAsWatched(listing) {
         if (!watchedMovieSet.has(listing)) return;
         watchedMovieSet.delete(listing);
         updateWatchedFilterUI();
+        updateOnHoldFilterUI();
         resetMovieSelectionPools();
         updateSpinBlockerUI();
         persistWatchedMovies();
@@ -777,10 +798,276 @@ ${lines.join('\n')}
         updateWatchedFilterUI();
     }
 
+    // --- ON-HOLD MOVIES ---
+
+    let onHoldMovieSet = new Set();
+    let onHoldMoviesFileHandle = null;
+
+    const ON_HOLD_FILE_HANDLE_DB_NAME = 'pick-a-flick-on-hold';
+    const ON_HOLD_FILE_HANDLE_STORE = 'handles';
+    const ON_HOLD_FILE_HANDLE_KEY = 'on-hold-movies';
+
+    function openOnHoldFileHandleDb() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(ON_HOLD_FILE_HANDLE_DB_NAME, 1);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => resolve(request.result);
+            request.onupgradeneeded = () => {
+                request.result.createObjectStore(ON_HOLD_FILE_HANDLE_STORE);
+            };
+        });
+    }
+
+    async function loadOnHoldMoviesFileHandle() {
+        if (!isFileSystemAccessSupported()) return;
+
+        try {
+            const db = await openOnHoldFileHandleDb();
+            const handle = await new Promise((resolve, reject) => {
+                const tx = db.transaction(ON_HOLD_FILE_HANDLE_STORE, 'readonly');
+                const req = tx.objectStore(ON_HOLD_FILE_HANDLE_STORE).get(ON_HOLD_FILE_HANDLE_KEY);
+                req.onsuccess = () => resolve(req.result ?? null);
+                req.onerror = () => reject(req.error);
+            });
+            db.close();
+            if (handle) {
+                onHoldMoviesFileHandle = handle;
+            }
+        } catch (err) {
+            console.log('Could not restore on-hold file handle:', err);
+        }
+    }
+
+    async function storeOnHoldMoviesFileHandle(handle) {
+        const db = await openOnHoldFileHandleDb();
+        await new Promise((resolve, reject) => {
+            const tx = db.transaction(ON_HOLD_FILE_HANDLE_STORE, 'readwrite');
+            tx.objectStore(ON_HOLD_FILE_HANDLE_STORE).put(handle, ON_HOLD_FILE_HANDLE_KEY);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+        });
+        db.close();
+    }
+
+    async function writeOnHoldMoviesToHandle(handle, content) {
+        const writable = await handle.createWritable();
+        await writable.write(content);
+        await writable.close();
+    }
+
+    async function ensureOnHoldMoviesFileHandle(allowPrompt = true) {
+        if (!isFileSystemAccessSupported()) return null;
+
+        if (onHoldMoviesFileHandle) {
+            const permission = await onHoldMoviesFileHandle.queryPermission({ mode: 'readwrite' });
+            if (permission === 'granted') {
+                return onHoldMoviesFileHandle;
+            }
+            if (permission === 'prompt' && allowPrompt) {
+                const requested = await onHoldMoviesFileHandle.requestPermission({ mode: 'readwrite' });
+                if (requested === 'granted') {
+                    return onHoldMoviesFileHandle;
+                }
+            }
+            if (!allowPrompt) {
+                return null;
+            }
+        }
+
+        if (!allowPrompt) return null;
+
+        const [handle] = await window.showOpenFilePicker({
+            types: [{
+                description: 'JavaScript',
+                accept: { 'application/javascript': ['.js'] },
+            }],
+            multiple: false,
+        });
+        onHoldMoviesFileHandle = handle;
+        await storeOnHoldMoviesFileHandle(handle);
+        return handle;
+    }
+
+    async function saveOnHoldMoviesFile(allowPrompt = true) {
+        window.onHoldMovieListings = [...onHoldMovieSet];
+        const content = buildOnHoldMoviesFileContent();
+
+        if (!isFileSystemAccessSupported()) {
+            downloadOnHoldMoviesFile(content);
+            return;
+        }
+
+        try {
+            const handle = await ensureOnHoldMoviesFileHandle(allowPrompt);
+            if (!handle) {
+                downloadOnHoldMoviesFile(content);
+                return;
+            }
+            await writeOnHoldMoviesToHandle(handle, content);
+            showOnHoldSaveStatus('Saved on-hold-movies.js.');
+        } catch (err) {
+            if (err?.name === 'AbortError') {
+                downloadOnHoldMoviesFile(content);
+                return;
+            }
+            console.log('On-hold file save failed:', err);
+            downloadOnHoldMoviesFile(content);
+        }
+    }
+
+    async function linkOnHoldMoviesSaveFile() {
+        if (!isFileSystemAccessSupported()) {
+            showOnHoldSaveStatus('Direct save not supported in this browser. Use downloaded file.');
+            return;
+        }
+
+        try {
+            const [handle] = await window.showOpenFilePicker({
+                types: [{
+                    description: 'JavaScript',
+                    accept: { 'application/javascript': ['.js'] },
+                }],
+                multiple: false,
+            });
+            onHoldMoviesFileHandle = handle;
+            await storeOnHoldMoviesFileHandle(handle);
+            await saveOnHoldMoviesFile(false);
+            showOnHoldSaveStatus('Linked and saved on-hold-movies.js.');
+        } catch (err) {
+            if (err?.name === 'AbortError') return;
+            console.log('Could not link on-hold file:', err);
+            showOnHoldSaveStatus('Could not link save file.');
+        }
+    }
+
+    function initOnHoldMovies() {
+        const listings = Array.isArray(window.onHoldMovieListings)
+            ? window.onHoldMovieListings
+            : [];
+        onHoldMovieSet = new Set(
+            listings.filter((item) => typeof item === 'string' && item.trim())
+        );
+    }
+
+    function isMovieOnHold(listing) {
+        return onHoldMovieSet.has(listing);
+    }
+
+    function moviePassesOnHoldFilter(listing) {
+        return !isMovieOnHold(listing);
+    }
+
+    function getOnHoldMoviesInCatalog() {
+        const inCatalog = [];
+        for (const listing of onHoldMovieSet) {
+            for (const movies of Object.values(movieDatabase)) {
+                if (movies.includes(listing)) {
+                    inCatalog.push(listing);
+                    break;
+                }
+            }
+        }
+        return inCatalog.sort((a, b) => a.localeCompare(b));
+    }
+
+    function buildOnHoldMoviesFileContent() {
+        const sorted = [...onHoldMovieSet].sort((a, b) => a.localeCompare(b));
+        const lines = sorted.map(
+            (listing) => `    "${listing.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}",`
+        );
+        return `// Personal on-hold list for Pick A Flick — edit via the app or by hand.
+window.onHoldMovieListings = [
+${lines.join('\n')}
+];
+`;
+    }
+
+    function showOnHoldSaveStatus(message) {
+        const status = document.getElementById('on-hold-save-status');
+        if (!status) return;
+        status.textContent = message;
+        if (message) {
+            window.setTimeout(() => {
+                if (status.textContent === message) {
+                    status.textContent = '';
+                }
+            }, 5000);
+        }
+    }
+
+    function downloadOnHoldMoviesFile(content = buildOnHoldMoviesFileContent()) {
+        const blob = new Blob([content], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'on-hold-movies.js';
+        link.click();
+        URL.revokeObjectURL(url);
+        showOnHoldSaveStatus('Save downloaded file to your Pick A Flick folder to keep changes.');
+    }
+
+    function persistOnHoldMovies() {
+        void saveOnHoldMoviesFile(true);
+    }
+
+    function markMoviesAsOnHold(listings) {
+        let changed = false;
+        let watchedChanged = false;
+        listings.forEach((listing) => {
+            if (!listing) return;
+            if (watchedMovieSet.has(listing)) {
+                watchedMovieSet.delete(listing);
+                watchedChanged = true;
+            }
+            if (onHoldMovieSet.has(listing)) return;
+            onHoldMovieSet.add(listing);
+            changed = true;
+        });
+        if (!changed && !watchedChanged) return;
+        updateOnHoldFilterUI();
+        if (watchedChanged) updateWatchedFilterUI();
+        resetMovieSelectionPools();
+        updateSpinBlockerUI();
+        if (changed) persistOnHoldMovies();
+        if (watchedChanged) persistWatchedMovies();
+    }
+
+    function unmarkMovieAsOnHold(listing) {
+        if (!onHoldMovieSet.has(listing)) return;
+        onHoldMovieSet.delete(listing);
+        updateOnHoldFilterUI();
+        resetMovieSelectionPools();
+        updateSpinBlockerUI();
+        persistOnHoldMovies();
+    }
+
     function applyWheelDiscArt() {
         const disc = document.getElementById('wheel-disc');
         if (!disc) return;
         disc.classList.toggle('wheel-disc-undead', useUndeadWheelDisc);
+    }
+
+    function applyArcadeBackgroundArt() {
+        const container = document.getElementById('arcade-container');
+        if (!container) return;
+        for (const className of CABINET_BACKGROUND_CLASSES) {
+            container.classList.remove(className);
+        }
+        const activeClass = CABINET_BACKGROUND_CLASS_BY_MODE[arcadeBackgroundMode];
+        if (activeClass) container.classList.add(activeClass);
+    }
+
+    function syncCabinetBackgroundSelect() {
+        const select = document.getElementById('cabinet-background-select');
+        if (select) select.value = arcadeBackgroundMode;
+    }
+
+    function setArcadeBackgroundMode(mode) {
+        arcadeBackgroundMode = Object.prototype.hasOwnProperty.call(CABINET_BACKGROUND_CLASS_BY_MODE, mode)
+            ? mode
+            : 'arcade';
+        syncCabinetBackgroundSelect();
+        applyArcadeBackgroundArt();
     }
 
     function setUseUndeadWheelDisc(enabled) {
@@ -791,13 +1078,22 @@ ${lines.join('\n')}
     }
 
     function buildWheelArtToggleUI() {
-        const checkbox = document.getElementById('undead-wheel-checkbox');
-        if (!checkbox) return;
-        checkbox.checked = useUndeadWheelDisc;
-        checkbox.addEventListener('change', () => {
-            setUseUndeadWheelDisc(checkbox.checked);
-        });
+        const undeadCheckbox = document.getElementById('undead-wheel-checkbox');
+        if (undeadCheckbox) {
+            undeadCheckbox.checked = useUndeadWheelDisc;
+            undeadCheckbox.addEventListener('change', () => {
+                setUseUndeadWheelDisc(undeadCheckbox.checked);
+            });
+        }
+        const cabinetSelect = document.getElementById('cabinet-background-select');
+        if (cabinetSelect) {
+            cabinetSelect.addEventListener('change', () => {
+                setArcadeBackgroundMode(cabinetSelect.value);
+            });
+        }
+        syncCabinetBackgroundSelect();
         applyWheelDiscArt();
+        applyArcadeBackgroundArt();
     }
 
     function buildFilterPanelToggles() {
@@ -825,7 +1121,8 @@ ${lines.join('\n')}
             (listing) =>
                 moviePassesRuntimeFilter(listing) &&
                 moviePassesDecadeFilter(listing) &&
-                moviePassesWatchedFilter(listing)
+                moviePassesWatchedFilter(listing) &&
+                moviePassesOnHoldFilter(listing)
         );
     }
 
@@ -3210,7 +3507,7 @@ function revealMovieResult(category, chosenMovie, categoryEmoji) {
     lastRevealedListing = chosenMovie;
     lastRevealedLabel = `${categoryEmoji} ${chosenMovie}`;
     refreshCoinTossCandidatesUI();
-    updateResultMarkWatchedButton();
+    updateResultStatusButtons();
 }
 
 
@@ -3393,7 +3690,7 @@ function revealKeeperPickInResultCard(keeperEntry) {
     if (!alreadyShowing) {
         revealMovieResult(category, listing, categoryEmoji);
     } else {
-        updateResultMarkWatchedButton();
+        updateResultStatusButtons();
         refreshCoinTossCandidatesUI();
     }
 
@@ -3407,7 +3704,75 @@ function updateWatchedFilterUI() {
         countEl.textContent = `${count} watched`;
     }
     updateWatchedFlicksListUI();
-    updateResultMarkWatchedButton();
+    updateResultStatusButtons();
+}
+
+function updateOnHoldFilterUI() {
+    const countEl = document.getElementById('on-hold-filter-count');
+    if (countEl) {
+        const count = getOnHoldMoviesInCatalog().length;
+        countEl.textContent = `${count} on hold`;
+    }
+    updateOnHoldFlicksListUI();
+    updateResultStatusButtons();
+}
+
+function updateOnHoldFlicksListUI() {
+    const list = document.getElementById('on-hold-flicks-list');
+    const empty = document.getElementById('on-hold-flicks-empty');
+    if (!list || !empty) return;
+
+    list.innerHTML = '';
+    const onHold = getOnHoldMoviesInCatalog();
+
+    empty.hidden = onHold.length > 0;
+    list.hidden = onHold.length === 0;
+
+    onHold.forEach((listing) => {
+        const li = document.createElement('li');
+        li.className = 'on-hold-flicks-item';
+
+        const category = findListingCategory(listing);
+        const emoji = category ? category.split(' ').pop() : '';
+        const title = document.createElement('span');
+        title.className = 'on-hold-flicks-title';
+        title.textContent = emoji ? `${emoji} ${listing}` : listing;
+
+        const returnBtn = document.createElement('button');
+        returnBtn.type = 'button';
+        returnBtn.className = 'on-hold-flicks-return-btn';
+        returnBtn.textContent = 'Return to rotation';
+        returnBtn.addEventListener('click', () => unmarkMovieAsOnHold(listing));
+
+        li.appendChild(title);
+        li.appendChild(returnBtn);
+        list.appendChild(li);
+    });
+}
+
+function buildOnHoldFlicksPanelUI() {
+    const toggle = document.getElementById('on-hold-flicks-toggle');
+    const content = document.getElementById('on-hold-flicks-content');
+    if (!toggle || !content) return;
+
+    toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!expanded));
+        content.hidden = expanded;
+    });
+
+    if (!document.getElementById('on-hold-choose-save-file')) {
+        const chooseSaveBtn = document.createElement('button');
+        chooseSaveBtn.type = 'button';
+        chooseSaveBtn.id = 'on-hold-choose-save-file';
+        chooseSaveBtn.textContent = 'Choose save file';
+        chooseSaveBtn.addEventListener('click', () => {
+            void linkOnHoldMoviesSaveFile();
+        });
+        content.insertBefore(chooseSaveBtn, content.firstChild);
+    }
+
+    updateOnHoldFlicksListUI();
 }
 
 function updateWatchedFlicksListUI() {
@@ -3733,6 +4098,27 @@ function updateResultMarkWatchedButton() {
     btn.disabled = false;
 }
 
+function updateResultOnHoldButton() {
+    const btn = document.getElementById('mark-on-hold-btn');
+    if (!btn) return;
+
+    if (!hasSelectedMovie || !lastRevealedListing) {
+        btn.hidden = true;
+        return;
+    }
+
+    btn.hidden = false;
+    const onHold = isMovieOnHold(lastRevealedListing);
+    btn.classList.toggle('is-on-hold', onHold);
+    btn.setAttribute('aria-label', onHold ? 'Return to rotation' : 'Put on hold');
+    btn.disabled = false;
+}
+
+function updateResultStatusButtons() {
+    updateResultMarkWatchedButton();
+    updateResultOnHoldButton();
+}
+
 function toggleCurrentResultWatched() {
     if (!lastRevealedListing) return;
     playMarkWatchedScribbleSound();
@@ -3740,6 +4126,16 @@ function toggleCurrentResultWatched() {
         unmarkMovieAsWatched(lastRevealedListing);
     } else {
         markMoviesAsWatched([lastRevealedListing]);
+    }
+}
+
+function toggleCurrentResultOnHold() {
+    if (!lastRevealedListing) return;
+    playMarkWatchedScribbleSound();
+    if (isMovieOnHold(lastRevealedListing)) {
+        unmarkMovieAsOnHold(lastRevealedListing);
+    } else {
+        markMoviesAsOnHold([lastRevealedListing]);
     }
 }
 
@@ -4400,6 +4796,356 @@ function buildWatchedBulkImportUI() {
         filtersPanel.insertBefore(section, addAFlick);
     } else {
         filtersPanel.appendChild(section);
+    }
+}
+
+function resolveOnHoldImportLine(rawLine) {
+    const trimmed = rawLine.trim();
+    if (!trimmed) {
+        return { skip: true };
+    }
+
+    const query = getKeeperListingLabel(trimmed);
+    if (!query) {
+        return { skip: true };
+    }
+
+    let listing = findExactListingInCatalog(query);
+    let warning = null;
+
+    if (!listing) {
+        const { matches } = findMovieListingInDatabase(query);
+        const listings = [...new Set(
+            matches
+                .map((match) => match.listing || getKeeperListingLabel(match.label))
+                .filter(Boolean)
+        )];
+
+        if (listings.length === 0) {
+            return { error: 'Not found in catalog.' };
+        }
+        if (listings.length > 1) {
+            const preview = listings.slice(0, 3).map((title) => `"${title}"`).join(', ');
+            const suffix = listings.length > 3 ? ', ...' : '';
+            return { error: `Ambiguous — ${listings.length} matches: ${preview}${suffix}` };
+        }
+
+        listing = listings[0];
+        if (query.toLowerCase() !== listing.toLowerCase()) {
+            warning = `Fuzzy match: "${listing}"`;
+        }
+    }
+
+    if (isMovieWatched(listing)) {
+        return { error: 'Already watched — return to rotation or remove from watched list first.' };
+    }
+
+    if (isMovieOnHold(listing)) {
+        return { listing, warning: 'Already on hold.', skipResolved: true };
+    }
+
+    return { listing, warning };
+}
+
+function parseBulkOnHoldInput(raw) {
+    const lines = raw.split(/\r?\n/);
+    const resolved = [];
+    const errors = [];
+    const warnings = [];
+    const seenInBatch = new Set();
+
+    lines.forEach((line, index) => {
+        const lineNum = index + 1;
+        const trimmed = line.trim();
+        if (!trimmed) return;
+
+        const result = resolveOnHoldImportLine(line);
+        if (result.skip) return;
+
+        if (result.error) {
+            errors.push({ lineNum, message: result.error });
+            return;
+        }
+
+        if (result.skipResolved) {
+            warnings.push({ lineNum, message: result.warning || 'Already on hold.' });
+            return;
+        }
+
+        if (result.warning) {
+            warnings.push({ lineNum, message: result.warning });
+        }
+
+        if (seenInBatch.has(result.listing)) {
+            warnings.push({
+                lineNum,
+                message: `Duplicate in list: "${result.listing}" — skipped.`,
+            });
+            return;
+        }
+        seenInBatch.add(result.listing);
+
+        resolved.push({
+            listing: result.listing,
+            lineNum,
+            warning: result.warning,
+        });
+    });
+
+    if (!raw.trim()) {
+        errors.push({ lineNum: 0, message: 'Enter at least one movie.' });
+    }
+
+    return { resolved, errors, warnings };
+}
+
+function setMarkOnHoldImportStatus(message, isError = false) {
+    const status = document.getElementById('mark-on-hold-bulk-status');
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle('mark-on-hold-bulk-status-error', isError);
+    status.classList.toggle(
+        'mark-on-hold-bulk-status-success',
+        !isError && message.startsWith('Imported')
+    );
+}
+
+function hideMarkOnHoldBatchSummary() {
+    const preview = document.getElementById('mark-on-hold-bulk-preview');
+    if (preview) preview.hidden = true;
+}
+
+function showMarkOnHoldBatchSummary(resolved) {
+    const preview = document.getElementById('mark-on-hold-bulk-preview');
+    let list = document.getElementById('mark-on-hold-bulk-preview-list');
+    if (!preview) return;
+
+    if (!list) {
+        list = document.createElement('ul');
+        list.id = 'mark-on-hold-bulk-preview-list';
+        preview.appendChild(list);
+    }
+
+    list.innerHTML = '';
+    resolved.forEach(({ listing }) => {
+        const item = document.createElement('li');
+        item.textContent = `\u2713 ${listing}`;
+        list.appendChild(item);
+    });
+
+    preview.hidden = false;
+}
+
+let markOnHoldLineHighlightsTimer = null;
+
+function syncMarkOnHoldHighlightScroll() {
+    const input = document.getElementById('mark-on-hold-bulk-input');
+    const highlightsInner = document.getElementById('mark-on-hold-bulk-highlights-inner');
+    if (!input || !highlightsInner) return;
+    highlightsInner.style.transform = `translateY(-${input.scrollTop}px)`;
+}
+
+function resizeMarkOnHoldTextarea() {
+    const input = document.getElementById('mark-on-hold-bulk-input');
+    if (!input) return;
+    input.style.height = 'auto';
+    const minHeight = 90;
+    input.style.height = `${Math.max(minHeight, input.scrollHeight)}px`;
+}
+
+function updateMarkOnHoldLineHighlights() {
+    const input = document.getElementById('mark-on-hold-bulk-input');
+    const highlightsInner = document.getElementById('mark-on-hold-bulk-highlights-inner');
+    if (!input || !highlightsInner) return;
+
+    const raw = input.value;
+    const lines = raw.split(/\r?\n/);
+    const { errors, warnings } = parseBulkOnHoldInput(raw);
+    const errorLines = new Set(
+        errors.filter((entry) => entry.lineNum > 0).map((entry) => entry.lineNum)
+    );
+    const warningLines = new Set(
+        warnings.filter((entry) => entry.lineNum > 0).map((entry) => entry.lineNum)
+    );
+
+    highlightsInner.replaceChildren();
+    lines.forEach((line, index) => {
+        const lineEl = document.createElement('div');
+        lineEl.className = 'mark-on-hold-bulk-line';
+        const lineNum = index + 1;
+        if (errorLines.has(lineNum)) {
+            lineEl.classList.add('mark-on-hold-bulk-line-error');
+        } else if (warningLines.has(lineNum)) {
+            lineEl.classList.add('mark-on-hold-bulk-line-warning');
+        }
+        lineEl.textContent = line.length ? line : '\u00a0';
+        highlightsInner.appendChild(lineEl);
+    });
+
+    syncMarkOnHoldHighlightScroll();
+
+    const lineErrors = errors.filter((entry) => entry.lineNum > 0);
+    if (lineErrors.length) {
+        const message = lineErrors
+            .map(({ lineNum, message: errorMessage }) => `Line ${lineNum}: ${errorMessage}`)
+            .join(' ');
+        setMarkOnHoldImportStatus(message, true);
+    } else if (errors.length) {
+        setMarkOnHoldImportStatus(errors[0].message, true);
+    } else {
+        const status = document.getElementById('mark-on-hold-bulk-status');
+        if (status?.classList.contains('mark-on-hold-bulk-status-error')) {
+            setMarkOnHoldImportStatus('', false);
+        }
+    }
+}
+
+function scheduleMarkOnHoldLineHighlights() {
+    if (markOnHoldLineHighlightsTimer) {
+        clearTimeout(markOnHoldLineHighlightsTimer);
+    }
+    markOnHoldLineHighlightsTimer = setTimeout(() => {
+        markOnHoldLineHighlightsTimer = null;
+        updateMarkOnHoldLineHighlights();
+    }, 150);
+}
+
+function submitMarkOnHoldBulkImport() {
+    const input = document.getElementById('mark-on-hold-bulk-input');
+    const submitBtn = document.getElementById('mark-on-hold-bulk-submit');
+    if (!input || !submitBtn) return;
+
+    const { resolved, errors, warnings } = parseBulkOnHoldInput(input.value);
+
+    if (resolved.length === 0) {
+        if (errors.length) {
+            const message = errors
+                .map(({ lineNum, message: errorMessage }) => (
+                    lineNum > 0 ? `Line ${lineNum}: ${errorMessage}` : errorMessage
+                ))
+                .join(' ');
+            setMarkOnHoldImportStatus(message, true);
+        } else if (warnings.length) {
+            setMarkOnHoldImportStatus('All entries were already on hold or duplicates.', true);
+        } else {
+            setMarkOnHoldImportStatus('Enter at least one movie.', true);
+        }
+        hideMarkOnHoldBatchSummary();
+        return;
+    }
+
+    submitBtn.disabled = true;
+    const listings = resolved.map((entry) => entry.listing);
+    markMoviesAsOnHold(listings);
+
+    let statusMsg = `Imported ${listings.length} title${listings.length === 1 ? '' : 's'}.`;
+    const lineErrors = errors.filter((entry) => entry.lineNum > 0);
+    if (lineErrors.length) {
+        statusMsg += ` ${lineErrors
+            .map(({ lineNum, message: errorMessage }) => `Line ${lineNum}: ${errorMessage}`)
+            .join(' ')}`;
+    }
+    const warningSuffix = formatBatchWarnings(warnings);
+    if (warningSuffix) {
+        statusMsg += ` ${warningSuffix}`;
+    }
+
+    setMarkOnHoldImportStatus(statusMsg, lineErrors.length > 0);
+    showMarkOnHoldBatchSummary(resolved);
+    input.value = '';
+    resizeMarkOnHoldTextarea();
+    updateMarkOnHoldLineHighlights();
+    submitBtn.disabled = false;
+}
+
+// --- MARK ON-HOLD BULK IMPORT ---
+
+function buildOnHoldBulkImportUI() {
+    const filtersPanel = document.getElementById('filters-panel');
+    if (!filtersPanel || document.getElementById('mark-on-hold-bulk')) return;
+
+    const section = document.createElement('div');
+    section.id = 'mark-on-hold-bulk';
+
+    const label = document.createElement('div');
+    label.id = 'mark-on-hold-bulk-label';
+    label.textContent = 'PUT ON HOLD';
+    section.appendChild(label);
+
+    const hint = document.createElement('div');
+    hint.id = 'mark-on-hold-bulk-hint';
+    hint.textContent = 'One per line: Title (Year) or partial title — Ctrl+Enter to import';
+    section.appendChild(hint);
+
+    const form = document.createElement('div');
+    form.id = 'mark-on-hold-bulk-form';
+
+    const editorWrap = document.createElement('div');
+    editorWrap.id = 'mark-on-hold-bulk-editor-wrap';
+
+    const highlights = document.createElement('div');
+    highlights.id = 'mark-on-hold-bulk-highlights';
+    highlights.setAttribute('aria-hidden', 'true');
+
+    const highlightsInner = document.createElement('div');
+    highlightsInner.id = 'mark-on-hold-bulk-highlights-inner';
+    highlights.appendChild(highlightsInner);
+    editorWrap.appendChild(highlights);
+
+    const titleInput = document.createElement('textarea');
+    titleInput.id = 'mark-on-hold-bulk-input';
+    titleInput.rows = 5;
+    titleInput.placeholder = 'Aliens (1986)\nDistrict 9 (2009)\nBlade Runner';
+    titleInput.autocomplete = 'off';
+    titleInput.addEventListener('input', () => {
+        resizeMarkOnHoldTextarea();
+        scheduleMarkOnHoldLineHighlights();
+    });
+    titleInput.addEventListener('scroll', syncMarkOnHoldHighlightScroll);
+    titleInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+            event.preventDefault();
+            submitMarkOnHoldBulkImport();
+        }
+    });
+    editorWrap.appendChild(titleInput);
+    form.appendChild(editorWrap);
+
+    const controlsRow = document.createElement('div');
+    controlsRow.id = 'mark-on-hold-bulk-controls';
+
+    const submitBtn = document.createElement('button');
+    submitBtn.type = 'button';
+    submitBtn.id = 'mark-on-hold-bulk-submit';
+    submitBtn.textContent = 'Import as On-Hold';
+    submitBtn.addEventListener('click', submitMarkOnHoldBulkImport);
+    controlsRow.appendChild(submitBtn);
+
+    form.appendChild(controlsRow);
+    section.appendChild(form);
+
+    const preview = document.createElement('div');
+    preview.id = 'mark-on-hold-bulk-preview';
+    preview.hidden = true;
+    section.appendChild(preview);
+
+    const status = document.createElement('div');
+    status.id = 'mark-on-hold-bulk-status';
+    status.setAttribute('aria-live', 'polite');
+    section.appendChild(status);
+
+    const markWatchedBulk = document.getElementById('mark-watched-bulk');
+    if (markWatchedBulk && markWatchedBulk.nextSibling) {
+        filtersPanel.insertBefore(section, markWatchedBulk.nextSibling);
+    } else if (markWatchedBulk) {
+        markWatchedBulk.insertAdjacentElement('afterend', section);
+    } else {
+        const addAFlick = document.getElementById('add-a-flick');
+        if (addAFlick) {
+            filtersPanel.insertBefore(section, addAFlick);
+        } else {
+            filtersPanel.appendChild(section);
+        }
     }
 }
 
@@ -9091,7 +9837,11 @@ buildCategoryFilterUI();
 
 initWatchedMovies();
 
+initOnHoldMovies();
+
 void loadWatchedMoviesFileHandle();
+
+void loadOnHoldMoviesFileHandle();
 
 buildRuntimeFilterUI();
 
@@ -9107,9 +9857,18 @@ buildManualKeeperPanelUI();
 
 buildWatchedFlicksPanelUI();
 
+buildOnHoldFlicksPanelUI();
+
+updateOnHoldFilterUI();
+
 const markWatchedBtn = document.getElementById('mark-watched-btn');
 if (markWatchedBtn) {
     markWatchedBtn.addEventListener('click', toggleCurrentResultWatched);
+}
+
+const markOnHoldBtn = document.getElementById('mark-on-hold-btn');
+if (markOnHoldBtn) {
+    markOnHoldBtn.addEventListener('click', toggleCurrentResultOnHold);
 }
 
 updateSpinBlockerUI();
@@ -9121,6 +9880,8 @@ buildCoinTossUI();
 buildAddMovieUI();
 
 buildWatchedBulkImportUI();
+
+buildOnHoldBulkImportUI();
 
 updateKeeperPicksUI();
 

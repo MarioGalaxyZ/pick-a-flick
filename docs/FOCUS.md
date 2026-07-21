@@ -4,9 +4,13 @@ Update this when priorities shift so agents know what matters now.
 
 ## Active
 
-- [ ] Bulk import of new movies — improve/add batch flow for adding titles to `movieDatabase` (filters panel **ADD A NEW FLICK**)
+- [ ] Developing TN edition
 
 ## Recently completed (July 2026)
+
+- [x] New-movie list OMDb normalization (parked) — TN/IN collections sheet through pass7; workbook `…OMDb pass7.xlsx`; **HOLD** before `movieDatabase` import; placeholders still deferred
+
+- [x] On-Hold movies — pause unwatched titles from spin/coin-toss/shuffle pools; mutually exclusive with watched; `app/on-hold-movies.js`, result-card button, ON-HOLD FLICKS panel, bulk import
 
 - [x] Category movie rotation — per-category shuffled decks; no repeat until full eligible set shown; wheel, mystery picks, shuffle defaults, and manual placements all consume the pool; pools reset on filter/category changes
 
@@ -23,6 +27,7 @@ Update this when priorities shift so agents know what matters now.
 
 ## Backlog (when ready)
 
+- [ ] Bulk import of new movies — improve/add batch flow for adding titles to `movieDatabase` (filters panel **ADD A NEW FLICK**)
 - [ ] Fill in `docs/VISION.md` — purpose, look/feel, audio tone, references, always/never
 - [ ] Workflow hygiene — update `.cursor/rules/` or this file when repeated agent friction appears
 - [ ] Tix Mix title-card themes for shuffle intro
@@ -35,12 +40,26 @@ Update this when priorities shift so agents know what matters now.
 
 ## Notes
 
-- Bulk import of new movies (active):
-  - **JS:** `// --- ADD MOVIES UI ---` in `app/main.js` — `parseBatchMovieInput`, `buildAddMoviesPrompt`, `submitAddMovieClaim`, `buildAddMovieUI` (~3745–4540)
+- On-Hold movies (completed):
+  - **Behavior:** Unwatched titles excluded from all option pools (`getEligibleMovies`); no "include on-hold" toggle — return via **ON-HOLD FLICKS** panel or result-card button
+  - **Data:** `app/on-hold-movies.js` → `window.onHoldMovieListings` → `onHoldMovieSet` (loaded in `app/index.html` before `main.js`)
+  - **JS:** `// --- ON-HOLD MOVIES ---` in `app/main.js` — `initOnHoldMovies`, `markMoviesAsOnHold`, `unmarkMovieAsOnHold`, `moviePassesOnHoldFilter`, file save via IndexedDB handle `pick-a-flick-on-hold`
+  - **UI:** `#mark-on-hold-btn` on result card; `#on-hold-flicks-panel`; `#on-hold-filter-count` in watched filter column; `// --- MARK ON-HOLD BULK IMPORT ---` — `buildOnHoldBulkImportUI`, `submitMarkOnHoldBulkImport`
+  - **Mutual exclusivity:** Marking watched removes from on-hold and vice versa
+  - **Parallel pattern:** `// --- WATCHED MOVIES ---` and `// --- MARK WATCHED BULK IMPORT ---` — same file-backed Set + filter + panel + bulk-import UX
+- Developing TN edition (active):
+  - **Shipped so far:** WHEEL ART panel `#cabinet-background-select` — Arcade / TN / TN (GPT) / Mario / Star Wars / Lego Star Wars / Lego Arcade v1 / v2; swaps cabinet background only; wheel disc, ticker, spin button stay as live overlays for now
+  - **Assets:** `graphics/ui/*-background.png` (themed plates; many are full mockups — intentional water-test)
+  - **JS/CSS:** `arcadeBackgroundMode` + `CABINET_BACKGROUND_CLASS_BY_MODE`, `applyArcadeBackgroundArt`, `buildWheelArtToggleUI`; classes on `#arcade-container` (+ `#spin-button-wrap::before` sync); Undead wheel checkbox independent
+  - **Deferred:** TN categories, TN movie list, wheel/ticker/mode-selector/keeper reskins
+- New-movie list OMDb normalization (parked):
+  - Workbook: `c:\Users\james\Downloads\New Titles from TN and IN Movie Collections - OMDb pass7.xlsx` (sheet `Movie Titles (2)`)
+  - **HOLD** before catalog import; `matched` rows are format-ready; placeholders stay out
+  - **Related:** `// --- ADD MOVIES UI ---` in `app/main.js`; category intent `docs/CATEGORIES.md`
+- Bulk import of new movies (backlog):
+  - **JS:** `// --- ADD MOVIES UI ---` in `app/main.js` — same helpers as above (~3745–4540)
   - **Parallel pattern:** `// --- MARK WATCHED BULK IMPORT ---` (~4242+) — same textarea/highlight UX for watched list
   - **CSS:** `#add-a-flick*` in `app/style.css` (~4173+)
-  - **Workflow:** UI copies a Cursor prompt → agent edits `movieDatabase` in `main.js` → `npm run generate-metadata:ps`
-  - **Category intent:** `docs/CATEGORIES.md`
 - Category movie rotation (completed):
   - **API:** `drawNextMovie`, `drawNextMovieLabel`, `drawNextMysteryFromCategories`, `markMovieServed`, `consumeListingAppearance`, `resetMovieSelectionPools` in `app/main.js` (~2484–2590)
   - **Spin:** all reveal modes call `drawNextMovie`; **Dueling Flicks:** mystery chip + shuffle C/D defaults use pool API; manual slot/keeper calls `consumeListingAppearance`

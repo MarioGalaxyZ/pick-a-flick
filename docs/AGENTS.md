@@ -10,7 +10,7 @@ Quick orientation for AI assistants working in this repo.
 
 ## Script load order (`app/index.html`)
 
-`app/generated/movie-metadata.js` → `app/watched-movies.js` → `app/generated/audio-paths.js` → `app/generated/win-clips-manifest.js` → `app/generated/audio-gain-map.js` → `app/generated/coin-flip-blip-map.js` → `app/generated/shuffle-golden-ticket-map.js` → `app/main.js`
+`app/generated/movie-metadata.js` → `app/watched-movies.js` → `app/on-hold-movies.js` → `app/generated/audio-paths.js` → `app/generated/win-clips-manifest.js` → `app/generated/audio-gain-map.js` → `app/generated/coin-flip-blip-map.js` → `app/generated/shuffle-golden-ticket-map.js` → `app/main.js`
 
 ## main.js navigation
 
@@ -21,6 +21,7 @@ Search for `// --- SECTION NAME ---` banners in `app/main.js`. The table below l
 | `MOVIE DATABASE` | `movieDatabase` category arrays |
 | `FILTERS` | Runtime, decade, eligibility, `getEligibleMovies` |
 | `WATCHED MOVIES` | `initWatchedMovies`, `watchedMovieSet`, file handle save |
+| `ON-HOLD MOVIES` | `initOnHoldMovies`, `onHoldMovieSet`, `moviePassesOnHoldFilter`, file handle save |
 | `CATEGORY FILTER AND SPIN STATE` | `activeCategories`, `initiateSpin` prerequisites |
 | `CORE AUDIO` | `audioCtx`, `spinButtonClipState`, `preloadSpinButtonClipAudio`, keeper clip playback |
 | `MASTER AUDIO MIXING DECK` | `cabinetMixer`, `getNormalizedVolume` |
@@ -34,6 +35,7 @@ Search for `// --- SECTION NAME ---` banners in `app/main.js`. The table below l
 | `KEEPER DECK` | Keeper slots, posters, runtime |
 | `ADD MOVIES UI` | `buildAddMovieUI`, `buildAddMoviesPrompt` |
 | `MARK WATCHED BULK IMPORT` | `buildWatchedBulkImportUI` |
+| `MARK ON-HOLD BULK IMPORT` | `buildOnHoldBulkImportUI` |
 | `TICKET SHUFFLE CONSTANTS` | `SHUFFLE_*` timing and layout |
 | `TICKET SHUFFLE AUDIO` | `playShuffleIntroClip`, golden ticket sound |
 | `COIN TOSS AND MINIGAME STATE` | Slot state, shared filter pool |
@@ -70,6 +72,7 @@ Event listeners are wired on `#spin-button` at init (pointer + keyboard), not vi
 | Coin toss | `buildCoinTossUI`, `armCoinToss`, `launchCoinToss` |
 | Ticket shuffle | `armTicketShuffle`, `launchTicketShuffle`, `SHUFFLE_*` constants |
 | Watched list | `app/watched-movies.js`, `initWatchedMovies` |
+| On-hold list | `app/on-hold-movies.js`, `initOnHoldMovies` |
 | Add/remove movies | `buildAddMoviesPrompt`, `movieDatabase`; category intent → `docs/CATEGORIES.md` |
 
 ## Related docs

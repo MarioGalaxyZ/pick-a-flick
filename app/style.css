@@ -92,6 +92,34 @@
 
         }
 
+        #arcade-container.tn-edition {
+            background-image: url('../graphics/ui/tn-background.png');
+        }
+
+        #arcade-container.tn-edition-gpt {
+            background-image: url('../graphics/ui/tn-background-gpt.png');
+        }
+
+        #arcade-container.bg-mario {
+            background-image: url('../graphics/ui/mario-background.png');
+        }
+
+        #arcade-container.bg-star-wars {
+            background-image: url('../graphics/ui/star-wars-background.png');
+        }
+
+        #arcade-container.bg-lego-star-wars {
+            background-image: url('../graphics/ui/lego-star-wars-background.png');
+        }
+
+        #arcade-container.bg-lego-arcade-v1 {
+            background-image: url('../graphics/ui/lego-arcade-v1-background.png');
+        }
+
+        #arcade-container.bg-lego-arcade-v2 {
+            background-image: url('../graphics/ui/lego-arcade-v2-background.png');
+        }
+
 
 
         /* Recent Spins History Panel */
@@ -780,6 +808,34 @@
 
             transform-origin: center center;
 
+        }
+
+        #arcade-container.tn-edition #spin-button-wrap::before {
+            background-image: url('../graphics/ui/tn-background.png');
+        }
+
+        #arcade-container.tn-edition-gpt #spin-button-wrap::before {
+            background-image: url('../graphics/ui/tn-background-gpt.png');
+        }
+
+        #arcade-container.bg-mario #spin-button-wrap::before {
+            background-image: url('../graphics/ui/mario-background.png');
+        }
+
+        #arcade-container.bg-star-wars #spin-button-wrap::before {
+            background-image: url('../graphics/ui/star-wars-background.png');
+        }
+
+        #arcade-container.bg-lego-star-wars #spin-button-wrap::before {
+            background-image: url('../graphics/ui/lego-star-wars-background.png');
+        }
+
+        #arcade-container.bg-lego-arcade-v1 #spin-button-wrap::before {
+            background-image: url('../graphics/ui/lego-arcade-v1-background.png');
+        }
+
+        #arcade-container.bg-lego-arcade-v2 #spin-button-wrap::before {
+            background-image: url('../graphics/ui/lego-arcade-v2-background.png');
         }
 
 
@@ -2900,6 +2956,66 @@
 
 
 
+        .mark-on-hold-emblem {
+
+            position: absolute;
+
+            top: 34px;
+
+            right: 10px;
+
+            z-index: 2;
+
+            font-size: 18px;
+
+            line-height: 1;
+
+            opacity: 0.2;
+
+            padding: 0;
+
+            border: none;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            user-select: none;
+
+        }
+
+
+
+        .mark-on-hold-emblem:hover,
+        .mark-on-hold-emblem:focus-visible {
+
+            opacity: 0.45;
+
+            outline: 1px solid rgba(255, 170, 0, 0.45);
+
+            outline-offset: 2px;
+
+        }
+
+
+
+        .mark-on-hold-emblem.is-on-hold {
+
+            opacity: 1;
+
+        }
+
+
+
+        .mark-on-hold-emblem.is-on-hold:hover,
+        .mark-on-hold-emblem.is-on-hold:focus-visible {
+
+            opacity: 1;
+
+        }
+
+
+
         #poster-placeholder.fallback-art {
 
             font-size: 72px;
@@ -3375,6 +3491,30 @@
 
         }
 
+        .wheel-art-toggle-option--select {
+            flex-wrap: wrap;
+            gap: 6px 8px;
+        }
+
+        #cabinet-background-select {
+            max-width: 180px;
+            padding: 3px 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px;
+            color: #39FF14;
+            background: #0a0a12;
+            border: 1px solid rgba(57, 255, 20, 0.55);
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        #cabinet-background-select:focus-visible {
+            outline: 1px solid #39FF14;
+            outline-offset: 2px;
+        }
+
 
 
         #watched-filter-count {
@@ -3388,6 +3528,24 @@
             text-transform: uppercase;
 
             letter-spacing: 1px;
+
+        }
+
+
+
+        #on-hold-filter-count {
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 11px;
+
+            color: rgba(255, 170, 0, 0.75);
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            margin-top: 6px;
 
         }
 
@@ -3807,6 +3965,258 @@
             color: rgba(57, 255, 20, 0.85);
 
             margin: 8px 0 0;
+
+        }
+
+
+
+        #on-hold-flicks-panel {
+
+            width: 100%;
+
+            margin-top: 12px;
+
+            padding: 10px 12px 10px 58px;
+
+            background: rgba(0, 0, 0, 0.75);
+
+            border: 1px solid rgba(255, 170, 0, 0.3);
+
+            border-radius: 6px;
+
+            position: relative;
+
+        }
+
+
+
+        .on-hold-flicks-emblem {
+
+            position: absolute;
+
+            top: 8px;
+
+            left: 10px;
+
+            z-index: 0;
+
+            pointer-events: none;
+
+            user-select: none;
+
+            font-size: 36px;
+
+            line-height: 1;
+
+            opacity: 0.45;
+
+        }
+
+
+
+        #on-hold-flicks-toggle {
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+            color: #ffaa00;
+
+            background: transparent;
+
+            border: 1px solid rgba(255, 170, 0, 0.5);
+
+            border-radius: 4px;
+
+            padding: 6px 12px;
+
+            cursor: pointer;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+        }
+
+
+
+        #on-hold-flicks-toggle:hover {
+
+            background: rgba(255, 170, 0, 0.15);
+
+        }
+
+
+
+        #on-hold-flicks-content {
+
+            margin-top: 10px;
+
+        }
+
+
+
+        #on-hold-flicks-list {
+
+            list-style: none;
+
+            margin: 0;
+
+            padding: 0;
+
+            max-height: 180px;
+
+            overflow-y: auto;
+
+        }
+
+
+
+        #on-hold-flicks-list[hidden] {
+
+            display: none;
+
+        }
+
+
+
+        .on-hold-flicks-item {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 12px;
+
+            padding: 6px 0;
+
+            border-bottom: 1px solid rgba(255, 170, 0, 0.15);
+
+        }
+
+
+
+        .on-hold-flicks-title {
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 11px;
+
+            color: #ffaa00;
+
+            flex: 1;
+
+            min-width: 0;
+
+        }
+
+
+
+        .on-hold-flicks-return-btn {
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 10px;
+
+            font-weight: bold;
+
+            color: #ffaa00;
+
+            background: rgba(0, 0, 0, 0.5);
+
+            border: 1px solid rgba(255, 170, 0, 0.5);
+
+            border-radius: 4px;
+
+            padding: 4px 8px;
+
+            cursor: pointer;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            white-space: nowrap;
+
+            flex-shrink: 0;
+
+        }
+
+
+
+        .on-hold-flicks-return-btn:hover {
+
+            background: rgba(255, 170, 0, 0.15);
+
+        }
+
+
+
+        #on-hold-flicks-empty {
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 11px;
+
+            color: rgba(255, 170, 0, 0.6);
+
+            margin: 0;
+
+        }
+
+
+
+        #on-hold-save-status {
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 10px;
+
+            color: rgba(255, 170, 0, 0.85);
+
+            margin: 8px 0 0;
+
+        }
+
+
+
+        #on-hold-choose-save-file {
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 10px;
+
+            font-weight: bold;
+
+            color: #ffaa00;
+
+            background: rgba(0, 0, 0, 0.5);
+
+            border: 1px solid rgba(255, 170, 0, 0.5);
+
+            border-radius: 4px;
+
+            padding: 4px 8px;
+
+            cursor: pointer;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 10px;
+
+        }
+
+
+
+        #on-hold-choose-save-file:hover {
+
+            background: rgba(255, 170, 0, 0.15);
 
         }
 
@@ -4977,6 +5387,368 @@
         #mark-watched-bulk-status.mark-watched-bulk-status-success {
 
             color: #39FF14;
+
+        }
+
+
+
+        #mark-on-hold-bulk {
+
+            width: 100%;
+
+            margin-top: 12px;
+
+            padding: 10px 12px;
+
+            background: rgba(0, 0, 0, 0.75);
+
+            border: 1px solid rgba(255, 170, 0, 0.35);
+
+            border-radius: 6px;
+
+        }
+
+
+
+        #mark-on-hold-bulk-label {
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+            color: #ffaa00;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 4px;
+
+        }
+
+
+
+        #mark-on-hold-bulk-hint {
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 10px;
+
+            color: rgba(255, 255, 255, 0.45);
+
+            margin-bottom: 10px;
+
+        }
+
+
+
+        #mark-on-hold-bulk-form {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 8px;
+
+        }
+
+
+
+        #mark-on-hold-bulk-editor-wrap {
+
+            position: relative;
+
+            width: 100%;
+
+            background: rgba(0, 0, 0, 0.5);
+
+            border: 1px solid rgba(255, 170, 0, 0.4);
+
+            border-radius: 4px;
+
+        }
+
+
+
+        #mark-on-hold-bulk-editor-wrap:focus-within {
+
+            border-color: #ffaa00;
+
+            box-shadow: 0 0 6px rgba(255, 170, 0, 0.35);
+
+        }
+
+
+
+        #mark-on-hold-bulk-highlights {
+
+            position: absolute;
+
+            inset: 0;
+
+            overflow: hidden;
+
+            pointer-events: none;
+
+            border-radius: 4px;
+
+        }
+
+
+
+        #mark-on-hold-bulk-highlights-inner {
+
+            padding: 6px 10px;
+
+        }
+
+
+
+        .mark-on-hold-bulk-line {
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 12px;
+
+            line-height: 1.4;
+
+            white-space: pre-wrap;
+
+            word-break: break-word;
+
+            min-height: calc(12px * 1.4);
+
+        }
+
+
+
+        .mark-on-hold-bulk-line-error {
+
+            background: rgba(255, 51, 51, 0.25);
+
+            box-shadow: inset 3px 0 0 rgba(255, 102, 102, 0.85);
+
+            border-radius: 2px;
+
+        }
+
+
+
+        .mark-on-hold-bulk-line-warning {
+
+            background: rgba(255, 170, 0, 0.2);
+
+            box-shadow: inset 3px 0 0 rgba(255, 204, 0, 0.75);
+
+            border-radius: 2px;
+
+        }
+
+
+
+        #mark-on-hold-bulk-input {
+
+            position: relative;
+
+            z-index: 1;
+
+            display: block;
+
+            width: 100%;
+
+            min-height: 90px;
+
+            resize: none;
+
+            overflow-y: hidden;
+
+            box-sizing: border-box;
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 12px;
+
+            color: #fff;
+
+            background: transparent;
+
+            border: none;
+
+            border-radius: 4px;
+
+            padding: 6px 10px;
+
+            line-height: 1.4;
+
+        }
+
+
+
+        #mark-on-hold-bulk-input::placeholder {
+
+            color: rgba(255, 255, 255, 0.35);
+
+        }
+
+
+
+        #mark-on-hold-bulk-input:focus {
+
+            outline: none;
+
+        }
+
+
+
+        #mark-on-hold-bulk-controls {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            align-items: center;
+
+            gap: 12px;
+
+        }
+
+
+
+        #mark-on-hold-bulk-submit {
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+            color: #ffaa00;
+
+            background: rgba(0, 0, 0, 0.5);
+
+            border: 1px solid rgba(255, 170, 0, 0.5);
+
+            border-radius: 4px;
+
+            padding: 6px 12px;
+
+            cursor: pointer;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+        }
+
+
+
+        #mark-on-hold-bulk-submit:hover:not(:disabled) {
+
+            background: rgba(255, 170, 0, 0.15);
+
+        }
+
+
+
+        #mark-on-hold-bulk-submit:disabled {
+
+            opacity: 0.5;
+
+            cursor: not-allowed;
+
+        }
+
+
+
+        #mark-on-hold-bulk-preview {
+
+            margin-top: 10px;
+
+            padding: 8px;
+
+            background: rgba(0, 0, 0, 0.4);
+
+            border: 1px solid rgba(255, 170, 0, 0.2);
+
+            border-radius: 4px;
+
+        }
+
+
+
+        #mark-on-hold-bulk-preview-list {
+
+            list-style: none;
+
+            margin: 0;
+
+            padding: 0;
+
+            max-height: 120px;
+
+            overflow-y: auto;
+
+            width: 100%;
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 11px;
+
+            color: #ffaa00;
+
+            line-height: 1.5;
+
+        }
+
+
+
+        #mark-on-hold-bulk-preview-list li {
+
+            padding: 2px 0;
+
+            border-bottom: 1px solid rgba(255, 170, 0, 0.1);
+
+        }
+
+
+
+        #mark-on-hold-bulk-preview-list li:last-child {
+
+            border-bottom: none;
+
+        }
+
+
+
+        #mark-on-hold-bulk-status {
+
+            margin-top: 8px;
+
+            font-family: 'Courier New', Courier, monospace;
+
+            font-size: 11px;
+
+            color: rgba(255, 255, 255, 0.65);
+
+            min-height: 1.2em;
+
+        }
+
+
+
+        #mark-on-hold-bulk-status.mark-on-hold-bulk-status-error {
+
+            color: #ff6666;
+
+        }
+
+
+
+        #mark-on-hold-bulk-status.mark-on-hold-bulk-status-success {
+
+            color: #ffaa00;
 
         }
 

@@ -38,8 +38,19 @@ export function normalizePartNumbersForOmdb(title) {
 /** Cabinet listing -> OMDb search title when they differ */
 export const titleAliasesByListing = {
     "Bill & Ted's Face The Music (2020)": 'Bill & Ted Face the Music',
-    "Walk the Line EXTENDED (2005)": 'Walk the Line'
+    "Walk the Line EXTENDED (2005)": 'Walk the Line',
+    "#ALIVE (2020)": '#Alive'
 };
+
+/** Cabinet listing -> IMDb ID when title+year search is ambiguous */
+export const imdbIdByListing = {
+    'Cargo (2018)': 'tt3860916',
+    '#ALIVE (2020)': 'tt10620868'
+};
+
+export function getOmdbImdbId(listing) {
+    return imdbIdByListing[listing] ?? null;
+}
 
 export function getOmdbSearchTitle(listing) {
     return titleAliasesByListing[listing] ?? parseMovieListing(listing).cleanTitle;
@@ -51,6 +62,10 @@ export function buildOmdbUrl(title, year, apiKey) {
         url += `&y=${encodeURIComponent(year)}`;
     }
     return url;
+}
+
+export function buildOmdbImdbUrl(imdbId, apiKey) {
+    return `https://www.omdbapi.com/?i=${encodeURIComponent(imdbId)}&apikey=${apiKey}`;
 }
 
 export function sanitizeOmdbPosterUrl(posterUrl) {

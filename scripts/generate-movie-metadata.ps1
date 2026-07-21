@@ -1,19 +1,22 @@
 # Generates movie-metadata.js from main.js listings via OMDb.
 # Usage: powershell -File scripts/generate-movie-metadata.ps1
-# Set OMDB_API_KEY in .env (copy from .env.example) or environment before running.
+# Optional: OMDB_API_KEY / OMDB_API_KEY_FREE in .env (defaults: premium + free fallback).
 
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $PSScriptRoot
 . (Join-Path $PSScriptRoot 'load-env.ps1')
+. (Join-Path $PSScriptRoot 'lib\omdb-api-key.ps1')
 $cliApiKey = $env:OMDB_API_KEY
+$cliFreeKey = $env:OMDB_API_KEY_FREE
 Import-DotEnv (Join-Path $Root '.env')
 if ($cliApiKey) { $env:OMDB_API_KEY = $cliApiKey }
+if ($cliFreeKey) { $env:OMDB_API_KEY_FREE = $cliFreeKey }
 
 $MainJs = Join-Path $Root 'app\main.js'
 $OutputPath = Join-Path $Root 'app\generated\movie-metadata.js'
 $OverridesPath = Join-Path $PSScriptRoot 'poster-overrides.json'
 $ThrottleMs = 500
-$ApiKey = if ($env:OMDB_API_KEY) { $env:OMDB_API_KEY } else { '14e2f0ac' }
+$OmdbKeys = Get-OmdbKeySession
 
 function Parse-MovieListing([string]$Listing) {
     if ($Listing -match '\((\d{4})\)') {
@@ -39,9 +42,19 @@ function Get-OmdbSearchTitle([string]$Listing) {
     $aliases = @{
         "Bill & Ted's Face The Music (2020)" = 'Bill & Ted Face the Music'
         "Walk the Line EXTENDED (2005)" = 'Walk the Line'
+        "#ALIVE (2020)" = '#Alive'
     }
     if ($aliases.ContainsKey($Listing)) { return $aliases[$Listing] }
     return (Parse-MovieListing $Listing).cleanTitle
+}
+
+function Get-OmdbImdbId([string]$Listing) {
+    $imdbIds = @{
+        'Cargo (2018)' = 'tt3860916'
+        '#ALIVE (2020)' = 'tt10620868'
+    }
+    if ($imdbIds.ContainsKey($Listing)) { return $imdbIds[$Listing] }
+    return $null
 }
 
 function Sanitize-PosterUrl([string]$Url) {
@@ -54,20 +67,50 @@ function Sanitize-PosterUrl([string]$Url) {
     return $u
 }
 
-function Invoke-Omdb([string]$Title, [string]$Year) {
-    $encoded = [uri]::EscapeDataString($Title)
-    $url = "https://www.omdbapi.com/?t=$encoded&apikey=$ApiKey"
-    if ($Year) { $url += "&y=$([uri]::EscapeDataString($Year))" }
-    $json = curl.exe -s -m 30 $url
+function Invoke-OmdbRequest([string]$Url) {
+    $json = curl.exe -s -m 30 $Url
     if (-not $json) { throw 'Empty OMDb response' }
     return $json | ConvertFrom-Json
+}
+
+function Invoke-OmdbWithKeyFallback([string]$UrlWithPlaceholder) {
+    $url = $UrlWithPlaceholder.Replace('__APIKEY__', $OmdbKeys.Key)
+    $data = Invoke-OmdbRequest $url
+    if (
+        $data.Response -eq 'False' -and
+        (Test-OmdbKeyFailure ([string]$data.Error)) -and
+        (Switch-OmdbKeyMaybeFallback -Session $OmdbKeys -ErrorOrData $data)
+    ) {
+        $url = $UrlWithPlaceholder.Replace('__APIKEY__', $OmdbKeys.Key)
+        $data = Invoke-OmdbRequest $url
+    }
+    return $data
+}
+
+function Invoke-Omdb([string]$Title, [string]$Year) {
+    $encoded = [uri]::EscapeDataString($Title)
+    $url = "https://www.omdbapi.com/?t=$encoded&apikey=__APIKEY__"
+    if ($Year) { $url += "&y=$([uri]::EscapeDataString($Year))" }
+    return Invoke-OmdbWithKeyFallback $url
+}
+
+function Invoke-OmdbByImdbId([string]$ImdbId) {
+    $url = "https://www.omdbapi.com/?i=$([uri]::EscapeDataString($ImdbId))&apikey=__APIKEY__"
+    return Invoke-OmdbWithKeyFallback $url
 }
 
 function Test-HasPoster($Data) {
     return ($Data.Response -eq 'True') -and $Data.Poster -and ($Data.Poster -ne 'N/A')
 }
 
-function Get-OmdbListing([string]$Title, [string]$Year) {
+function Get-OmdbListing([string]$Title, [string]$Year, [string]$ImdbId) {
+    if ($ImdbId) {
+        $data = Invoke-OmdbByImdbId $ImdbId
+        if ($data.Response -eq 'True') {
+            return $data
+        }
+    }
+
     $data = Invoke-Omdb $Title $Year
     if ($Year -and -not (Test-HasPoster $data)) {
         $data = Invoke-Omdb $Title $null
@@ -178,13 +221,14 @@ $bootstrapped = 0
 $skipped = 0
 
 Write-Host "Generating metadata for $($listings.Count) listings..."
-Write-Host "API key: $(if ($env:OMDB_API_KEY) { 'from OMDB_API_KEY' } else { 'default (set .env for your own key)' })`n"
+Write-Host "API key: $(Get-OmdbKeySessionDescribe $OmdbKeys) (length $($OmdbKeys.Key.Length))`n"
 
 $i = 0
 foreach ($listing in $listings) {
     $i++
     $parsed = Parse-MovieListing $listing
     $searchTitle = Get-OmdbSearchTitle $listing
+    $mappedImdbId = Get-OmdbImdbId $listing
     $listingPosterOverride = $null
     if ($overrides.byListing.PSObject.Properties.Name -contains $listing) {
         $listingPosterOverride = $overrides.byListing.$listing
@@ -201,7 +245,8 @@ foreach ($listing in $listings) {
 
     $existingRecord = $null
     if ($metadata.Contains($listing)) { $existingRecord = $metadata[$listing] }
-    if (Test-FullMetadataRecord $existingRecord) {
+    $needsImdbRefresh = $mappedImdbId -and $existingRecord -and $existingRecord.imdbID -and ($existingRecord.imdbID -ne $mappedImdbId)
+    if ((Test-FullMetadataRecord $existingRecord) -and -not $needsImdbRefresh) {
         Write-Host 'SKIP (cached)'
         $skipped++
         Start-Sleep -Milliseconds $ThrottleMs
@@ -211,7 +256,7 @@ foreach ($listing in $listings) {
     $data = $null
     $omdbError = $null
     try {
-        $data = Get-OmdbListing $searchTitle $parsed.year
+        $data = Get-OmdbListing $searchTitle $parsed.year $mappedImdbId
         if ($data.Response -ne 'True') { $omdbError = $data.Error }
     } catch {
         $omdbError = $_.Exception.Message
@@ -248,7 +293,7 @@ foreach ($listing in $listings) {
 $lines = @(
     '// Auto-generated by scripts/generate-movie-metadata.ps1 - do not edit by hand.',
     '// Re-run: npm run generate-metadata:ps',
-    '// Set OMDB_API_KEY in .env for your own OMDb key.',
+    '// OMDb keys: scripts/lib/omdb-api-key.ps1 (premium default + free fallback).',
     'window.movieMetadataByListing = {'
 )
 $sortedKeys = @($metadata.Keys | Sort-Object)
@@ -275,5 +320,5 @@ Write-Host "Poster misses: $($posterMisses.Count)"
 Write-Host "Output: $OutputPath"
 
 if ($omdbFetched -eq 0 -and $bootstrapped -gt 0) {
-    Write-Host "`nNo OMDb data fetched. Copy .env.example to .env, add your free key from https://www.omdbapi.com/apikey.aspx, then re-run."
+    Write-Host "`nNo OMDb data fetched. Check OMDB_API_KEY / network, or wait for quota reset, then re-run."
 }

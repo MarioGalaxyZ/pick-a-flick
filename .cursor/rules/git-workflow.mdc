@@ -1,0 +1,23 @@
+---
+description: Git workflow — branches, commits, releases; suggest only, never auto-commit
+alwaysApply: true
+---
+
+# Git workflow
+
+See `docs/GIT-WORKFLOW.md` for full detail.
+
+## Agent behavior
+
+- Prefer a **feature branch** for non-trivial or risky work (spin wheel, coin toss, shuffle, audio pipelines).
+- **`main`** should stay runnable — merge only after suggesting a smoke test (`scripts/serve-static.ps1`).
+- **Never commit, push, tag, or create releases unless the user explicitly asks.**
+- At natural stopping points (feature slice done, session wrapping up), **suggest** next git steps, e.g. "Ready to commit on `feature/foo`?" — do not run them.
+- When the user asks to commit: stage relevant files only; exclude `.env`, debug logs, and `audio/_staging/` drafts unless requested.
+- When the user asks for a release: follow tag naming (`v1.4`), push branch + tag, use `gh release create` with a short changelog.
+
+## Regenerate only when relevant
+
+- Audio clip/path changes → remind about `npm run refresh-audio`
+- `movieDatabase` changes → remind about `npm run generate-metadata:ps`
+- Logic/CSS-only changes → no refresh needed
