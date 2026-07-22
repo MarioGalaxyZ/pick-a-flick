@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Neon Arcade Movie Wheel - Premium Edition</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,6 +20,8 @@
             </clipPath>
         </defs>
     </svg>
+
+    <div id="arcade-rotate-hint" aria-hidden="true">Rotate for best view</div>
 
     <div id="arcade-scale-wrap">
     <div id="arcade-container">
@@ -62,6 +64,8 @@
             <button type="button" id="killswitch-btn" class="killswitch-btn" onclick="killswitch()">KILLSWITCH</button>
         </div>
 
+        <button type="button" id="arcade-fullscreen-btn" aria-pressed="false" title="Fullscreen (Esc to exit)">Fullscreen</button>
+
         <div id="result-panel">
             <div id="poster-frame">
                 <div id="poster-placeholder">AWAITING SPIN...</div>
@@ -71,6 +75,7 @@
             <div id="result-details" class="result-hidden" aria-live="polite">
                 <button type="button" id="mark-watched-btn" class="mark-watched-emblem" hidden aria-label="Mark as watched">📜</button>
                 <button type="button" id="mark-on-hold-btn" class="mark-on-hold-emblem" hidden aria-label="Put on hold">⏸️</button>
+                <button type="button" id="mark-family-ok-btn" class="mark-family-ok-emblem" hidden aria-label="Mark as Family OK">👨‍👩‍👧</button>
                 <div id="result-title" class="result-line"></div>
                 <div id="result-meta" class="result-line"></div>
                 <div id="result-genre" class="result-line"></div>
@@ -130,6 +135,7 @@
             </div>
         </div>
 
+        <div id="decade-rating-column">
         <div id="decade-filter">
             <button type="button" class="filter-panel-emblem filter-panel-emblem--calendar" aria-expanded="true" aria-controls="decade-filter-body" aria-label="Toggle decade filter">📅</button>
             <div id="decade-filter-body" class="filter-panel-body">
@@ -140,6 +146,26 @@
                 </div>
                 <div id="decade-filter-options"></div>
             </div>
+        </div>
+
+        <div id="rating-filter">
+            <button type="button" class="filter-panel-emblem filter-panel-emblem--rating" aria-expanded="true" aria-controls="rating-filter-body" aria-label="Toggle rating filter">👪</button>
+            <div id="rating-filter-body" class="filter-panel-body">
+                <div id="rating-filter-label">RATING FILTER</div>
+                <div id="rating-filter-controls">
+                    <button type="button" id="family-friendly-preset-btn" onclick="applyFamilyFriendlyPreset()">Family Friendly</button>
+                    <button type="button" onclick="toggleAllRatings(true)">Select All</button>
+                    <button type="button" onclick="toggleAllRatings(false)">Deselect All</button>
+                </div>
+                <div id="rating-filter-options"></div>
+                <button type="button" id="family-ok-filter-count" aria-expanded="false" aria-controls="family-ok-list-panel">0 family ok</button>
+                <div id="family-ok-list-panel" hidden>
+                    <ul id="family-ok-list"></ul>
+                    <p id="family-ok-list-empty">No Family OK titles yet.</p>
+                    <p id="family-ok-save-status" aria-live="polite"></p>
+                </div>
+            </div>
+        </div>
         </div>
 
         <div id="watched-filter-column">
@@ -165,6 +191,10 @@
                         <label class="wheel-art-toggle-option">
                             <input type="checkbox" id="undead-wheel-checkbox">
                             Undead wheel
+                        </label>
+                        <label class="wheel-art-toggle-option">
+                            <input type="checkbox" id="farmhouse-wheel-checkbox">
+                            Farmhouse wheel
                         </label>
                         <label class="wheel-art-toggle-option wheel-art-toggle-option--select" for="cabinet-background-select">
                             Cabinet
@@ -209,6 +239,7 @@
     <script src="generated/movie-metadata.js"></script>
     <script src="watched-movies.js"></script>
     <script src="on-hold-movies.js"></script>
+    <script src="family-friendly-movies.js"></script>
     <script src="generated/audio-paths.js"></script>
     <script src="generated/win-clips-manifest.js"></script>
     <script src="generated/audio-gain-map.js"></script>

@@ -31,11 +31,18 @@ Works on phone and desktop browsers. Friends use your curated list as-is; their 
 - Recent Spins (last 3 picks)
 - Marquee ticker (status messages)
 - Audio controls and KILLSWITCH
+- Fullscreen button (top-right of the cabinet)
 - KEEP button (appears after a spin)
+
+The arcade cabinet **contain-fits** the browser window: it grows or shrinks to use as much width and height as possible while keeping its 1200×700 shape. On a wide PC or TV you may still see thin black bars (letterboxing) if the screen is wider than that shape — that is expected.
+
+**Fullscreen** — click **Fullscreen** on the cabinet (or use the browser’s own fullscreen). This hides the filters panel and browser chrome so the cabinet can fill the display; press **Esc** or **Exit Full** to leave. Best for TV via HDMI or movie-night viewing. Prefer the local server or the live site over opening `app/index.html` as a raw file (audio and fullscreen behave more reliably).
+
+On phones where the browser Fullscreen API is unavailable (common on iPhone), the same button still **maximizes** the cabinet in the page (theater mode): filters hide and the cabinet scales to the viewport. Landscape works best; in portrait a short **Rotate for best view** hint appears. Esc or **Exit Full** leaves maximize mode too.
 
 **Filters panel**
 
-- Category, runtime, decade, and watched filters
+- Category, runtime, decade, rating, and watched filters
 - Available Flicks count
 - Dueling Flicks (coin flip and shuffle)
 - Keeper tools, watched list, and curator panels
@@ -83,16 +90,21 @@ Filters affect the main spin **and** the movie pools for Dueling Flicks.
 | **Category Filter** | Checkboxes for each genre wheel (e.g. CAGE STAGE, NEON & NINETIES). Select All / Deselect All at the top. For what each category means, see [Wheel categories](CATEGORIES.md). |
 | **Runtime Filter** | Min and/or max runtime in minutes (from OMDb metadata). Clear resets both. |
 | **Decade Filter** | Which release decades are eligible. Deselecting all decades blocks the spin. |
+| **Rating Filter** | Which content ratings are eligible: G, PG, PG-13, R, NC-17, TV-* , and **Other** (Not Rated, Unrated, Approved, legacy GP/M, missing, etc.). Deselecting all ratings blocks the spin. |
+| **Family Friendly** | One-click preset on the Rating Filter: keeps only G, PG, TV-Y, TV-Y7, TV-G, and TV-PG. Does not include PG-13, R, or Other. |
+| **Family OK** | Curated overrides for Other-rated titles you have vetted. They stay eligible under Family Friendly (or any rating selection) even when Other is deselected. Click the family ok count in the Rating Filter to manage the list. |
 | **Include watched** | When unchecked, watched movies are excluded from spin and Dueling Flicks pools. |
 | **On hold count** | Shows how many catalog titles are paused from rotation (always excluded from pools). |
-| **Reset All Filters** | Restores categories, runtime, decades, and watched filter to defaults. |
+| **Reset All Filters** | Restores categories, runtime, decades, ratings, and watched filter to defaults. Does not clear the Family OK list. |
 | **Available Flicks** | Live count of movies that match every active filter. |
 
 ---
 
 ## Wheel art
 
-**Undead wheel** — toggle alternate wheel disc artwork on or off.
+**Undead wheel** / **Farmhouse wheel** — toggle alternate wheel disc artwork. Mutually exclusive; both off uses the default disc.
+
+**Farmhouse wheel** also swaps the **SEQUEL STREET** slice’s movie pool to **Farmhouse Films** (`tnCatalogue`). The wheel still lands on that slice; results and the category filter label show as Farmhouse Films. Win clips use the Farmhouse Films soundbank (`audio/win/farmhouse_films/`); if that bank is empty, Sequel Street clips play as a fallback. With Farmhouse off, Sequel Street uses the Classic Earnest sequels list and Sequel Street win audio as usual.
 
 ---
 
@@ -150,6 +162,19 @@ On-hold listings load from `app/on-hold-movies.js` when the app starts.
 
 ---
 
+## Family OK (Other-rated overrides)
+
+When you use **Family Friendly** (or otherwise deselect **Other**), unrated / legacy-rated titles drop out of the pool. **Family OK** lets you vet specific titles back in without enabling every Other-rated movie.
+
+### Ways to mark Family OK
+
+1. **Family OK** — 👨‍👩‍👧 button on the result card (shown when the title maps to **Other**)
+2. Click the **family ok** count in the Rating Filter to open the list, remove titles, or **Choose save file**
+
+Family OK listings load from `app/family-friendly-movies.js` when the app starts. Reset All Filters does **not** clear this list.
+
+---
+
 ## Keeper deck (3 slots)
 
 The keeper deck holds up to **3 movies** you want to hang onto before committing.
@@ -204,7 +229,7 @@ Hint shown in the UI: *"Pick two movies to flip or shuffle — optional picks C 
 
 Press **Escape** to cancel an in-progress coin toss or shuffle.
 
-All category, runtime, decade, and watched filters apply to candidate and mystery pools. Mystery picks and default shuffle tickets (Sequel Street / true random) use the same per-category rotation as the wheel — no repeats within a category until the full eligible set has been shown.
+All category, runtime, decade, rating, and watched filters apply to candidate and mystery pools. Mystery picks and default shuffle tickets (Sequel Street / true random) use the same per-category rotation as the wheel — no repeats within a category until the full eligible set has been shown.
 
 ---
 
@@ -247,7 +272,7 @@ Paste movie listings one per line. Partial title matches are supported. **Ctrl+E
 
 | Key | Action |
 |-----|--------|
-| **Escape** | Cancel coin toss or shuffle; otherwise stop cabinet audio, close ticket stubs, minimize expanded keeper |
+| **Escape** | Exit browser fullscreen or cabinet maximize (theater) if active; otherwise cancel coin toss or shuffle, or stop cabinet audio / close ticket stubs / minimize expanded keeper |
 | **Space / Enter** | Press and release on the focused spin button to spin |
 | **Shift+P** | Dev shortcut: fill keeper with random catalog picks (when not typing in a field) |
 
@@ -258,7 +283,7 @@ Paste movie listings one per line. Partial title matches are supported. **Ctrl+E
 - Listing format is `"Title (Year)"` — series entries use `"Franchise (Series)"`
 - Posters, runtime, ratings, and plot come from `app/generated/movie-metadata.js` (generated from OMDb)
 - If metadata is missing, the result card shows a category emoji fallback and a cabinet archive message
-- Deselecting **all** categories or **all** decades blocks the spin, same as having zero available flicks
+- Deselecting **all** categories, **all** decades, or **all** content ratings blocks the spin, same as having zero available flicks
 
 ---
 

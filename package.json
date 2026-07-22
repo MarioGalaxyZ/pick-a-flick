@@ -12,7 +12,9 @@
     "generate-metadata:ps": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/generate-movie-metadata.ps1",
     "bootstrap-metadata": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/bootstrap-movie-metadata.ps1",
     "analyze-coin-flips": "node scripts/analyze-coin-flip-blips.mjs",
-    "analyze-shuffle-golden-ticket": "node scripts/analyze-shuffle-golden-ticket.mjs"
+    "analyze-shuffle-golden-ticket": "node scripts/analyze-shuffle-golden-ticket.mjs",
+    "check-encoding": "node scripts/main-js-encoding.mjs",
+    "fix-encoding": "node scripts/main-js-encoding.mjs --fix"
   },
   "devDependencies": {
     "ffmpeg-static": "^5.2.0"

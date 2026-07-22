@@ -180,6 +180,18 @@ window.categoryWinClips = {
     "youll-never-see-it-coming-last-surprise-persona-5-.mp3"
     ]
   },
+  "Farmhouse Films": {
+    folder: "../audio/win/farmhouse_films/",
+    files: [
+    "cow moo.mp3",
+    "duck quacking.mp3",
+    "goat.mp3",
+    "horse neigh.mp3",
+    "pig grunt.mp3",
+    "playhouse-disney-originals.mp3",
+    "screaming goat.wav"
+    ]
+  },
   "WACKY WAY 🤪": {
     folder: "../audio/win/wacky_way/",
     files: [

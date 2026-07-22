@@ -12,6 +12,7 @@ export const WIN_CLIP_CATEGORIES = {
     "MUSIC MOUNTAIN ⛰️": "audio/win/music_mountain",
     "PEGG'S PLAYGROUND 🎡": "audio/win/peggs_playground",
     "SEQUEL STREET 🚗": "audio/win/sequel_street",
+    "Farmhouse Films": "audio/win/farmhouse_films",
     "WACKY WAY 🤪": "audio/win/wacky_way",
     "ZEMECKIS ZONE 🐇": "audio/win/zemeckis_zone",
     "PHOENIX FREEWAY 🃏": "audio/win/phoenix_freeway",

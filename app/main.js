@@ -1,4 +1,4 @@
-﻿// Fully calibrated movie lists + Prospector Pete logic integration
+// Fully calibrated movie lists + Prospector Pete logic integration
 
     // --- MOVIE DATABASE ---
 
@@ -427,6 +427,600 @@
 
     };
 
+    // Classic Earnest Catalogue = movieDatabase above.
+    // Farmhouse Films (Farmhouse wheel swaps SEQUEL STREET's movie pool to this set).
+    const SEQUEL_STREET_CATEGORY = 'SEQUEL STREET 🚗';
+    const FARMHOUSE_FILMS_POOL_KEY = 'Farmhouse Films';
+
+    const tnCatalogue = {
+        "Farmhouse Films": [
+            "17 Again (2009)",
+            "2001: A Space Odyssey (1968)",
+            "2010: The Year We Make Contact (1984)",
+            "27 Dresses (2008)",
+            "48 Hrs. (1982)",
+            "A Bridge Too Far (1977)",
+            "A Charlie Brown Christmas (1965)",
+            "A Fish Called Wanda (1988)",
+            "A Good Year (2006)",
+            "A League of Their Own (1992)",
+            "A Little Princess (1995)",
+            "A Night to Remember (1958)",
+            "A Perfect Murder (1998)",
+            "A Prairie Home Companion (2006)",
+            "A Smile Like Yours (1997)",
+            "A Snoodle's Tale (2004)",
+            "A View to a Kill (1985)",
+            "A Walk in the Clouds (1995)",
+            "Absence of Malice (1981)",
+            "Absolute Power (1997)",
+            "Admission (2013)",
+            "Adventures in Odyssey: A Fine Feathered Frenzy (1992)",
+            "Adventures in Odyssey: A Stranger Among Us (1998)",
+            "Adventures in Odyssey: Electric Christmas (1994)",
+            "Adventures in Odyssey: Escape from the Forbidden Matrix (2000)",
+            "Adventures in Odyssey: Go West Young Man (1995)",
+            "Adventures in Odyssey: Star Quest (1993)",
+            "Adventures in Odyssey: The Caves of Qumran (2002)",
+            "Adventures in Odyssey: The Knight Travellers (1991)",
+            "Adventures in Odyssey: The Last Days of Eugene Meltsner (2000)",
+            "After the Sunset (2004)",
+            "Air Force One (1997)",
+            "Airport (1970)",
+            "An Officer and a Gentleman (1982)",
+            "An Unfinished Life (2005)",
+            "Angels in the Outfield (1994)",
+            "Another 48 Hrs. (1990)",
+            "Another Stakeout (1993)",
+            "Apollo 13 (1995)",
+            "Armageddon (1998)",
+            "As Good as It Gets (1997)",
+            "Baby Boom (1987)",
+            "Baby Mama (2008)",
+            "Back to the Future (1985)",
+            "Back to the Future Part II (1989)",
+            "Back to the Future Part III (1990)",
+            "Backdraft (1991)",
+            "Balto (1995)",
+            "Balto: Wolf Quest (2002)",
+            "Battleship (2012)",
+            "Because of Winn-Dixie (2005)",
+            "Bells of San Angelo (1947)",
+            "Betsy's Wedding (1990)",
+            "Beverly Hills Cop (1984)",
+            "Beverly Hills Cop II (1987)",
+            "Beverly Hills Cop III (1994)",
+            "Bewitched (2005)",
+            "Big (1988)",
+            "Blame It on the Bellboy (1992)",
+            "Blood Work (2002)",
+            "Born Free (1966)",
+            "Boynton Beach Club (2005)",
+            "Breach (2007)",
+            "Broadcast News (1987)",
+            "Bronco Billy (1980)",
+            "Cahill U.S. Marshal (1973)",
+            "Casino Royale (2006)",
+            "Cast Away (2000)",
+            "Chariots of the Gods (1970)",
+            "Chariots of the Gods? The Mysteries Continue (1996)",
+            "Charlie Wilson's War (2007)",
+            "Charlotte's Web (2006)",
+            "Chicken Little (2005)",
+            "Cinderella (1950)",
+            "Clear and Present Danger (1994)",
+            "Close Encounters of the Third Kind (1977)",
+            "Clueless (1995)",
+            "Cocoon (1985)",
+            "Cocoon: The Return (1988)",
+            "Come September (1961)",
+            "Contact (1997)",
+            "Continental Divide (1981)",
+            "Cookie's Fortune (1999)",
+            "Copy Cat (2020)",
+            "Courage Under Fire (1996)",
+            "Crimson Tide (1995)",
+            "Crocodile Dundee (1986)",
+            "Crocodile Dundee II (1988)",
+            "Dances with Wolves (1990)",
+            "Dante's Peak (1997)",
+            "Dave (1993)",
+            "Deep Impact (1998)",
+            "Diamonds Are Forever (1971)",
+            "Die Another Day (2002)",
+            "Die Hard (1988)",
+            "Die Hard 2 (1990)",
+            "Die Hard with a Vengeance (1995)",
+            "Dirty Harry (1971)",
+            "Dirty Rotten Scoundrels (1988)",
+            "Divine Secrets of the Ya-Ya Sisterhood (2002)",
+            "Doc Hollywood (1991)",
+            "Down Periscope (1996)",
+            "Dr. No (1962)",
+            "Driving Miss Daisy (1989)",
+            "E.T. the Extra Terrestrial (1982)",
+            "Enemy of the State (1998)",
+            "Entrapment (1999)",
+            "Evil Roy Slade (1972)",
+            "Evita (1996)",
+            "Executive Decision (1996)",
+            "Extreme Measures (1996)",
+            "Eyes of Texas (1948)",
+            "Eyewitness (1981)",
+            "F/X (1986)",
+            "F/X2 (1991)",
+            "Faith Hill: Joy to the World (2008)",
+            "Family Plot (1976)",
+            "Fat Man Little Boy (2013)",
+            "Father of the Bride (1991)",
+            "Father of the Bride Part II (1995)",
+            "Fierce Creatures (1997)",
+            "Finding Mr. Wonderful (2020)",
+            "Firehouse Dog (2007)",
+            "Flags of Our Fathers (2006)",
+            "Fool's Gold (2008)",
+            "For Your Eyes Only (1981)",
+            "Forget Paris (1995)",
+            "Forrest Gump (1994)",
+            "Foul Play (1978)",
+            "Four Seasons (1975)",
+            "Four Weddings and a Funeral (1994)",
+            "Fracture (2007)",
+            "Francesco's Friendly World: The Last Stone (1996)",
+            "French Kiss (1995)",
+            "Frequency (2000)",
+            "Fried Green Tomatoes (1991)",
+            "From Russia with Love (1963)",
+            "Galaxy Quest (1999)",
+            "Game Change (2012)",
+            "Get Shorty (1995)",
+            "Get Smart (2008)",
+            "Ghost (1990)",
+            "Gladiator (2000)",
+            "GoldenEye (1995)",
+            "Goldfinger (1964)",
+            "Good Advice (2001)",
+            "Gorky Park (1983)",
+            "Gran Torino (2008)",
+            "Grand Canyon (1991)",
+            "Grand Canyon Trail (1948)",
+            "Grosse Pointe Blank (1997)",
+            "Groundhog Day (1993)",
+            "Grumpier Old Men (1995)",
+            "Grumpy Old Men (1993)",
+            "Guarding Tess (1994)",
+            "Hairspray (2007)",
+            "Harlan County U.S.A. (1976)",
+            "He Is Risen (1988)",
+            "Heist (2001)",
+            "Her Alibi (1989)",
+            "Here on Earth (2000)",
+            "Hero (2002)",
+            "He's Just Not That Into You (2009)",
+            "Hitch (2005)",
+            "Home Alone (1990)",
+            "Home Alone 2: Lost in New York (1992)",
+            "Hoot (2006)",
+            "Hope Floats (1998)",
+            "Hope Springs (2012)",
+            "Housesitter (1992)",
+            "How the Grinch Stole Christmas (2000)",
+            "Ice Age: The Meltdown (2006)",
+            "In Good Company (2004)",
+            "In Old Cheyenne (1941)",
+            "In the Land of Women (2007)",
+            "In the Line of Fire (1993)",
+            "Independence Day (1996)",
+            "Indiana Jones and the Kingdom of the Crystal Skull (2008)",
+            "Indiana Jones and the Last Crusade (1989)",
+            "Indiana Jones and the Temple of Doom (1984)",
+            "Intolerable Cruelty (2003)",
+            "Jack Reacher (2012)",
+            "Jacob (1994)",
+            "Jaws (1975)",
+            "Jaws 2 (1978)",
+            "Jersey Girl (2004)",
+            "Jesse Stone: Benefit of the Doubt (2012)",
+            "Jesse Stone: Death in Paradise (2006)",
+            "Jesse Stone: Innocents Lost (2011)",
+            "Jesse Stone: Night Passage (2006)",
+            "Jesse Stone: No Remorse (2010)",
+            "Jesse Stone: Sea Change (2007)",
+            "Jesse Stone: Stone Cold (2005)",
+            "Jesse Stone: Thin Ice (2009)",
+            "Jonah: A VeggieTales Movie (2002)",
+            "Joseph: King of Dreams (2000)",
+            "Juno (2007)",
+            "Jurassic Park (1993)",
+            "Jurassic Park III (2001)",
+            "Just Like Heaven (2005)",
+            "Keeping the Faith (2000)",
+            "Keeping the Promise (1997)",
+            "Kindergarten Cop (1990)",
+            "Kiss the Girls (1997)",
+            "Knight and Day (2010)",
+            "Larry Crowne (2011)",
+            "Larry-Boy! And the Fib from Outer Space! (1997)",
+            "Laws of Attraction (2004)",
+            "Lego Jack Stone (2001)",
+            "Lethal Weapon (1987)",
+            "Lethal Weapon 2 (1989)",
+            "Lethal Weapon 3 (1992)",
+            "Lethal Weapon 4 (1998)",
+            "Licence to Kill (1989)",
+            "Little Black Book (2004)",
+            "Little Women (1994)",
+            "Live and Let Die (1973)",
+            "Live Free or Die Hard (2007)",
+            "Love Actually (2003)",
+            "Love Comes Softly (2003)",
+            "Mad Money (2008)",
+            "Madeline (1998)",
+            "Magnum Force (1973)",
+            "Major League (1989)",
+            "Major League II (1994)",
+            "Mamma Mia! (2008)",
+            "Mary Christmas (2002)",
+            "Medicine Man (1992)",
+            "Meet the Parents (2000)",
+            "Men in Black (1997)",
+            "Men in Black II (2002)",
+            "Men in Black 3 (2012)",
+            "Message in a Bottle (1999)",
+            "Midnight Run (1988)",
+            "Midway (2019)",
+            "Milk Money (1994)",
+            "Million Dollar Baby (2005)",
+            "Miracle in the Woods (1997)",
+            "Miss Congeniality (2000)",
+            "Miss Congeniality 2: Armed & Fabulous (2005)",
+            "Mission: Impossible (1996)",
+            "Mission: Impossible II (2000)",
+            "Mission: Impossible III (2006)",
+            "Moonraker (1979)",
+            "Moonstruck (1987)",
+            "Mother (2009)",
+            "Mr. & Mrs. Smith (2005)",
+            "Mr. Baseball (1992)",
+            "Mrs. Winterbourne (1996)",
+            "Munich (2005)",
+            "Murphy's Romance (1985)",
+            "Must Love Dogs (2005)",
+            "My Big Fat Greek Wedding (2002)",
+            "My Cousin Vinny (1992)",
+            "My Fellow Americans (1996)",
+            "Mystery of the Sphinx (1993)",
+            "Mystic Pizza (1988)",
+            "Nanny McPhee (2005)",
+            "National Treasure (2004)",
+            "National Treasure: Book of Secrets (2007)",
+            "Never Say Never Again (1983)",
+            "Night at the Museum (2006)",
+            "Night at the Museum: Battle of the Smithsonian (2009)",
+            "Nights in Rodanthe (2008)",
+            "Nighttime in Nevada (1948)",
+            "Nine Months (1995)",
+            "No Reservations (2007)",
+            "No Way Out (1987)",
+            "Nobody's Fool (1994)",
+            "Notting Hill (1999)",
+            "O Brother, Where Art Thou? (2000)",
+            "Ocean's Eleven (2001)",
+            "Ocean's Thirteen (2007)",
+            "Ocean's Twelve (2004)",
+            "October Sky (1999)",
+            "Octopussy (1983)",
+            "Oh, God! (1977)",
+            "Oh, God! Book II (1980)",
+            "On Golden Pond (1981)",
+            "On Her Majesty's Secret Service (1969)",
+            "One Fine Day (1996)",
+            "Only You (1994)",
+            "Operation Petticoat (1959)",
+            "Other People's Money (1991)",
+            "Out of Sight (1998)",
+            "Out to Sea (1997)",
+            "Outbreak (1995)",
+            "Outrageous Fortune (1987)",
+            "Over the Hedge (2006)",
+            "Patriot Games (1992)",
+            "Patton (1970)",
+            "Pay It Forward (2000)",
+            "Penelope (2006)",
+            "Phantom of the Opera (1943)",
+            "Pilgrim's Progress (1978)",
+            "Point Break (1991)",
+            "Pooh's Grand Adventure: The Search for Christopher Robin (1997)",
+            "Pretty Woman (1990)",
+            "Prime (2005)",
+            "Private Benjamin (1980)",
+            "Prizzi's Honor (1985)",
+            "Project Dinosaur (2000)",
+            "Quantum of Solace (2008)",
+            "Quick Change (1990)",
+            "Quigley Down Under (1990)",
+            "Raiders of the Lost Ark (1981)",
+            "Raising Helen (2004)",
+            "Ransom (1996)",
+            "RED (2010)",
+            "RED 2 (2013)",
+            "Red Dragon (2002)",
+            "Regarding Henry (1991)",
+            "Remember the Titans (2000)",
+            "Rising Sun (1993)",
+            "Romancing the Stone (1984)",
+            "Rooster Cogburn (1975)",
+            "Ruthless People (1986)",
+            "Samantha: An American Girl Holiday (2004)",
+            "Saving Private Ryan (1998)",
+            "Schindler's List (1994)",
+            "Se7en (1995)",
+            "Seems Like Old Times (1980)",
+            "Serendipity (2001)",
+            "Seven Alone (1974)",
+            "Seven Pounds (2008)",
+            "She-Devil (1989)",
+            "She's All That (1999)",
+            "She's the Man (2006)",
+            "Shiloh Makes It Big (1997)",
+            "Shrek (2001)",
+            "Shrek 2 (2004)",
+            "Shrek Forever After (2010)",
+            "Shrek the Third (2007)",
+            "Sibling Rivalry (1990)",
+            "Silver Spurs (1943)",
+            "Silver Streak (1976)",
+            "Sister Act (1992)",
+            "Sister Act 2: Back in the Habit (1993)",
+            "Six Days Seven Nights (1998)",
+            "Skyfall (2012)",
+            "Sleeping with the Enemy (1991)",
+            "Sleepless in Seattle (1993)",
+            "Sliding Doors (1998)",
+            "Sneakers (1992)",
+            "Soap Dish (2021)",
+            "Someone Like You (2001)",
+            "Something the Lord Made (2004)",
+            "Something to Talk About (1995)",
+            "Something's Gotta Give (2003)",
+            "Space Cowboys (2000)",
+            "Spanglish (2004)",
+            "Speed (1994)",
+            "Spider-Man (2002)",
+            "Spider-Man 2 (2004)",
+            "Springtime in the Sierras (1947)",
+            "Stake Out (2020)",
+            "Star Trek (2009)",
+            "Star Trek II: The Wrath of Khan (1982)",
+            "Star Trek III: The Search for Spock (1984)",
+            "Star Trek IV: The Voyage Home (1986)",
+            "Star Trek V: The Final Frontier (1989)",
+            "Star Trek VI: The Undiscovered Country (1991)",
+            "Star Trek: First Contact (1996)",
+            "Star Trek: Generations (1994)",
+            "Star Trek: Insurrection (1998)",
+            "Star Trek: Nemesis (2002)",
+            "Star Trek: The Motion Picture (1979)",
+            "Star Wars: Episode I - The Phantom Menace (1999)",
+            "Star Wars: Episode II - Attack of the Clones (2002)",
+            "Star Wars: Episode III - Revenge of the Sith (2005)",
+            "Star Wars: Episode IV - A New Hope (1977)",
+            "Star Wars: Episode V - The Empire Strikes Back (1980)",
+            "Star Wars: Episode VI - Return of the Jedi (1983)",
+            "Stargate (1994)",
+            "State and Main (2000)",
+            "Steel Magnolias (1989)",
+            "Steve Green: Hide 'Em in Your Heart - Volume II (1992)",
+            "Striking Distance (1993)",
+            "Sudden Impact (1983)",
+            "Superman (1978)",
+            "Sweet Liberty (1986)",
+            "Tall Tale (1995)",
+            "Terminator 2: Judgment Day (1991)",
+            "Terminator 3: Rise of the Machines (2003)",
+            "Terminator Salvation (2009)",
+            "Terms of Endearment (1983)",
+            "Thank You for Smoking (2005)",
+            "The Adventures of Scamper the Penguin (1987)",
+            "The African Queen (1951)",
+            "The American President (1995)",
+            "The Andromeda Strain (1971)",
+            "The Ballad of Paul Bunyan (1973)",
+            "The Beverly Hillbillies (1993)",
+            "The Bible: The Amazing Book (1988)",
+            "The Big Easy (1986)",
+            "The Bodyguard (1992)",
+            "The Bourne Identity (2002)",
+            "The Bourne Legacy (2012)",
+            "The Bourne Supremacy (2004)",
+            "The Bourne Ultimatum (2007)",
+            "The Boy in the Striped Pajamas (2008)",
+            "The Bridge on the River Kwai (1957)",
+            "The Bridges of Madison County (1995)",
+            "The Bucket List (2007)",
+            "The ButterCream Gang in Secret of Treasure Mountain (1993)",
+            "The Cemetery Club (1993)",
+            "The China Syndrome (1979)",
+            "The Cider House Rules (1999)",
+            "The Client (1994)",
+            "The Contender (2000)",
+            "The Da Vinci Code (2006)",
+            "The Dead Pool (1988)",
+            "The Dirty Dozen (1967)",
+            "The Doctor (1991)",
+            "The Donut Man: The Donut Repair Shop (1996)",
+            "The Dream Team (1989)",
+            "The Easter Promise (1975)",
+            "The Electric Horseman (1979)",
+            "The End Times: In the Words of Jesus (2006)",
+            "The Enforcer (1976)",
+            "The Englishman Who Went Up a Hill But Came Down a Mountain (1995)",
+            "The Far Frontier (1948)",
+            "The First Wives Club (1996)",
+            "The Fourth Protocol (1987)",
+            "The Fugitive (1993)",
+            "The Gay Ranchero (1948)",
+            "The Godfather (1972)",
+            "The Godfather Part II (1974)",
+            "The Godfather Part III (1990)",
+            "The Gods Must Be Crazy (1980)",
+            "The Good Shepherd (2006)",
+            "The Goodbye Girl (1977)",
+            "The Guns of Navarone (1961)",
+            "The Hard Way (1991)",
+            "The Horse Whisperer (1998)",
+            "The Hunt for Red October (1990)",
+            "The In-Laws (1979)",
+            "The Iron Giant (1999)",
+            "The Jackal (1997)",
+            "The Jane Austen Book Club (2007)",
+            "The Jewel of the Nile (1985)",
+            "The Lake House (2006)",
+            "The Land Before Time (1988)",
+            "The Land Before Time II: The Great Valley Adventure (1994)",
+            "The Land Before Time III: The Time of the Great Giving (1995)",
+            "The Land Before Time V: The Mysterious Island (1997)",
+            "The Last Chance Detectives: Legend of the Desert Bigfoot (1995)",
+            "The Last Chance Detectives: Mystery Lights of Navajo Mesa (1994)",
+            "The Last Starfighter (1984)",
+            "The Lion King (1994)",
+            "The Little Fox (1981)",
+            "The Little Princess (1939)",
+            "The Living Daylights (1987)",
+            "The Long Kiss Goodnight (1996)",
+            "The Longest Day (1962)",
+            "The Lord of the Rings: The Fellowship of the Ring (2001)",
+            "The Lord of the Rings: The Return of the King (2003)",
+            "The Lord of the Rings: The Two Towers (2002)",
+            "The Lost World: Jurassic Park (1997)",
+            "The Lucky One (2012)",
+            "The Man in the Moon (1991)",
+            "The Man with One Red Shoe (1985)",
+            "The Man with the Golden Gun (1974)",
+            "The MatchMaker (1997)",
+            "The Mighty (1998)",
+            "The Notebook (2004)",
+            "The Other Boleyn Girl (2008)",
+            "The Package (2018)",
+            "The Painted Hills (1951)",
+            "The Parent Trap (1998)",
+            "The Polar Express (2004)",
+            "The Poseidon Adventure (1972)",
+            "The Preacher's Wife (1996)",
+            "The Prince of Egypt (1998)",
+            "The Privileged Planet (2004)",
+            "The Proposal (2009)",
+            "The Queen (2006)",
+            "The Recruit (2003)",
+            "The Replacements (2000)",
+            "The Right Stuff (1983)",
+            "The Rock (1996)",
+            "The Rookie (2002)",
+            "The Russia House (1990)",
+            "The Santa Clause (1994)",
+            "The Santa Clause 2 (2002)",
+            "The Santa Clause 3: The Escape Clause (2006)",
+            "The Seventh Brother (1991)",
+            "The Shaggy D.A. (1976)",
+            "The Shawshank Redemption (1994)",
+            "The Sisterhood of the Traveling Pants (2005)",
+            "The Sisterhood of the Traveling Pants 2 (2008)",
+            "The Sixth Sense (1999)",
+            "The Sound of Music (1965)",
+            "The Spy Who Loved Me (1977)",
+            "The Star Chamber (1983)",
+            "The Star of Christmas (2002)",
+            "The Taking of Pelham 123 (2009)",
+            "The Thomas Crown Affair (1999)",
+            "The Towering Inferno (1974)",
+            "The Toy That Saved Christmas (1996)",
+            "The Train (1964)",
+            "The Truth About Cats & Dogs (1996)",
+            "The Ultimate Gift (2006)",
+            "The Untouchables (1987)",
+            "The Upside of Anger (2005)",
+            "The War of the Worlds (1953)",
+            "The Wedding Planner (2001)",
+            "The Wedding Singer (1998)",
+            "The Whole Nine Yards (2000)",
+            "The Wind in the Willows (1949)",
+            "The Wonders of Creation Reveal God's Glory (2009)",
+            "The World Is Not Enough (1999)",
+            "There's Something About Mary (1998)",
+            "Thomas and the Magic Railroad (2000)",
+            "Three Days of the Condor (1975)",
+            "Thunderball (1965)",
+            "Timmy's Gift: A Precious Moments Christmas (1991)",
+            "Titanic (1997)",
+            "Tomorrow Never Dies (1997)",
+            "Tootsie (1982)",
+            "Top Gun (1986)",
+            "Trading Places (1983)",
+            "Treasure Planet (2002)",
+            "Treasures of the Snow (1983)",
+            "True Grit (2010)",
+            "True Lies (1994)",
+            "Twister (1996)",
+            "Two Mules for Sister Sara (1970)",
+            "Two Weeks Notice (2002)",
+            "U-571 (2000)",
+            "Under California Stars (1948)",
+            "Under Siege (1992)",
+            "Under the Tuscan Sun (2003)",
+            "Up Close & Personal (1996)",
+            "Up in the Air (2009)",
+            "Used Cars (1980)",
+            "VeggieTales: Are You My Neighbor? (1995)",
+            "VeggieTales: Dave and the Giant Pickle (1996)",
+            "VeggieTales: Duke and the Great Pie War (2005)",
+            "VeggieTales: Esther, the Girl Who Became Queen (2000)",
+            "VeggieTales: God Wants Me to Forgive Them!?! (1994)",
+            "VeggieTales: Josh and the Big Wall! (1997)",
+            "VeggieTales: King George and the Ducky (2000)",
+            "VeggieTales: Lord of the Beans (2005)",
+            "VeggieTales: Lyle, the Kindly Viking (2001)",
+            "VeggieTales: Madame Blueberry (1998)",
+            "VeggieTales: Rack, Shack & Benny (1995)",
+            "VeggieTales: The Ballad of Little Joe (2003)",
+            "VeggieTales: Where's God When I'm S-Scared? (1993)",
+            "Volcano (1997)",
+            "Walk the Line (2005)",
+            "Wall Street (1987)",
+            "Wall Street: Money Never Sleeps (2010)",
+            "War of the Worlds (2005)",
+            "WarGames (1983)",
+            "Warriors of Honor (2004)",
+            "We Are Marshall (2006)",
+            "Wee Sing Together (1985)",
+            "We're Back! A Dinosaur's Story (1993)",
+            "What Happens in Vegas (2008)",
+            "What Lies Beneath (2000)",
+            "What Women Want (2000)",
+            "Where Eagles Dare (1968)",
+            "Where the Money Is (2000)",
+            "While You Were Sleeping (1995)",
+            "Wimbledon (2004)",
+            "Witness (1985)",
+            "You Are Special (2000)",
+            "You Only Live Twice (1967)",
+            "You've Got Mail (1998)",
+        ],
+    };
+
+    function getTnCatalogueListings() {
+        return Object.values(tnCatalogue).flat();
+    }
+
+    function getAllCatalogueListings() {
+        return [...Object.values(movieDatabase).flat(), ...getTnCatalogueListings()];
+    }
+
+    function isListingInAnyCatalog(listing) {
+        for (const movies of Object.values(movieDatabase)) {
+            if (movies.includes(listing)) return true;
+        }
+        return getTnCatalogueListings().includes(listing);
+    }
     // --- FILTERS ---
 
     const RUNTIME_FILTER_OPTIONS = [60, 75, 90, 105, 120, 135, 150, 165, 180];
@@ -485,7 +1079,7 @@
     }
 
     const DECADE_FILTER_OPTIONS = [...new Set(
-        Object.values(movieDatabase).flat().map(getMovieDecade).filter((decade) => decade != null)
+        getAllCatalogueListings().map(getMovieDecade).filter((decade) => decade != null)
     )].sort((a, b) => a - b);
 
     let activeDecades = [...DECADE_FILTER_OPTIONS];
@@ -506,10 +1100,70 @@
         return activeDecades.includes(decade);
     }
 
+    const FAMILY_FRIENDLY_RATINGS = ['G', 'PG', 'TV-Y', 'TV-Y7', 'TV-G', 'TV-PG'];
+    // Standard theatrical / TV ratings shown as checkboxes. Everything else (Not Rated,
+    // Unrated, Approved, GP, M, Passed, missing, etc.) collapses to Other.
+    const PRIMARY_CONTENT_RATINGS = new Set([
+        'G', 'PG', 'PG-13', 'R', 'NC-17',
+        'TV-Y', 'TV-Y7', 'TV-G', 'TV-PG', 'TV-14', 'TV-MA',
+    ]);
+    const RATING_FILTER_SORT_ORDER = [
+        'G', 'PG', 'PG-13', 'R', 'NC-17',
+        'TV-Y', 'TV-Y7', 'TV-G', 'TV-PG', 'TV-14', 'TV-MA',
+        'Other',
+    ];
+
+    function getMovieRawContentRating(listing) {
+        const meta = getMovieMetadata(listing);
+        const rated = meta?.Rated;
+        if (!rated || rated === 'N/A') return 'Unknown';
+        return String(rated).trim();
+    }
+
+    function getMovieContentRating(listing) {
+        const raw = getMovieRawContentRating(listing);
+        if (PRIMARY_CONTENT_RATINGS.has(raw)) return raw;
+        return 'Other';
+    }
+
+    function isFamilyOkEligibleListing(listing) {
+        return getMovieContentRating(listing) === 'Other';
+    }
+
+    function compareContentRatings(a, b) {
+        const ai = RATING_FILTER_SORT_ORDER.indexOf(a);
+        const bi = RATING_FILTER_SORT_ORDER.indexOf(b);
+        const aOrder = ai === -1 ? RATING_FILTER_SORT_ORDER.length : ai;
+        const bOrder = bi === -1 ? RATING_FILTER_SORT_ORDER.length : bi;
+        if (aOrder !== bOrder) return aOrder - bOrder;
+        return a.localeCompare(b);
+    }
+
+    const RATING_FILTER_OPTIONS = [...new Set(
+        getAllCatalogueListings().map(getMovieContentRating)
+    )].sort(compareContentRatings);
+
+    let activeRatings = [...RATING_FILTER_OPTIONS];
+
+    function isRatingFilterActive() {
+        return activeRatings.length > 0 && activeRatings.length < RATING_FILTER_OPTIONS.length;
+    }
+
+    function isFamilyFriendlyPresetActive() {
+        if (RATING_FILTER_OPTIONS.length === 0) return false;
+        const familyAvailable = FAMILY_FRIENDLY_RATINGS.filter((rating) =>
+            RATING_FILTER_OPTIONS.includes(rating)
+        );
+        if (familyAvailable.length === 0) return false;
+        if (activeRatings.length !== familyAvailable.length) return false;
+        return familyAvailable.every((rating) => activeRatings.includes(rating));
+    }
+
     // --- WATCHED MOVIES ---
 
     let includeWatchedMovies = false;
     let useUndeadWheelDisc = false;
+    let useFarmhouseWheelDisc = false;
     const CABINET_BACKGROUND_CLASS_BY_MODE = {
         arcade: null,
         tn: 'tn-edition',
@@ -687,12 +1341,7 @@
     function getWatchedMoviesInCatalog() {
         const inCatalog = [];
         for (const listing of watchedMovieSet) {
-            for (const movies of Object.values(movieDatabase)) {
-                if (movies.includes(listing)) {
-                    inCatalog.push(listing);
-                    break;
-                }
-            }
+            if (isListingInAnyCatalog(listing)) inCatalog.push(listing);
         }
         return inCatalog.sort((a, b) => a.localeCompare(b));
     }
@@ -700,6 +1349,9 @@
     function findListingCategory(listing) {
         for (const [category, movies] of Object.entries(movieDatabase)) {
             if (movies.includes(listing)) return category;
+        }
+        if (getTnCatalogueListings().includes(listing)) {
+            return SEQUEL_STREET_CATEGORY;
         }
         return null;
     }
@@ -960,12 +1612,7 @@ ${lines.join('\n')}
     function getOnHoldMoviesInCatalog() {
         const inCatalog = [];
         for (const listing of onHoldMovieSet) {
-            for (const movies of Object.values(movieDatabase)) {
-                if (movies.includes(listing)) {
-                    inCatalog.push(listing);
-                    break;
-                }
-            }
+            if (isListingInAnyCatalog(listing)) inCatalog.push(listing);
         }
         return inCatalog.sort((a, b) => a.localeCompare(b));
     }
@@ -1041,10 +1688,264 @@ ${lines.join('\n')}
         persistOnHoldMovies();
     }
 
+    // --- FAMILY OK MOVIES ---
+
+    let familyOkMovieSet = new Set();
+    let familyOkMoviesFileHandle = null;
+
+    const FAMILY_OK_FILE_HANDLE_DB_NAME = 'pick-a-flick-family-ok';
+    const FAMILY_OK_FILE_HANDLE_STORE = 'handles';
+    const FAMILY_OK_FILE_HANDLE_KEY = 'family-friendly-movies';
+
+    function openFamilyOkFileHandleDb() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(FAMILY_OK_FILE_HANDLE_DB_NAME, 1);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => resolve(request.result);
+            request.onupgradeneeded = () => {
+                request.result.createObjectStore(FAMILY_OK_FILE_HANDLE_STORE);
+            };
+        });
+    }
+
+    async function loadFamilyOkMoviesFileHandle() {
+        if (!isFileSystemAccessSupported()) return;
+
+        try {
+            const db = await openFamilyOkFileHandleDb();
+            const handle = await new Promise((resolve, reject) => {
+                const tx = db.transaction(FAMILY_OK_FILE_HANDLE_STORE, 'readonly');
+                const req = tx.objectStore(FAMILY_OK_FILE_HANDLE_STORE).get(FAMILY_OK_FILE_HANDLE_KEY);
+                req.onsuccess = () => resolve(req.result ?? null);
+                req.onerror = () => reject(req.error);
+            });
+            db.close();
+            if (handle) {
+                familyOkMoviesFileHandle = handle;
+            }
+        } catch (err) {
+            console.log('Could not restore Family OK file handle:', err);
+        }
+    }
+
+    async function storeFamilyOkMoviesFileHandle(handle) {
+        const db = await openFamilyOkFileHandleDb();
+        await new Promise((resolve, reject) => {
+            const tx = db.transaction(FAMILY_OK_FILE_HANDLE_STORE, 'readwrite');
+            tx.objectStore(FAMILY_OK_FILE_HANDLE_STORE).put(handle, FAMILY_OK_FILE_HANDLE_KEY);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+        });
+        db.close();
+    }
+
+    async function writeFamilyOkMoviesToHandle(handle, content) {
+        const writable = await handle.createWritable();
+        await writable.write(content);
+        await writable.close();
+    }
+
+    async function ensureFamilyOkMoviesFileHandle(allowPrompt = true) {
+        if (!isFileSystemAccessSupported()) return null;
+
+        if (familyOkMoviesFileHandle) {
+            const permission = await familyOkMoviesFileHandle.queryPermission({ mode: 'readwrite' });
+            if (permission === 'granted') {
+                return familyOkMoviesFileHandle;
+            }
+            if (permission === 'prompt' && allowPrompt) {
+                const requested = await familyOkMoviesFileHandle.requestPermission({ mode: 'readwrite' });
+                if (requested === 'granted') {
+                    return familyOkMoviesFileHandle;
+                }
+            }
+            if (!allowPrompt) {
+                return null;
+            }
+        }
+
+        if (!allowPrompt) return null;
+
+        const [handle] = await window.showOpenFilePicker({
+            types: [{
+                description: 'JavaScript',
+                accept: { 'application/javascript': ['.js'] },
+            }],
+            multiple: false,
+        });
+        familyOkMoviesFileHandle = handle;
+        await storeFamilyOkMoviesFileHandle(handle);
+        return handle;
+    }
+
+    async function saveFamilyOkMoviesFile(allowPrompt = true) {
+        window.familyFriendlyMovieListings = [...familyOkMovieSet];
+        const content = buildFamilyOkMoviesFileContent();
+
+        if (!isFileSystemAccessSupported()) {
+            downloadFamilyOkMoviesFile(content);
+            return;
+        }
+
+        try {
+            const handle = await ensureFamilyOkMoviesFileHandle(allowPrompt);
+            if (!handle) {
+                downloadFamilyOkMoviesFile(content);
+                return;
+            }
+            await writeFamilyOkMoviesToHandle(handle, content);
+            showFamilyOkSaveStatus('Saved family-friendly-movies.js.');
+        } catch (err) {
+            if (err?.name === 'AbortError') {
+                downloadFamilyOkMoviesFile(content);
+                return;
+            }
+            console.log('Family OK file save failed:', err);
+            downloadFamilyOkMoviesFile(content);
+        }
+    }
+
+    async function linkFamilyOkMoviesSaveFile() {
+        if (!isFileSystemAccessSupported()) {
+            showFamilyOkSaveStatus('Direct save not supported in this browser. Use downloaded file.');
+            return;
+        }
+
+        try {
+            const [handle] = await window.showOpenFilePicker({
+                types: [{
+                    description: 'JavaScript',
+                    accept: { 'application/javascript': ['.js'] },
+                }],
+                multiple: false,
+            });
+            familyOkMoviesFileHandle = handle;
+            await storeFamilyOkMoviesFileHandle(handle);
+            await saveFamilyOkMoviesFile(false);
+            showFamilyOkSaveStatus('Linked and saved family-friendly-movies.js.');
+        } catch (err) {
+            if (err?.name === 'AbortError') return;
+            console.log('Could not link Family OK file:', err);
+            showFamilyOkSaveStatus('Could not link save file.');
+        }
+    }
+
+    function initFamilyOkMovies() {
+        const listings = Array.isArray(window.familyFriendlyMovieListings)
+            ? window.familyFriendlyMovieListings
+            : [];
+        familyOkMovieSet = new Set(
+            listings.filter((item) => typeof item === 'string' && item.trim())
+        );
+    }
+
+    function isMovieFamilyOk(listing) {
+        return familyOkMovieSet.has(listing);
+    }
+
+    function moviePassesRatingFilter(listing) {
+        if (!isRatingFilterActive()) return true;
+        if (isMovieFamilyOk(listing)) return true;
+        const rating = getMovieContentRating(listing);
+        return activeRatings.includes(rating);
+    }
+
+    function getFamilyOkMoviesInCatalog() {
+        const inCatalog = [];
+        for (const listing of familyOkMovieSet) {
+            if (isListingInAnyCatalog(listing)) inCatalog.push(listing);
+        }
+        return inCatalog.sort((a, b) => a.localeCompare(b));
+    }
+
+    function buildFamilyOkMoviesFileContent() {
+        const sorted = [...familyOkMovieSet].sort((a, b) => a.localeCompare(b));
+        const lines = sorted.map(
+            (listing) => `    "${listing.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}",`
+        );
+        return `// Personal Family OK list for Pick A Flick — edit via the app or by hand.
+// Titles here pass the rating filter even when their OMDb Rated is deselected
+// (e.g. Not Rated / Unrated titles you have vetted as family-friendly).
+window.familyFriendlyMovieListings = [
+${lines.join('\n')}
+];
+`;
+    }
+
+    function showFamilyOkSaveStatus(message) {
+        const status = document.getElementById('family-ok-save-status');
+        if (!status) return;
+        status.textContent = message;
+        if (message) {
+            window.setTimeout(() => {
+                if (status.textContent === message) {
+                    status.textContent = '';
+                }
+            }, 5000);
+        }
+    }
+
+    function downloadFamilyOkMoviesFile(content = buildFamilyOkMoviesFileContent()) {
+        const blob = new Blob([content], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'family-friendly-movies.js';
+        link.click();
+        URL.revokeObjectURL(url);
+        showFamilyOkSaveStatus('Save downloaded file to your Pick A Flick folder to keep changes.');
+    }
+
+    function persistFamilyOkMovies() {
+        void saveFamilyOkMoviesFile(true);
+    }
+
+    function markMoviesAsFamilyOk(listings) {
+        let changed = false;
+        listings.forEach((listing) => {
+            if (!listing) return;
+            if (familyOkMovieSet.has(listing)) return;
+            familyOkMovieSet.add(listing);
+            changed = true;
+        });
+        if (!changed) return;
+        updateFamilyOkFilterUI();
+        resetMovieSelectionPools();
+        updateSpinBlockerUI();
+        persistFamilyOkMovies();
+    }
+
+    function unmarkMovieAsFamilyOk(listing) {
+        if (!familyOkMovieSet.has(listing)) return;
+        familyOkMovieSet.delete(listing);
+        updateFamilyOkFilterUI();
+        resetMovieSelectionPools();
+        updateSpinBlockerUI();
+        persistFamilyOkMovies();
+    }
+
     function applyWheelDiscArt() {
         const disc = document.getElementById('wheel-disc');
         if (!disc) return;
         disc.classList.toggle('wheel-disc-undead', useUndeadWheelDisc);
+        disc.classList.toggle('wheel-disc-farmhouse', useFarmhouseWheelDisc);
+    }
+
+    function syncWheelDiscCheckboxes() {
+        const undeadCheckbox = document.getElementById('undead-wheel-checkbox');
+        const farmhouseCheckbox = document.getElementById('farmhouse-wheel-checkbox');
+        if (undeadCheckbox) undeadCheckbox.checked = useUndeadWheelDisc;
+        if (farmhouseCheckbox) farmhouseCheckbox.checked = useFarmhouseWheelDisc;
+    }
+
+    function setWheelDiscArt(mode) {
+        useUndeadWheelDisc = mode === 'undead';
+        useFarmhouseWheelDisc = mode === 'farmhouse';
+        syncWheelDiscCheckboxes();
+        applyWheelDiscArt();
+        updateCategoryFilterDisplayNames();
+        resetMovieSelectionPools();
+        updateSpinBlockerUI();
     }
 
     function applyArcadeBackgroundArt() {
@@ -1070,19 +1971,17 @@ ${lines.join('\n')}
         applyArcadeBackgroundArt();
     }
 
-    function setUseUndeadWheelDisc(enabled) {
-        useUndeadWheelDisc = enabled;
-        const checkbox = document.getElementById('undead-wheel-checkbox');
-        if (checkbox) checkbox.checked = enabled;
-        applyWheelDiscArt();
-    }
-
     function buildWheelArtToggleUI() {
         const undeadCheckbox = document.getElementById('undead-wheel-checkbox');
         if (undeadCheckbox) {
-            undeadCheckbox.checked = useUndeadWheelDisc;
             undeadCheckbox.addEventListener('change', () => {
-                setUseUndeadWheelDisc(undeadCheckbox.checked);
+                setWheelDiscArt(undeadCheckbox.checked ? 'undead' : 'default');
+            });
+        }
+        const farmhouseCheckbox = document.getElementById('farmhouse-wheel-checkbox');
+        if (farmhouseCheckbox) {
+            farmhouseCheckbox.addEventListener('change', () => {
+                setWheelDiscArt(farmhouseCheckbox.checked ? 'farmhouse' : 'default');
             });
         }
         const cabinetSelect = document.getElementById('cabinet-background-select');
@@ -1092,6 +1991,7 @@ ${lines.join('\n')}
             });
         }
         syncCabinetBackgroundSelect();
+        syncWheelDiscCheckboxes();
         applyWheelDiscArt();
         applyArcadeBackgroundArt();
     }
@@ -1100,6 +2000,7 @@ ${lines.join('\n')}
         const panels = [
             { panel: 'runtime-filter', label: 'runtime filter' },
             { panel: 'decade-filter', label: 'decade filter' },
+            { panel: 'rating-filter', label: 'rating filter' },
             { panel: 'watched-filter', label: 'watched filter' },
             { panel: 'wheel-art-toggle', label: 'wheel art' },
         ];
@@ -1116,11 +2017,27 @@ ${lines.join('\n')}
         });
     }
 
+    function resolveCategoryListings(category) {
+        if (useFarmhouseWheelDisc && category === SEQUEL_STREET_CATEGORY) {
+            return {
+                listings: getTnCatalogueListings(),
+                poolKey: FARMHOUSE_FILMS_POOL_KEY,
+                displayName: FARMHOUSE_FILMS_POOL_KEY,
+            };
+        }
+        return {
+            listings: movieDatabase[category] ?? [],
+            poolKey: category,
+            displayName: category,
+        };
+    }
+
     function getEligibleMovies(category) {
-        return movieDatabase[category].filter(
+        return resolveCategoryListings(category).listings.filter(
             (listing) =>
                 moviePassesRuntimeFilter(listing) &&
                 moviePassesDecadeFilter(listing) &&
+                moviePassesRatingFilter(listing) &&
                 moviePassesWatchedFilter(listing) &&
                 moviePassesOnHoldFilter(listing)
         );
@@ -1134,13 +2051,14 @@ ${lines.join('\n')}
         syncRuntimeFilterState();
         if (activeCategories.length === 0) return false;
         if (activeDecades.length === 0) return false;
+        if (activeRatings.length === 0) return false;
         if (isRuntimeFilterActive() && !isRuntimeFilterValid()) return false;
         return getEligibleCategories().length === 0;
     }
 
     function getAvailableFlicksCount() {
         syncRuntimeFilterState();
-        if (activeCategories.length === 0 || activeDecades.length === 0) return 0;
+        if (activeCategories.length === 0 || activeDecades.length === 0 || activeRatings.length === 0) return 0;
         if (isRuntimeFilterActive() && !isRuntimeFilterValid()) return 0;
 
         return activeCategories.reduce(
@@ -1258,6 +2176,7 @@ ${lines.join('\n')}
         toggleAllCategories(true);
         clearRuntimeFilter();
         toggleAllDecades(true);
+        resetRatingFilter();
         resetWatchedFilter();
     }
 
@@ -1279,11 +2198,112 @@ ${lines.join('\n')}
         });
     }
 
+    function updateRatingLabelVisual(rating) {
+        const checkbox = document.querySelector(
+            `#rating-filter-options input[data-rating="${CSS.escape(rating)}"]`
+        );
+        if (!checkbox) return;
+
+        const isActive = activeRatings.includes(rating);
+        checkbox.checked = isActive;
+        checkbox.closest('label')?.classList.toggle('rating-inactive', !isActive);
+    }
+
+    function updateFamilyFriendlyPresetButton() {
+        const btn = document.getElementById('family-friendly-preset-btn');
+        if (!btn) return;
+        btn.classList.toggle('is-active', isFamilyFriendlyPresetActive());
+    }
+
+    function toggleRating(rating) {
+        const index = activeRatings.indexOf(rating);
+        if (index === -1) {
+            activeRatings.push(rating);
+        } else {
+            activeRatings.splice(index, 1);
+        }
+        activeRatings.sort(compareContentRatings);
+        updateRatingLabelVisual(rating);
+        updateFamilyFriendlyPresetButton();
+        resetMovieSelectionPools();
+        updateSpinBlockerUI();
+    }
+
+    function toggleAllRatings(shouldSelect) {
+        if (shouldSelect) {
+            activeRatings = [...RATING_FILTER_OPTIONS];
+        } else {
+            activeRatings = [];
+        }
+
+        RATING_FILTER_OPTIONS.forEach((rating) => {
+            updateRatingLabelVisual(rating);
+        });
+        updateFamilyFriendlyPresetButton();
+        resetMovieSelectionPools();
+        updateSpinBlockerUI();
+    }
+
+    function applyFamilyFriendlyPreset() {
+        activeRatings = FAMILY_FRIENDLY_RATINGS.filter((rating) =>
+            RATING_FILTER_OPTIONS.includes(rating)
+        );
+        RATING_FILTER_OPTIONS.forEach((rating) => {
+            updateRatingLabelVisual(rating);
+        });
+        updateFamilyFriendlyPresetButton();
+        resetMovieSelectionPools();
+        updateSpinBlockerUI();
+    }
+
+    function resetRatingFilter() {
+        toggleAllRatings(true);
+    }
+
+    function buildRatingFilterUI() {
+        const container = document.getElementById('rating-filter-options');
+        if (!container) return;
+
+        container.innerHTML = '';
+        RATING_FILTER_OPTIONS.forEach((rating) => {
+            const label = document.createElement('label');
+            label.className = 'rating-filter-label';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = true;
+            checkbox.dataset.rating = rating;
+            checkbox.addEventListener('change', () => toggleRating(rating));
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(' ' + rating));
+            container.appendChild(label);
+        });
+        updateFamilyFriendlyPresetButton();
+    }
+
     // --- CATEGORY FILTER AND SPIN STATE ---
 
     let categories = Object.keys(movieDatabase);
 
     let activeCategories = [...categories];
+
+    function getCategoryFilterDisplayName(categoryName) {
+        if (useFarmhouseWheelDisc && categoryName === SEQUEL_STREET_CATEGORY) {
+            return FARMHOUSE_FILMS_POOL_KEY;
+        }
+        return categoryName;
+    }
+
+    function updateCategoryFilterDisplayNames() {
+        Object.keys(movieDatabase).forEach((categoryName) => {
+            const checkbox = document.querySelector(
+                `#category-filter-options input[data-category="${CSS.escape(categoryName)}"]`
+            );
+            const textSpan = checkbox?.closest('label')?.querySelector('.category-filter-text');
+            if (textSpan) {
+                textSpan.textContent = ' ' + getCategoryFilterDisplayName(categoryName);
+            }
+        });
+    }
 
     function updateCategoryLabelVisual(categoryName) {
         const checkbox = document.querySelector(
@@ -1975,6 +2995,129 @@ ${lines.join('\n')}
         updateKeeperButtonState();
         resetTicketShuffleState();
         resetSnappyPowerGauge();
+    }
+
+    let arcadeTheaterActive = false;
+
+    function getFullscreenElement() {
+        return document.fullscreenElement
+            || document.webkitFullscreenElement
+            || document.msFullscreenElement
+            || null;
+    }
+
+    function supportsBrowserFullscreen() {
+        const root = document.documentElement;
+        const enabled = document.fullscreenEnabled
+            || document.webkitFullscreenEnabled
+            || document.msFullscreenEnabled
+            || false;
+        const canRequest = typeof root.requestFullscreen === 'function'
+            || typeof root.webkitRequestFullscreen === 'function'
+            || typeof root.msRequestFullscreen === 'function';
+        return Boolean(enabled && canRequest);
+    }
+
+    function isArcadeFullscreenActive() {
+        return Boolean(getFullscreenElement()) || arcadeTheaterActive;
+    }
+
+    function enterArcadeTheater() {
+        arcadeTheaterActive = true;
+        updateArcadeFullscreenButton();
+    }
+
+    function exitArcadeTheater() {
+        arcadeTheaterActive = false;
+        updateArcadeFullscreenButton();
+    }
+
+    function updateArcadeFullscreenButton() {
+        const btn = document.getElementById('arcade-fullscreen-btn');
+        const active = isArcadeFullscreenActive();
+        const nativeFs = Boolean(getFullscreenElement());
+        if (nativeFs) arcadeTheaterActive = false;
+        document.body.classList.toggle('is-arcade-fullscreen', active);
+        if (!btn) return;
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        btn.textContent = active ? 'Exit Full' : 'Fullscreen';
+        if (active) {
+            btn.title = nativeFs
+                ? 'Exit fullscreen (Esc)'
+                : 'Exit maximize (Esc)';
+        } else if (supportsBrowserFullscreen()) {
+            btn.title = 'Fullscreen (Esc to exit)';
+        } else {
+            btn.title = 'Maximize cabinet — Esc to exit';
+        }
+    }
+
+    async function enterArcadeFullscreen() {
+        if (!supportsBrowserFullscreen()) {
+            enterArcadeTheater();
+            return;
+        }
+        const root = document.documentElement;
+        try {
+            if (root.requestFullscreen) {
+                try {
+                    await root.requestFullscreen({ navigationUI: 'hide' });
+                } catch {
+                    await root.requestFullscreen();
+                }
+            } else if (root.webkitRequestFullscreen) {
+                root.webkitRequestFullscreen();
+            } else if (root.msRequestFullscreen) {
+                root.msRequestFullscreen();
+            }
+        } catch (err) {
+            console.log('Could not enter fullscreen:', err);
+        }
+        if (!getFullscreenElement()) {
+            enterArcadeTheater();
+            return;
+        }
+        updateArcadeFullscreenButton();
+    }
+
+    async function exitArcadeFullscreen() {
+        arcadeTheaterActive = false;
+        if (getFullscreenElement()) {
+            try {
+                if (document.exitFullscreen) {
+                    await document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            } catch (err) {
+                console.log('Could not exit fullscreen:', err);
+            }
+        }
+        updateArcadeFullscreenButton();
+    }
+
+    async function toggleArcadeFullscreen() {
+        if (isArcadeFullscreenActive()) {
+            await exitArcadeFullscreen();
+            return;
+        }
+        await enterArcadeFullscreen();
+    }
+
+    function initArcadeFullscreenControls() {
+        const btn = document.getElementById('arcade-fullscreen-btn');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                void toggleArcadeFullscreen();
+            });
+        }
+        document.addEventListener('fullscreenchange', updateArcadeFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateArcadeFullscreenButton);
+        document.addEventListener('MSFullscreenChange', updateArcadeFullscreenButton);
+        updateArcadeFullscreenButton();
     }
 
 
@@ -2860,14 +4003,15 @@ ${lines.join('\n')}
     }
 
     function markMovieServed(catKey, listing) {
+        const { poolKey } = resolveCategoryListings(catKey);
         const eligible = getEligibleMovies(catKey);
         if (!eligible.includes(listing)) return;
 
-        reconcileMoviePool(catKey, eligible);
-        if (!movieRemainingByCategory[catKey]?.length) {
-            movieRemainingByCategory[catKey] = shuffleArray(eligible);
+        reconcileMoviePool(poolKey, eligible);
+        if (!movieRemainingByCategory[poolKey]?.length) {
+            movieRemainingByCategory[poolKey] = shuffleArray(eligible);
         }
-        const pool = movieRemainingByCategory[catKey];
+        const pool = movieRemainingByCategory[poolKey];
         const idx = pool.indexOf(listing);
         if (idx >= 0) pool.splice(idx, 1);
     }
@@ -2880,6 +4024,7 @@ ${lines.join('\n')}
     function drawNextMovie(catKey, second) {
         const options = normalizeDrawNextMovieOptions(second);
         const excludeListings = options.excludeListings ?? [];
+        const { poolKey } = resolveCategoryListings(catKey);
         let eligibleMovies = options.eligibleMovies
             ?? getEligibleMoviesForDraw(catKey, excludeListings);
         if (excludeListings.length) {
@@ -2888,9 +4033,9 @@ ${lines.join('\n')}
         }
         if (!eligibleMovies.length) return null;
 
-        reconcileMoviePool(catKey, eligibleMovies);
-        ensureMoviePool(catKey, eligibleMovies);
-        return movieRemainingByCategory[catKey].pop() ?? null;
+        reconcileMoviePool(poolKey, eligibleMovies);
+        ensureMoviePool(poolKey, eligibleMovies);
+        return movieRemainingByCategory[poolKey].pop() ?? null;
     }
 
     function drawNextMovieLabel(catKey, options = {}) {
@@ -2906,10 +4051,11 @@ ${lines.join('\n')}
     }
 
     function getMoviePoolRemainingCount(catKey, excludeListings = []) {
+        const { poolKey } = resolveCategoryListings(catKey);
         const eligibleMovies = getEligibleMoviesForDraw(catKey, excludeListings);
         if (!eligibleMovies.length) return 0;
-        reconcileMoviePool(catKey, eligibleMovies);
-        const pool = movieRemainingByCategory[catKey];
+        reconcileMoviePool(poolKey, eligibleMovies);
+        const pool = movieRemainingByCategory[poolKey];
         if (pool?.length) {
             const exclude = new Set(excludeListings);
             return pool.filter((listing) => !exclude.has(listing)).length;
@@ -2947,17 +4093,29 @@ ${lines.join('\n')}
         markMovieServed(category, listing);
     }
 
+    function resolveWinClipCategory(catKey) {
+        if (useFarmhouseWheelDisc && catKey === SEQUEL_STREET_CATEGORY) {
+            return FARMHOUSE_FILMS_POOL_KEY;
+        }
+        return catKey;
+    }
+
     function playCategoryVictorySound(catKey) {
 
         if (!victoryEnabled) return;
 
-        
+        let winKey = resolveWinClipCategory(catKey);
+        let winData = categoryWinClips[winKey];
 
-        let winData = categoryWinClips[catKey];
+        // Empty Farmhouse bank falls back to Sequel Street until clips are added.
+        if ((!winData || winData.files.length === 0) && winKey !== catKey) {
+            winKey = catKey;
+            winData = categoryWinClips[catKey];
+        }
 
         if (winData && winData.files.length > 0) {
 
-            let randomWinFile = drawNextWinClip(catKey, winData.files);
+            let randomWinFile = drawNextWinClip(winKey, winData.files);
 
             let fullPath = winData.folder + randomWinFile;
 
@@ -3403,7 +4561,7 @@ function showPosterFallback(categoryEmoji) {
     if (placeholder) {
         placeholder.style.display = 'block';
         placeholder.classList.add('fallback-art');
-        placeholder.textContent = categoryEmoji || '🎬';
+        placeholder.textContent = categoryEmoji || '??';
     }
 }
 
@@ -3502,7 +4660,8 @@ function revealMovieResult(category, chosenMovie, categoryEmoji) {
         showPosterFallback(categoryEmoji);
     }
 
-    populateResultCard(metadata, chosenMovie, categoryEmoji, category);
+    const { displayName } = resolveCategoryListings(category);
+    populateResultCard(metadata, chosenMovie, categoryEmoji, displayName);
 
     lastRevealedListing = chosenMovie;
     lastRevealedLabel = `${categoryEmoji} ${chosenMovie}`;
@@ -3715,6 +4874,74 @@ function updateOnHoldFilterUI() {
     }
     updateOnHoldFlicksListUI();
     updateResultStatusButtons();
+}
+
+function updateFamilyOkFilterUI() {
+    const countEl = document.getElementById('family-ok-filter-count');
+    if (countEl) {
+        const count = getFamilyOkMoviesInCatalog().length;
+        countEl.textContent = `${count} family ok`;
+    }
+    updateFamilyOkListUI();
+    updateResultStatusButtons();
+}
+
+function updateFamilyOkListUI() {
+    const list = document.getElementById('family-ok-list');
+    const empty = document.getElementById('family-ok-list-empty');
+    if (!list || !empty) return;
+
+    list.innerHTML = '';
+    const familyOk = getFamilyOkMoviesInCatalog();
+
+    empty.hidden = familyOk.length > 0;
+    list.hidden = familyOk.length === 0;
+
+    familyOk.forEach((listing) => {
+        const li = document.createElement('li');
+        li.className = 'family-ok-list-item';
+
+        const category = findListingCategory(listing);
+        const emoji = category ? category.split(' ').pop() : '';
+        const title = document.createElement('span');
+        title.className = 'family-ok-list-title';
+        title.textContent = emoji ? `${emoji} ${listing}` : listing;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'family-ok-list-remove-btn';
+        removeBtn.textContent = 'Remove';
+        removeBtn.addEventListener('click', () => unmarkMovieAsFamilyOk(listing));
+
+        li.appendChild(title);
+        li.appendChild(removeBtn);
+        list.appendChild(li);
+    });
+}
+
+function buildFamilyOkListPanelUI() {
+    const toggle = document.getElementById('family-ok-filter-count');
+    const panel = document.getElementById('family-ok-list-panel');
+    if (!toggle || !panel) return;
+
+    toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!expanded));
+        panel.hidden = expanded;
+    });
+
+    if (!document.getElementById('family-ok-choose-save-file')) {
+        const chooseSaveBtn = document.createElement('button');
+        chooseSaveBtn.type = 'button';
+        chooseSaveBtn.id = 'family-ok-choose-save-file';
+        chooseSaveBtn.textContent = 'Choose save file';
+        chooseSaveBtn.addEventListener('click', () => {
+            void linkFamilyOkMoviesSaveFile();
+        });
+        panel.insertBefore(chooseSaveBtn, panel.firstChild);
+    }
+
+    updateFamilyOkFilterUI();
 }
 
 function updateOnHoldFlicksListUI() {
@@ -3999,7 +5226,7 @@ function buildManualKeeperPanelUI() {
     const emblem = document.createElement('div');
     emblem.className = 'manual-keeper-emblem';
     emblem.setAttribute('aria-hidden', 'true');
-    emblem.textContent = '🔎';
+    emblem.textContent = '??';
     section.appendChild(emblem);
 
     const label = document.createElement('div');
@@ -4114,9 +5341,32 @@ function updateResultOnHoldButton() {
     btn.disabled = false;
 }
 
+function updateResultFamilyOkButton() {
+    const btn = document.getElementById('mark-family-ok-btn');
+    if (!btn) return;
+
+    if (!hasSelectedMovie || !lastRevealedListing) {
+        btn.hidden = true;
+        return;
+    }
+
+    const familyOk = isMovieFamilyOk(lastRevealedListing);
+    const showButton = familyOk || isFamilyOkEligibleListing(lastRevealedListing);
+    if (!showButton) {
+        btn.hidden = true;
+        return;
+    }
+
+    btn.hidden = false;
+    btn.classList.toggle('is-family-ok', familyOk);
+    btn.setAttribute('aria-label', familyOk ? 'Remove Family OK' : 'Mark as Family OK');
+    btn.disabled = false;
+}
+
 function updateResultStatusButtons() {
     updateResultMarkWatchedButton();
     updateResultOnHoldButton();
+    updateResultFamilyOkButton();
 }
 
 function toggleCurrentResultWatched() {
@@ -4136,6 +5386,16 @@ function toggleCurrentResultOnHold() {
         unmarkMovieAsOnHold(lastRevealedListing);
     } else {
         markMoviesAsOnHold([lastRevealedListing]);
+    }
+}
+
+function toggleCurrentResultFamilyOk() {
+    if (!lastRevealedListing) return;
+    playMarkWatchedScribbleSound();
+    if (isMovieFamilyOk(lastRevealedListing)) {
+        unmarkMovieAsFamilyOk(lastRevealedListing);
+    } else {
+        markMoviesAsFamilyOk([lastRevealedListing]);
     }
 }
 
@@ -4317,6 +5577,11 @@ function isDuplicateListing(listing) {
             return { duplicate: true, category };
         }
     }
+    for (const [collection, movies] of Object.entries(tnCatalogue)) {
+        if (movies.includes(listing)) {
+            return { duplicate: true, category: collection };
+        }
+    }
     return { duplicate: false };
 }
 
@@ -4324,7 +5589,7 @@ function isDuplicateListing(listing) {
 
 function buildAddMoviesPrompt(entries) {
     const bullets = entries
-        .map(({ listing, category }) => `- "${listing}" â†’ ${category}`)
+        .map(({ listing, category }) => `- "${listing}" ??? ${category}`)
         .join('\n');
 
     return `Add these movies to movieDatabase in main.js:
@@ -4450,11 +5715,9 @@ function formatBatchWarnings(warnings) {
 
 function findExactListingInCatalog(query) {
     const lower = query.trim().toLowerCase();
-    for (const movies of Object.values(movieDatabase)) {
-        for (const listing of movies) {
-            if (listing.toLowerCase() === lower) {
-                return listing;
-            }
+    for (const listing of getAllCatalogueListings()) {
+        if (listing.toLowerCase() === lower) {
+            return listing;
         }
     }
     return null;
@@ -5415,7 +6678,7 @@ const SHUFFLE_CONFIRM_BOWER_POS = [
     { left: 50, top: 82, bow: 'center' },
     { left: 78, top: 78, bow: 'right' }
 ];
-const SHUFFLE_MYSTERY_SEQUEL_CATEGORY = 'SEQUEL STREET 🚗';
+const SHUFFLE_MYSTERY_SEQUEL_CATEGORY = SEQUEL_STREET_CATEGORY;
 
 const SHUFFLE_JOKER_DISINTEGRATE_MS = 1400;
 const SHUFFLE_JOKER_WHOOSH_PRE_ANIM_MS = 150;
@@ -5794,7 +7057,11 @@ function getCoinTossEmojiForEntry(entry) {
             return parts[parts.length - 1];
         }
     }
-    return '🎬';
+    if (getTnCatalogueListings().includes(entry.listing)) {
+        const parts = SEQUEL_STREET_CATEGORY.split(' ');
+        return parts[parts.length - 1];
+    }
+    return '??';
 }
 
 function getCoinTossCandidates() {
@@ -5956,18 +7223,28 @@ function findMovieListingInDatabase(query) {
     const partial = [];
     const lower = normalized.toLowerCase();
 
+    const considerListing = (categoryEmoji, listing) => {
+        const label = `${categoryEmoji} ${listing}`;
+        const listingLower = listing.toLowerCase();
+        if (listingLower === lower || label.toLowerCase() === lower) {
+            exact.push(buildCoinTossEntry(label, 'manual'));
+        } else if (listingLower.includes(lower)) {
+            partial.push(buildCoinTossEntry(label, 'manual'));
+        }
+    };
+
     for (const category of Object.keys(movieDatabase)) {
         const parts = category.split(' ');
         const categoryEmoji = parts[parts.length - 1];
         for (const listing of movieDatabase[category]) {
-            const label = `${categoryEmoji} ${listing}`;
-            const listingLower = listing.toLowerCase();
-            if (listingLower === lower || label.toLowerCase() === lower) {
-                exact.push(buildCoinTossEntry(label, 'manual'));
-            } else if (listingLower.includes(lower)) {
-                partial.push(buildCoinTossEntry(label, 'manual'));
-            }
+            considerListing(categoryEmoji, listing);
         }
+    }
+
+    const sequelParts = SEQUEL_STREET_CATEGORY.split(' ');
+    const tnEmoji = sequelParts[sequelParts.length - 1];
+    for (const listing of getTnCatalogueListings()) {
+        considerListing(tnEmoji, listing);
     }
 
     if (exact.length) return { matches: exact };
@@ -8798,7 +10075,7 @@ function handleCoinTossManualSearch(slotKey) {
 
 function getShuffleJokerPreviewMarkup() {
     const layers = Array.from({ length: SHUFFLE_LOCK_IN_DECK_LAYERS }, () =>
-        '<span class="shuffle-joker-card-layer" aria-hidden="true">🃏</span>'
+        '<span class="shuffle-joker-card-layer" aria-hidden="true">??</span>'
     ).join('');
     return `<span class="shuffle-joker-face"><span class="shuffle-joker-card-shell"><span class="shuffle-joker-deck" aria-hidden="true">${layers}</span></span></span>`;
 }
@@ -9827,8 +11104,11 @@ function buildCategoryFilterUI() {
         checkbox.checked = true;
         checkbox.dataset.category = categoryName;
         checkbox.addEventListener('change', () => toggleCategory(categoryName));
+        const textSpan = document.createElement('span');
+        textSpan.className = 'category-filter-text';
+        textSpan.textContent = ' ' + getCategoryFilterDisplayName(categoryName);
         label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(' ' + categoryName));
+        label.appendChild(textSpan);
         container.appendChild(label);
     });
 }
@@ -9839,13 +11119,19 @@ initWatchedMovies();
 
 initOnHoldMovies();
 
+initFamilyOkMovies();
+
 void loadWatchedMoviesFileHandle();
 
 void loadOnHoldMoviesFileHandle();
 
+void loadFamilyOkMoviesFileHandle();
+
 buildRuntimeFilterUI();
 
 buildDecadeFilterUI();
+
+buildRatingFilterUI();
 
 buildWatchedFilterUI();
 
@@ -9859,6 +11145,8 @@ buildWatchedFlicksPanelUI();
 
 buildOnHoldFlicksPanelUI();
 
+buildFamilyOkListPanelUI();
+
 updateOnHoldFilterUI();
 
 const markWatchedBtn = document.getElementById('mark-watched-btn');
@@ -9869,6 +11157,11 @@ if (markWatchedBtn) {
 const markOnHoldBtn = document.getElementById('mark-on-hold-btn');
 if (markOnHoldBtn) {
     markOnHoldBtn.addEventListener('click', toggleCurrentResultOnHold);
+}
+
+const markFamilyOkBtn = document.getElementById('mark-family-ok-btn');
+if (markFamilyOkBtn) {
+    markFamilyOkBtn.addEventListener('click', toggleCurrentResultFamilyOk);
 }
 
 updateSpinBlockerUI();
@@ -9894,6 +11187,7 @@ updateKeeperButtonState();
 preloadSpinButtonClipAudio();
 preloadMarkWatchedScribbleAudio();
 initSnappyPowerGaugeSegments();
+initArcadeFullscreenControls();
 
 const spinButtonEl = document.getElementById('spin-button');
 if (spinButtonEl) {
@@ -9935,6 +11229,12 @@ document.addEventListener('keydown', (event) => {
         }
         if (isShuffleActive) {
             cancelActiveTicketShuffle();
+            event.preventDefault();
+            return;
+        }
+
+        if (arcadeTheaterActive && !getFullscreenElement()) {
+            exitArcadeTheater();
             event.preventDefault();
             return;
         }
